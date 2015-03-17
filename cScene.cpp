@@ -44,25 +44,9 @@ bool cScene::LoadLevel(int level)
 						//Tiles = 1,2,3,...
 						map[(j*SCENE_WIDTH)+i] = tile_num;
 
-						//coordx_tile i coordy_tile 
 						coordx_tile = (float)((tile_num%15)*(16.0/240.0));
-						coordy_tile = (float)((tile_num%20)*(16.0/320.0));
+						coordy_tile = (float)((tile_num/15)*(16.0/320.0));
 
-						// img = 8x8, size=256
-						/*        i
-							0  1  2  3
-							4  5  6  7 
-						 j  8  9 10 11
-						   12 13 14 15
-						switch(tile)
-						{
-						case 6:	cx = 2*((256/8)/256)
-								cy = 1*/
-
-
-
-						//BLOCK_SIZE = 24, FILE_SIZE = 64
-						// 24 / 64 = 0.375
 						glTexCoord2f(coordx_tile             ,coordy_tile+(16.0/320.0));	glVertex2i(px           ,py           );
 						glTexCoord2f(coordx_tile+(16.0/240.0),coordy_tile+(16.0/320.0));	glVertex2i(px+TILE_SIZE, py           );
 						glTexCoord2f(coordx_tile+(16.0/240.0),coordy_tile       );			glVertex2i(px+TILE_SIZE, py+TILE_SIZE);
