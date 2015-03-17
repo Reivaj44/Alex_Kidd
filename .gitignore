@@ -1,1 +1,15 @@
 *.sln
+*.suo
+*.sdf
+*.vc*
+*.dll
+*.opensdf
+*.filters
+*.users
+*.lib
+*.XML
+
+Debug/*
+glut-3.7.6-bin/*
+ipch/*
+_UpgradeReport_Files/*
