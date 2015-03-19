@@ -28,6 +28,8 @@ bool cScene::LoadLevel(int level)
 
 	id_DL=glGenLists(1);
 	glNewList(id_DL,GL_COMPILE);
+		glPushMatrix();
+		glTranslatef(-16.0,-1744.0,0.0);
 		glBegin(GL_QUADS);
 	
 			for(j=SCENE_HEIGHT-1;j>=0;j--)
@@ -61,6 +63,7 @@ bool cScene::LoadLevel(int level)
 			}
 
 		glEnd();
+		glPopMatrix();
 	glEndList();
 
 	fclose(fd);
