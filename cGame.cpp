@@ -1,11 +1,11 @@
 #include "cGame.h"
 #include "Globals.h"
-#include <windows.h>
-#include <ctime>
 
 
 cGame::cGame(void)
 {
+	jump_key = false;
+	punch_key = false;
 }
 
 cGame::~cGame(void)
@@ -27,35 +27,37 @@ bool cGame::Init()
 	glEnable(GL_ALPHA_TEST);
 
 	//Scene initialization
-	res = Data.LoadImage(IMG_BLOCKS,"Pantalla01.png",GL_RGBA);
+	res = Data.LoadImage(IMG_BLOCKS,"blocks.png",GL_RGBA);
 	if(!res) return false;
-	res = Scene.LoadLevel(2);
+	res = Scene.LoadLevel(1);
 	if(!res) return false;
 
 	//Player initialization
-	res = Data.LoadImage(IMG_PLAYER,"bub.png",GL_RGBA);
+	res = Data.LoadImage(IMG_PLAYER,"alexkiddmw.png",GL_RGBA);
 	if(!res) return false;
-	Player.SetWidthHeight(32,32);
 	Player.SetTile(4,1);
-	Player.SetWidthHeight(32,32);
+	Player.SetWidthHeight(16,24);
 	Player.SetState(STATE_LOOKRIGHT);
+
+	res = Data.LoadImageA(IMG_PTERO, "ptero.png", GL_RGBA);
+	if(!res) return false;
+	Ptero.SetTile(4,5);
+	Ptero.SetWidthHeight(24,16);
 
 	return res;
 }
 
 bool cGame::Loop()
 {
+	int t1 = glutGet(GLUT_ELAPSED_TIME);
+	int t2;
 	bool res=true;
-
-	clock_t begin = clock();
 
 	res = Process();
 	if(res) Render();
-
-	clock_t end = clock();
-	double elapsed_msecs = double(end - begin) * 1000.0 / CLOCKS_PER_SEC;
-	if((elapsed_msecs) < 2000) Sleep(elapsed_msecs);
-
+	do {
+		t2 = glutGet(GLUT_ELAPSED_TIME);
+	} while(t2-t1<17);
 	return res;
 }
 
@@ -67,6 +69,8 @@ void cGame::Finalize()
 void cGame::ReadKeyboard(unsigned char key, int x, int y, bool press)
 {
 	keys[key] = press;
+	if(key=='x' && !press) jump_key=false;
+	if(key=='c' && !press) punch_key=false;
 }
 
 void cGame::ReadMouse(int button, int state, int x, int y)
@@ -77,14 +81,45 @@ void cGame::ReadMouse(int button, int state, int x, int y)
 bool cGame::Process()
 {
 	bool res=true;
-	
+	Ptero.Move(Scene.GetMap());
 	//Process Input
 	if(keys[27])	res=false;
 	
-	if(keys[GLUT_KEY_UP])			Player.Jump(Scene.GetMap());
-	if(keys[GLUT_KEY_LEFT])			Player.MoveLeft(Scene.GetMap());
-	else if(keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap());
-	else Player.Stop();
+	bool keypressed = false;
+
+	if(keys[GLUT_KEY_DOWN]) 
+	{		
+		Player.Crouch(Scene.GetMap());					
+		keypressed=true;
+	}
+
+	if(keys['x'] && !jump_key) 
+	{
+		Player.Jump(Scene.GetMap()); 
+		jump_key=true;		
+		keypressed=true;
+	}
+
+	if(keys['c'] && !punch_key)
+	{
+		Player.Punch(Scene.GetMap());
+		punch_key=true;
+		keypressed=true;
+	}
+
+	if(keys[GLUT_KEY_LEFT]) 
+	{		
+		Player.MoveLeft(Scene.GetMap());	
+		keypressed=true;
+	}
+
+	else if(keys[GLUT_KEY_RIGHT]) 
+	{	
+		Player.MoveRight(Scene.GetMap());	
+		keypressed=true;
+	}
+
+	if(!keypressed) Player.Stop();
 	
 	
 	//Game Logic
@@ -102,6 +137,7 @@ void cGame::Render()
 
 	Scene.Draw(Data.GetID(IMG_BLOCKS));
 	Player.Draw(Data.GetID(IMG_PLAYER));
+	Ptero.Draw(Data.GetID(IMG_PTERO));
 
 	glutSwapBuffers();
 }
