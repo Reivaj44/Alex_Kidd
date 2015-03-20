@@ -14,7 +14,7 @@ bool cScene::LoadLevel(int level)
 	bool res;
 	FILE *fd;
 	char file[16];
-	int i,j,px,py;
+	int i,j,px,py, tile_num;
 	char tile;
 	float coordx_tile, coordy_tile;
 
@@ -29,7 +29,7 @@ bool cScene::LoadLevel(int level)
 	id_DL=glGenLists(1);
 	glNewList(id_DL,GL_COMPILE);
 		glPushMatrix();
-		glTranslatef(-16.0,-1744.0,0.0);
+		glTranslatef(-32.0,-1744.0,0.0);
 		glBegin(GL_QUADS);
 	
 			for(j=SCENE_HEIGHT-1;j>=0;j--)
@@ -39,7 +39,7 @@ bool cScene::LoadLevel(int level)
 
 				for(i=0;i<SCENE_WIDTH;i++)
 				{
-					int tile_num;
+					tile_num;
 					fscanf(fd,"%d",&tile_num);
 					tile_num--;
 					if (tile_num >= 0) {

@@ -12,6 +12,12 @@
 #define STATE_LOOKRIGHT		1
 #define STATE_WALKLEFT		2
 #define STATE_WALKRIGHT		3
+#define STATE_JUMPLEFT		4
+#define STATE_JUMPRIGHT		5
+#define STATE_CROUCHLEFT	6
+#define STATE_CROUCHRIGHT	7
+#define STATE_PUNCHLEFT		8
+#define STATE_PUNCHRIGHT	9
 
 class cRect
 {
@@ -37,14 +43,9 @@ public:
 	bool Collides(cRect *rc);
 	bool CollidesMapWall(int *map,bool right);
 	bool CollidesMapFloor(int *map);
+	bool CollidesMapCeil(int *map);
 	void GetArea(cRect *rc);
 	void DrawRect(int tex_id,float xo,float yo,float xf,float yf);
-
-	void MoveRight(int *map);
-	void MoveLeft(int *map);
-	void Jump(int *map);
-	void Stop();
-	void Logic(int *map);
 
 	int  GetState();
 	void SetState(int s);
@@ -52,7 +53,7 @@ public:
 	void NextFrame(int max);
 	int  GetFrame();
 	
-private:
+protected:
 	int x,y;
 	int w,h;
 	int state;

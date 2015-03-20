@@ -2,6 +2,7 @@
 
 #include "cScene.h"
 #include "cPlayer.h"
+#include "cPtero.h"
 #include "cData.h"
 
 #define GAME_WIDTH	640
@@ -27,7 +28,10 @@ public:
 
 private:
 	unsigned char keys[256];
+	bool jump_key;
+	bool punch_key;
 	cScene Scene;
 	cPlayer Player;
+	cPtero Ptero;
 	cData Data;
 };
