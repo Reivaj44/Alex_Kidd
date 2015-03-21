@@ -40,10 +40,10 @@ bool cGame::Init()
 	Player.SetWidthHeight(16,24);
 	Player.SetState(STATE_LOOKRIGHT);
 
-	/*res = Data.LoadImageA(IMG_PTERO, "ptero.png", GL_RGBA);
+	res = Data.LoadImageA(IMG_PTERO, "ptero.png", GL_RGBA);
 	if(!res) return false;
 	Ptero.SetTile(4,5);
-	Ptero.SetWidthHeight(24,16);*/
+	Ptero.SetWidthHeight(24,16);
 
 	return res;
 }
