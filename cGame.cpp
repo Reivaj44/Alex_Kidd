@@ -15,11 +15,14 @@ cGame::~cGame(void)
 bool cGame::Init()
 {
 	bool res=true;
-
+	cam_x = 0.25;
+	cam_y = 18.25;
 	//Graphics initialization
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+	glRotatef(180.0,0.0,1.0,0.0);
+	gluLookAt(cam_x,cam_y,-1.0, cam_x,cam_y,0.0, 0.0,1.0,0.0);
 	glOrtho(0,256,0,192,0,1);
 	glMatrixMode(GL_MODELVIEW);
 	
@@ -36,7 +39,7 @@ bool cGame::Init()
 	res = Data.LoadImage(IMG_PLAYER,"alexkiddmw.png",GL_RGBA);
 	if(!res) return false;
 	//Player.SetWidthHeight(32,32);
-	Player.SetTile(3,4); //init position
+	Player.SetTile(3,113); //init position
 	Player.SetWidthHeight(16,24);
 	Player.SetState(STATE_LOOKRIGHT);
 

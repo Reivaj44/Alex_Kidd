@@ -30,6 +30,7 @@ private:
 	unsigned char keys[256];
 	bool jump_key;
 	bool punch_key;
+	double cam_x, cam_y;
 	cScene Scene;
 	cPlayer Player;
 	cPtero Ptero;
