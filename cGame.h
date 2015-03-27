@@ -2,8 +2,9 @@
 
 #include "cScene.h"
 #include "cPlayer.h"
-#include "cPtero.h"
+#include "cMonster.h"
 #include "cData.h"
+#include "cPtero.h"
 
 #define GAME_WIDTH	640
 #define GAME_HEIGHT 480
@@ -33,6 +34,6 @@ private:
 	double cam_x, cam_y;
 	cScene Scene;
 	cPlayer Player;
-	cPtero Ptero;
+	std::vector<cMonster*> monsters;
 	cData Data;
 };

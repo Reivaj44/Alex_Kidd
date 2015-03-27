@@ -20,32 +20,54 @@ void cBicho::SetPosition(int posx,int posy)
 {
 	x = posx;
 	y = posy;
+	UpdateBox();
 }
-void cBicho::GetPosition(int *posx,int *posy)
+void cBicho::GetPosition(int &posx,int &posy)
 {
-	*posx = x;
-	*posy = y;
+	posx = x;
+	posy = y;
 }
 void cBicho::SetTile(int tx,int ty)
 {
 	x = tx * TILE_SIZE;
 	y = ty * TILE_SIZE;
+	UpdateBox();
 }
-void cBicho::GetTile(int *tx,int *ty)
+void cBicho::GetTile(int &tx,int &ty)
 {
-	*tx = x / TILE_SIZE;
-	*ty = y / TILE_SIZE;
+	tx = x / TILE_SIZE;
+	ty = y / TILE_SIZE;
 }
 void cBicho::SetWidthHeight(int width,int height)
 {
 	w = width;
 	h = height;
+	ibodybox.left = 0; ibodybox.bottom = 0;
+	ibodybox.right = width - 1;
+	ibodybox.top = height - 1;
+	UpdateBox();
 }
-void cBicho::GetWidthHeight(int *width,int *height)
+
+void cBicho::GetWidthHeight(int &width,int &height)
 {
-	*width = w;
-	*height = h;
+	width = w;
+	height = h;
 }
+
+cRect cBicho::GetBodyBox()
+{
+	return bodybox;
+}
+
+
+void cBicho::UpdateBox() 
+{
+	bodybox.left = x + ibodybox.left;
+	bodybox.right = x + ibodybox.right;
+	bodybox.bottom = y + ibodybox.bottom;
+	bodybox.top = y + ibodybox.top;
+}
+
 bool cBicho::Collides(cRect *rc)
 {
 	return ((x>rc->left) && (x+w<rc->right) && (y>rc->bottom) && (y+h<rc->top));
@@ -55,14 +77,15 @@ bool cBicho::CollidesMapWall(int *map,bool right)
 	int tile_x,tile_y;
 	int j;
 	int width_tiles,height_tiles;
-	int x_aux = x;
-	if(right) x_aux = x + w -1;
+
+	int x_aux = bodybox.left;
+	if(right) x_aux = bodybox.right;
 
 	tile_x = x_aux / TILE_SIZE;
-	tile_y = y / TILE_SIZE;
+	tile_y = bodybox.bottom / TILE_SIZE;
 	
-	width_tiles  = w / TILE_SIZE;
-	height_tiles = ( (y+h-1) / TILE_SIZE) - (y / TILE_SIZE) + 1;
+	width_tiles  = (bodybox.left - bodybox.right + 1) / TILE_SIZE;
+	height_tiles = ( bodybox.top / TILE_SIZE) - (bodybox.bottom / TILE_SIZE) + 1;
 	
 	for(j=0;j<height_tiles;j++)
 	{
@@ -79,16 +102,16 @@ bool cBicho::CollidesMapFloor(int *map)
 	bool on_base;
 	int i;
 
-	tile_x = x / TILE_SIZE;
-	tile_y = y / TILE_SIZE;
+	tile_x = bodybox.left / TILE_SIZE;
+	tile_y = bodybox.bottom / TILE_SIZE;
 
-	width_tiles = ( (x+w-1) / TILE_SIZE) - (x / TILE_SIZE) + 1;
+	width_tiles = ( (bodybox.right + 1) / TILE_SIZE ) - ( bodybox.left / TILE_SIZE ) + 1;
 
 	on_base = false;
 	i=0;
 	while((i<width_tiles) && !on_base)
 	{
-		if( (y % TILE_SIZE) == 0 )
+		if( (bodybox.bottom % TILE_SIZE) == 0 )
 		{
 			if(map[ (tile_x + i) + ((tile_y - 1) * SCENE_WIDTH) ] != 0)
 				on_base = true;
@@ -97,7 +120,8 @@ bool cBicho::CollidesMapFloor(int *map)
 		{
 			if(map[ (tile_x + i) + (tile_y * SCENE_WIDTH) ] != 0)
 			{
-				y = (tile_y + 1) * TILE_SIZE;
+				y += TILE_SIZE - (bodybox.bottom % TILE_SIZE);
+				UpdateBox();
 				on_base = true;
 			}
 		}
@@ -113,12 +137,11 @@ bool cBicho::CollidesMapCeil(int *map)
 	int i;
 	bool collide;
 
-	int y_aux = y+h;
-	tile_x = x / TILE_SIZE;
+	int y_aux = bodybox.top + 1;
+	tile_x = bodybox.left / TILE_SIZE;
 	tile_y = y_aux / TILE_SIZE;
 
-	width_tiles = w / TILE_SIZE;
-	if( (x % TILE_SIZE) != 0) width_tiles++;
+	width_tiles = ( (bodybox.right+1) / TILE_SIZE) - (bodybox.left / TILE_SIZE) + 1;
 
 	collide = false;
 	i=0;
@@ -130,15 +153,27 @@ bool cBicho::CollidesMapCeil(int *map)
 				collide = true;
 		}
 		else {
+			int k = map[ (tile_x + i) + ((tile_y) * SCENE_WIDTH) ];
 			if(map[ (tile_x + i) + ((tile_y) * SCENE_WIDTH) ] != 0)
 			{
 				y -= (y_aux % TILE_SIZE);
+				UpdateBox();
 				collide = true;
 			}
 		}
 		i++;
 	}
 	return collide;
+}
+
+bool cBicho::CollidesBox(const cRect &box)
+{
+	if ((bodybox.left) <= (box.right) &&
+		(bodybox.right) >= (box.left) &&
+		(bodybox.bottom) <= (box.top) &&
+		(bodybox.top) >= (box.bottom)) 
+			return true;
+	else return false;
 }
 
 void cBicho::GetArea(cRect *rc)
@@ -148,6 +183,7 @@ void cBicho::GetArea(cRect *rc)
 	rc->bottom = y;
 	rc->top    = y+h;
 }
+
 void cBicho::DrawRect(int tex_id,float xo,float yo,float xf,float yf)
 {
 	int screen_x,screen_y;

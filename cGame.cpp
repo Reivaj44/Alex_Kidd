@@ -36,17 +36,25 @@ bool cGame::Init()
 	if(!res) return false;
 
 	//Player initialization
-	res = Data.LoadImage(IMG_PLAYER,"alexkiddmw.png",GL_RGBA);
+	res = Data.LoadImage(IMG_PLAYER,"alex.png",GL_RGBA);
 	if(!res) return false;
-	//Player.SetWidthHeight(32,32);
 	Player.SetTile(3,113); //init position
-	Player.SetWidthHeight(16,24);
+	Player.SetWidthHeight(32,32);
 	Player.SetState(STATE_LOOKRIGHT);
 
 	res = Data.LoadImageA(IMG_PTERO, "ptero.png", GL_RGBA);
 	if(!res) return false;
-	Ptero.SetTile(4,5);
-	Ptero.SetWidthHeight(24,16);
+
+	cPtero* Ptero = new cPtero();
+	Ptero->SetTile(4,3);
+	Ptero->SetWidthHeight(24,16);
+
+	cPtero* Ptero2 = new cPtero();
+	Ptero2->SetTile(10,1);
+	Ptero2->SetWidthHeight(24,16);
+
+	monsters.push_back(Ptero);
+	monsters.push_back(Ptero2);
 
 	return res;
 }
@@ -85,7 +93,7 @@ void cGame::ReadMouse(int button, int state, int x, int y)
 bool cGame::Process()
 {
 	bool res=true;
-	Ptero.Move(Scene.GetMap());
+	
 	//Process Input
 	if(keys[27])	res=false;
 	
@@ -127,6 +135,14 @@ bool cGame::Process()
 	
 	
 	//Game Logic
+	for(unsigned int i = 0; i < monsters.size(); i++) {
+		if(!monsters[i]->isDead())
+		{
+			monsters[i]->Logic(Scene.GetMap());
+			if(Player.isPunching() && monsters[i]->CollidesBox(Player.GetHitBox())) monsters[i]->Die();
+			if(!monsters[i]->isDead() && monsters[i]->CollidesBox(Player.GetBodyBox())) Player.Die();
+		}
+	}
 	Player.Logic(Scene.GetMap());
 
 	return res;
@@ -141,7 +157,8 @@ void cGame::Render()
 
 	Scene.Draw(Data.GetID(IMG_BLOCKS));
 	Player.Draw(Data.GetID(IMG_PLAYER));
-	Ptero.Draw(Data.GetID(IMG_PTERO));
+	for(unsigned int i = 0; i < monsters.size(); i++) 
+		if(!monsters[i]->isDead()) monsters[i]->Draw(Data.GetID(IMG_PTERO));
 
 	glutSwapBuffers();
 }
