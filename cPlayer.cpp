@@ -6,82 +6,132 @@
 cPlayer::cPlayer() 
 {
 	intheair = false;
-	jumping = false;	
+	jumping = false;
+	left = false;
 }
 cPlayer::~cPlayer(){}
 
+void cPlayer::SetWidthHeight(int width,int height)
+{
+	w = width;
+	h = height;
+	UpdateBox();
+}
+
+cRect cPlayer::GetHitBox()
+{
+	return punchbox;
+}
+
+bool cPlayer::isPunching()
+{
+	return punching;
+}
+
+void cPlayer::UpdateBox() 
+{
+	ibodybox.left = 8; ibodybox.right = 22;
+	ibodybox.bottom = 4; ibodybox.top = 27;
+	cBicho::UpdateBox();
+	
+	punchbox.bottom = y + ipunchbox.bottom;
+	punchbox.top = y + ipunchbox.top;
+	punchbox.left = x + ipunchbox.left;
+	punchbox.right = x + ipunchbox.right;
+
+	if(left)
+	{
+		punchbox.left = x + 31 - ipunchbox.right;
+		punchbox.right = x + 31 - ipunchbox.left;
+	}
+}
+
+void cPlayer::ChangeBox()
+{
+	if(punching) 
+	{
+		ipunchbox.left = 22; ipunchbox.right = 30;
+		ipunchbox.bottom = 12; ipunchbox.top = 19;
+	}
+	else
+	{
+		ipunchbox.left = 0; ipunchbox.right = 0;
+		ipunchbox.bottom = 0; ipunchbox.top = 0;
+	}
+	UpdateBox();
+}
+
 void cPlayer::MoveLeft(int *map)
 {
-	if(state==STATE_CROUCHLEFT || state==STATE_CROUCHRIGHT) state = STATE_CROUCHLEFT;
-	else 
+	if(state != STATE_DEAD)
 	{
-		int xaux;
-		//Whats next tile?
-		if( (x % TILE_SIZE) == 0)
+		if(state==STATE_CROUCHLEFT || state==STATE_CROUCHRIGHT)	SetState(STATE_CROUCHLEFT);
+		else if (!punching || intheair)
 		{
+			int xaux;
+			//Whats next tile?
+		
 			xaux = x;
 			x -= STEP_LENGTH;
+			UpdateBox();
 
-			if(CollidesMapWall(map,false))
+			if(CollidesMapWall(map,false)) 
+			{
 				x = xaux;
-		}
-		//Advance, no problem
-		else
-		{
-			x -= STEP_LENGTH;
-			if(state != STATE_WALKLEFT)
+				UpdateBox();
+			}
+			else if(state != STATE_WALKLEFT)
 			{
 				seq = 0;
 				delay = 0;
 			}
+			if(intheair && !punching) SetState(STATE_JUMPLEFT);
+			else if(!punching) SetState(STATE_WALKLEFT);
 		}
-		if(intheair) state = STATE_JUMPLEFT;
-		else state = STATE_WALKLEFT;
-	}	
+	}
 }
 
 void cPlayer::MoveRight(int *map)
 {
-	if(state==STATE_CROUCHLEFT || state==STATE_CROUCHRIGHT) state = STATE_CROUCHRIGHT;
-	else {
-		int xaux;
-
-		//Whats next tile?
-		if( (x % TILE_SIZE) == 0)
+	if(state!=STATE_DEAD) {
+		if(state==STATE_CROUCHRIGHT || state==STATE_CROUCHLEFT) SetState(STATE_CROUCHRIGHT);
+		else if (!punching || intheair)
 		{
+			int xaux;
+
+			//Whats next tile?
 			xaux = x;
 			x += STEP_LENGTH;
+			UpdateBox();
 
-			if(CollidesMapWall(map,true))
+			if(CollidesMapWall(map,true)) {
 				x = xaux;
-		}
-		//Advance, no problem
-		else
-		{
-			x += STEP_LENGTH;
+				UpdateBox();
+			}
 
-			if(state != STATE_WALKRIGHT)
+			else if(state != STATE_WALKRIGHT)
 			{
 				seq = 0;
 				delay = 0;
 			}
+
+			if(intheair && !punching) SetState(STATE_JUMPRIGHT);
+			else if(!punching) SetState(STATE_WALKRIGHT);	
 		}
-		if(intheair) state = STATE_JUMPRIGHT;
-		else state = STATE_WALKRIGHT;		
 	}
 }
 
 void cPlayer::Crouch(int *map)
 {
-	if(!intheair) {
-		if(CollidesMapWall(map,true) && state==STATE_WALKRIGHT) state = STATE_CROUCHRIGHT;
-		else if(CollidesMapWall(map,false) && state==STATE_WALKLEFT) state = STATE_CROUCHLEFT;
+	if(!intheair && state!=STATE_DEAD) {
+		if(CollidesMapWall(map,true) && state==STATE_WALKRIGHT) SetState(STATE_CROUCHRIGHT);
+		else if(CollidesMapWall(map,false) && state==STATE_WALKLEFT) SetState(STATE_CROUCHLEFT);
 		else
 		{
 			switch(state)
 			{
-				case STATE_LOOKLEFT:	state = STATE_CROUCHLEFT;		break;
-				case STATE_LOOKRIGHT:	state = STATE_CROUCHRIGHT;		break;
+				case STATE_LOOKLEFT:	SetState(STATE_CROUCHLEFT);		break;
+				case STATE_LOOKRIGHT:	SetState(STATE_CROUCHRIGHT);		break;
 			}
 		}
 	}
@@ -89,37 +139,40 @@ void cPlayer::Crouch(int *map)
 
 void cPlayer::Punch(int *map)
 {
-	if(state!=STATE_CROUCHLEFT && state!=STATE_CROUCHRIGHT)
+	if(state!=STATE_CROUCHLEFT && state!=STATE_CROUCHRIGHT && !punching && state!=STATE_DEAD)
 	{
-		if(state==STATE_WALKRIGHT || state==STATE_LOOKRIGHT || state==STATE_JUMPRIGHT) state = STATE_PUNCHRIGHT;
-		else state = STATE_PUNCHLEFT;
+		punching = true;
+		if(!left) SetState(STATE_PUNCHRIGHT);
+		else SetState(STATE_PUNCHLEFT);
+		seq = 0;
+		delay = 0;
 	}
 }
 
 void cPlayer::Stop()
 {
-	if(!intheair){
+	if(!intheair && !punching && state!=STATE_DEAD){
 		switch(state)
 		{
-			case STATE_WALKLEFT:	state = STATE_LOOKLEFT;		break;
-			case STATE_WALKRIGHT:	state = STATE_LOOKRIGHT;	break;
-			case STATE_JUMPLEFT:	state = STATE_LOOKLEFT;		break;
-			case STATE_JUMPRIGHT:	state = STATE_LOOKRIGHT;	break;
-			case STATE_CROUCHLEFT:	state = STATE_LOOKLEFT;		break;
-			case STATE_CROUCHRIGHT:	state = STATE_LOOKRIGHT;	break;
-			case STATE_PUNCHLEFT:	state = STATE_LOOKLEFT;		break;
-			case STATE_PUNCHRIGHT:	state = STATE_LOOKRIGHT;	break;
+			case STATE_WALKLEFT:	SetState(STATE_LOOKLEFT);		break;
+			case STATE_WALKRIGHT:	SetState(STATE_LOOKRIGHT);	break;
+			case STATE_JUMPLEFT:	SetState(STATE_LOOKLEFT);		break;
+			case STATE_JUMPRIGHT:	SetState(STATE_LOOKRIGHT);	break;
+			case STATE_CROUCHLEFT:	SetState(STATE_LOOKLEFT);		break;
+			case STATE_CROUCHRIGHT:	SetState(STATE_LOOKRIGHT);	break;
+			case STATE_PUNCHLEFT:	SetState(STATE_LOOKLEFT);		break;
+			case STATE_PUNCHRIGHT:	SetState(STATE_LOOKRIGHT);	break;
 		}
 	}
-	else {
+	else if(intheair && !punching && state!=STATE_DEAD) {
 		switch(state) 
 		{
-			case STATE_WALKLEFT:		state = STATE_JUMPLEFT;		break;
-			case STATE_WALKRIGHT:		state = STATE_JUMPRIGHT;	break;
-			case STATE_LOOKRIGHT:		state = STATE_JUMPRIGHT;	break;
-			case STATE_LOOKLEFT:		state = STATE_JUMPLEFT;		break;
-			case STATE_PUNCHLEFT:		state = STATE_JUMPLEFT;		break;
-			case STATE_PUNCHRIGHT:		state = STATE_JUMPRIGHT;	break;
+			case STATE_WALKLEFT:		SetState(STATE_JUMPLEFT);		break;
+			case STATE_WALKRIGHT:		SetState(STATE_JUMPRIGHT);	break;
+			case STATE_LOOKRIGHT:		SetState(STATE_JUMPRIGHT);	break;
+			case STATE_LOOKLEFT:		SetState(STATE_JUMPLEFT);		break;
+			case STATE_PUNCHLEFT:		SetState(STATE_JUMPLEFT);		break;
+			case STATE_PUNCHRIGHT:		SetState(STATE_JUMPRIGHT);	break;
 		}
 	}
 		
@@ -129,10 +182,10 @@ void cPlayer::Jump(int *map)
 {
 	if(!jumping)
 	{
-		if(CollidesMapFloor(map))
+		if(CollidesMapFloor(map) && (state!=STATE_CROUCHLEFT) && (state!=STATE_CROUCHRIGHT) && !punching)
 		{
-			if(state==STATE_WALKLEFT || state==STATE_LOOKLEFT) state = STATE_JUMPLEFT;
-			else if(state==STATE_WALKRIGHT || state==STATE_LOOKRIGHT)	state = STATE_JUMPRIGHT;
+			if(state==STATE_WALKLEFT || state==STATE_LOOKLEFT) SetState(STATE_JUMPLEFT);
+			else if(state==STATE_WALKRIGHT || state==STATE_LOOKRIGHT) SetState(STATE_JUMPRIGHT);
 			jumping = true;
 			intheair = true;
 			jump_alfa = 0;
@@ -141,42 +194,76 @@ void cPlayer::Jump(int *map)
 	}
 }
 
+void cPlayer::Die()
+{
+	SetState(STATE_DEAD);
+}
+
+void cPlayer::SetState(int s)
+{
+	cBicho::SetState(s);
+	if(state==STATE_LOOKLEFT || state==STATE_WALKLEFT || state==STATE_JUMPLEFT || state==STATE_CROUCHLEFT || state==STATE_PUNCHLEFT) left = true;
+	else left = false;
+	ChangeBox();
+}
+
 void cPlayer::Logic(int *map)
 {
-	float alfa;
+	if(state==STATE_DEAD) {
+		y += 2;
+		UpdateBox();
+	}
 
-	if(jumping)
-	{
-		jump_alfa += JUMP_STEP;
-		
-		if(jump_alfa == 180)
-		{
-			jumping = false;
-			y = jump_y;
-		}
-		else 
-		{
-			alfa = ((float)jump_alfa) * 0.017453f;
-			y = jump_y + (int)( ((float)JUMP_HEIGHT) * sin(alfa) );
-			
-			if(jump_alfa <= 90 && CollidesMapCeil(map))
-				jumping = false;
-
-			if(jump_alfa > 90)
+	else {
+		if(punching) {
+				delay++;
+			if(delay == FRAME_DELAY)
 			{
-				//Over floor?
-				jumping=!CollidesMapFloor(map);
+				delay = 0;
+				punching = false;
 			}
 		}
-	}
-	else
-	{
-		//Over floor?
-		if(!CollidesMapFloor(map)) {
-			y -= (2*STEP_LENGTH);
-			intheair=true;
+		if(jumping)
+		{
+			float alfa;
+			jump_alfa += JUMP_STEP;
+		
+			if(jump_alfa == 180)
+			{
+				jumping = false;
+				y = jump_y;
+				UpdateBox();
+			}
+
+			else 
+			{
+				alfa = ((float)jump_alfa) * 0.017453f;
+				y = jump_y + (int)( ((float)JUMP_HEIGHT) * sin(alfa) );
+				UpdateBox();
+			
+				if(jump_alfa <= 90 && CollidesMapCeil(map))
+					jumping = false;
+
+				if(jump_alfa > 90)
+				{
+					//Over floor?
+					jumping=!CollidesMapFloor(map);
+					//intheair=!CollidesMapFloor(map);
+				}
+			}
 		}
-		else intheair=false;
+
+		else
+		{
+			//Over floor?
+			if(!CollidesMapFloor(map)) {
+				y -= (2*STEP_LENGTH);
+				UpdateBox();
+				intheair=true;
+			}
+
+			else intheair=false;
+		}
 	}
 }
 
@@ -184,53 +271,50 @@ void cPlayer::Draw(int tex_id)
 {	
 	float xo,yo,xf,yf;
 	bool left = false;
-	bool punch = false;
 	switch(GetState())
 	{
 		//5
-		case STATE_LOOKLEFT:	xo = 0.125f;	yo = 0.875f;
-								left = true; break;
+		case STATE_LOOKLEFT:	xo = 0.625f;	yo = 0.125f;
+								left = true; 
+								break;
 		//5
-		case STATE_LOOKRIGHT:	xo = 0.0f;	yo = 0.875f;
+		case STATE_LOOKRIGHT:	xo = 0.500f;	yo = 0.125f;
 								break;
 		//4..1
-		case STATE_WALKLEFT:	xo = 0.125f + (GetFrame()*0.125f); yo = 0.375f;
+		case STATE_WALKLEFT:	xo = 0.125f + (GetFrame()*0.125f); yo = 0.125;
 								NextFrame(4);
 								left = true; break;
 		//1..4
-		case STATE_WALKRIGHT:	xo = 0.0f + (GetFrame()*0.125f); yo = 0.375f;
+		case STATE_WALKRIGHT:	xo = 0.0f + (GetFrame()*0.125f); yo = 0.125f;
 								NextFrame(4);
 								break;
 		//6
-		case STATE_JUMPLEFT:	xo = 0.250f; yo = 0.875f;
+		case STATE_JUMPLEFT:	xo = 0.750f; yo = 0.125f;
 								left = true; break;
 		//6
-		case STATE_JUMPRIGHT:	xo = 0.125f; yo = 0.875f;
+		case STATE_JUMPRIGHT:	xo = 0.625f; yo = 0.125;
 								break;
 		//7
-		case STATE_CROUCHLEFT:	xo = 0.375f; yo = 0.875f;
+		case STATE_CROUCHLEFT:	xo = 0.875f; yo = 0.125f;
 								left = true; break;
 		//7
-		case STATE_CROUCHRIGHT:	xo = 0.250f; yo = 0.875f;
+		case STATE_CROUCHRIGHT:	xo = 0.750f; yo = 0.125f;
 								break;
 
-		case STATE_PUNCHLEFT:	xo = 0.5625f; yo = 0.875f;
-								left = true; punch = true; break;
+		case STATE_PUNCHLEFT:	xo = 1.0f; yo = 0.125f;
+								left = true; break;
 
-		case STATE_PUNCHRIGHT:	xo = 0.375f; yo = 0.875f;
-								left = false; punch = true; break;
+		case STATE_PUNCHRIGHT:	xo = 0.875f; yo = 0.125f;
+								break;
 
+		case STATE_DEAD:		xo = 0.0f + (GetFrame()*0.125f); yo = 0.5f;
+								NextFrame(3); break;
 	}
+
+	yf = yo - 0.125f;
 	float ix = 0.125f;
-	if(punch) ix = 0.1875;
+	xf = xo + ix;
 
-	if(left) {
-		xf = xo - ix;
-		yf = yo - 0.375f;
-	}
-	else {
-		xf = xo + ix;
-		yf = yo - 0.375f;
-	}
+	if(left) xf = xo - ix;
 	DrawRect(tex_id,xo,yo,xf,yf);
 }

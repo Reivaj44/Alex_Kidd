@@ -1,14 +1,16 @@
 #pragma once
 
-#include "cbicho.h"
+#include "cMonster.h"
 
-class cPtero :	public cBicho
+class cPtero :	public cMonster
 {
 public:
 	cPtero(void);
 	~cPtero(void);
 
-	void Draw(int tex_id);
-	void Move(int *map);
+	void Die();
+	bool isDead();
+	virtual void Draw(int tex_id);
+	virtual void Logic(int *map);
 };
 
