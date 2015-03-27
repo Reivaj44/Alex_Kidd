@@ -32,7 +32,7 @@ bool cGame::Init()
 	//Scene initialization
 	res = Data.LoadImage(IMG_BLOCKS,"Pantalla01.png",GL_RGBA);
 	if(!res) return false;
-	res = Scene.LoadLevel(2);
+	res = Scene.LoadLevel(1);
 	if(!res) return false;
 
 	//Player initialization
