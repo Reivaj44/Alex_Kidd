@@ -32,7 +32,7 @@ bool cGame::Init()
 	//Scene initialization
 	res = Data.LoadImage(IMG_BLOCKS,"Pantalla01.png",GL_RGBA);
 	if(!res) return false;
-	res = Scene.LoadLevel(1);
+	res = Scene.LoadLevel(3);
 	if(!res) return false;
 
 	//Player initialization
@@ -46,11 +46,11 @@ bool cGame::Init()
 	if(!res) return false;
 
 	cPtero* Ptero = new cPtero();
-	Ptero->SetTile(4,3);
+	Ptero->SetTile(10,110);
 	Ptero->SetWidthHeight(24,16);
 
 	cPtero* Ptero2 = new cPtero();
-	Ptero2->SetTile(10,1);
+	Ptero2->SetTile(10,108);
 	Ptero2->SetWidthHeight(24,16);
 
 	monsters.push_back(Ptero);
