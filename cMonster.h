@@ -8,6 +8,8 @@
 #define STATE_DOWN		3
 #define STATE_MONSTERDEAD		4
 
+class cPlayer;
+
 class cMonster :
 	public cBicho
 {
@@ -18,6 +20,6 @@ public:
 	void Die();
 	bool isDead();
 	virtual void Draw(int tex_id) = 0;
-	virtual void Logic(int *map) = 0;
+	virtual void Logic(int *map, cPlayer &player) = 0;
 };
 

@@ -11,6 +11,6 @@ public:
 	void Die();
 	bool isDead();
 	virtual void Draw(int tex_id);
-	virtual void Logic(int *map);
+	virtual void Logic(int *map, cPlayer &player);
 };
 

@@ -1,7 +1,6 @@
 
 #include "cPlayer.h"
 #include "Globals.h"
-#include "cScene.h"
 
 cPlayer::cPlayer() 
 {
@@ -207,7 +206,7 @@ void cPlayer::SetState(int s)
 	ChangeBox();
 }
 
-void cPlayer::Logic(int *map)
+void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters)
 {
 	if(state==STATE_DEAD) {
 		y += 2;
@@ -216,7 +215,10 @@ void cPlayer::Logic(int *map)
 
 	else {
 		if(punching) {
-				delay++;
+			for(unsigned int i = 0; i < monsters.size(); i++) 
+				if(!monsters[i]->isDead())
+					if(monsters[i]->CollidesBox(punchbox)) monsters[i]->Die();
+			delay++;
 			if(delay == FRAME_DELAY)
 			{
 				delay = 0;

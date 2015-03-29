@@ -22,6 +22,8 @@
 #define STATE_PUNCHRIGHT	9
 #define STATE_DEAD			10
 
+class cMonster;
+
 class cPlayer: public cBicho
 {
 public:
@@ -42,7 +44,7 @@ public:
 
 	void SetState(int s);
 
-	void Logic(int *map);
+	void Logic(int *map, std::vector<cMonster*> &monsters);
 
 	virtual void Draw(int tex_id);
 

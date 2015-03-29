@@ -17,6 +17,7 @@ bool cGame::Init()
 	bool res=true;
 	cam_x = 0.25;
 	cam_y = 18.25;
+
 	//Graphics initialization
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	glMatrixMode(GL_PROJECTION);
@@ -135,15 +136,9 @@ bool cGame::Process()
 	
 	
 	//Game Logic
-	for(unsigned int i = 0; i < monsters.size(); i++) {
-		if(!monsters[i]->isDead())
-		{
-			monsters[i]->Logic(Scene.GetMap());
-			if(Player.isPunching() && monsters[i]->CollidesBox(Player.GetHitBox())) monsters[i]->Die();
-			if(!monsters[i]->isDead() && monsters[i]->CollidesBox(Player.GetBodyBox())) Player.Die();
-		}
-	}
-	Player.Logic(Scene.GetMap());
+	for(unsigned int i = 0; i < monsters.size(); i++)
+			monsters[i]->Logic(Scene.GetMap(), Player);
+	Player.Logic(Scene.GetMap(),monsters);
 
 	return res;
 }

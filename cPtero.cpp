@@ -33,7 +33,7 @@ void cPtero::Draw(int tex_id)
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cPtero::Logic(int *map) {
+void cPtero::Logic(int *map, cPlayer &player) {
 	int xaux;
 	bool right = false;
 	if(state==STATE_RIGHT) right = true;
@@ -50,4 +50,5 @@ void cPtero::Logic(int *map) {
 		seq = 0;
 		delay = 0;
 	}	
+	if(state!=STATE_MONSTERDEAD && CollidesBox(player.GetBodyBox())) player.Die();
 }
