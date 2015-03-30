@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "cPtero.h"
 #include "cSFish.h"
+#include "cGhost.h"
 
 
 cGame::cGame(void)
@@ -47,18 +48,23 @@ bool cGame::Init()
 
 	res = Data.LoadImageA(IMG_ENEMY, "Monsters.png", GL_RGBA);
 	if(!res) return false;
-
+	/*
 	cPtero* Ptero = new cPtero();
 	Ptero->SetWidthHeight(32,32);
 	Ptero->SetTile(10,110);
 
-	cSFish* SFish2 = new cSFish();
-	SFish2->SetWidthHeight(32,32);
-	SFish2->SetTile(10,108);
+	cSFish* SFish = new cSFish();
+	SFish->SetWidthHeight(32,32);
+	SFish->SetTile(10,108);
+	*/
+	cGhost* Ghost = new cGhost();
+	Ghost->SetWidthHeight(32,32);
+	Ghost->SetTile(10,111);
 	
 
-	monsters.push_back(Ptero);
-	monsters.push_back(SFish2);
+	//monsters.push_back(Ptero);
+	//monsters.push_back(SFish);
+	monsters.push_back(Ghost);
 
 	return res;
 }

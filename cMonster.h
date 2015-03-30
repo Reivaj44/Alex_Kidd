@@ -16,7 +16,7 @@ public:
 	cMonster(void);
 	virtual ~cMonster(void);
 
-	void Die();
+	virtual void Die();
 	bool isDead();
 	virtual void Draw(int tex_id) = 0;
 	virtual void Logic(int *map, cPlayer &player);
