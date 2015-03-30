@@ -19,3 +19,8 @@ bool cMonster::isDead()
 {
 	return state == STATE_MONSTERDEAD;
 }
+
+void cMonster::Logic(int *map, cPlayer &player)
+{
+	if(state!=STATE_MONSTERDEAD && CollidesBox(player.GetBodyBox())) player.Die();
+}

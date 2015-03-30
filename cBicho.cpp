@@ -11,21 +11,21 @@ cBicho::~cBicho(void){}
 
 cBicho::cBicho(int posx,int posy,int width,int height)
 {
-	x = posx;
-	y = posy;
+	x = posx - ibodybox.left;
+	y = posy - ibodybox.bottom;
 	w = width;
 	h = height;
 }
 void cBicho::SetPosition(int posx,int posy)
 {
-	x = posx;
-	y = posy;
+	x = posx - ibodybox.left;
+	y = posy - ibodybox.bottom;
 	UpdateBox();
 }
 void cBicho::GetPosition(int &posx,int &posy)
 {
-	posx = x;
-	posy = y;
+	posx = x + ibodybox.left;
+	posy = y + ibodybox.bottom;
 }
 void cBicho::SetTile(int tx,int ty)
 {

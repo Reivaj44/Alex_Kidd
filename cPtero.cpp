@@ -52,5 +52,5 @@ void cPtero::Logic(int *map, cPlayer &player) {
 		seq = 0;
 		delay = 0;
 	}	
-	if(state!=STATE_MONSTERDEAD && CollidesBox(player.GetBodyBox())) player.Die();
+	cMonster::Logic(map,player);
 }
