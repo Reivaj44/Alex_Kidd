@@ -7,6 +7,8 @@ cPlayer::cPlayer()
 	intheair = false;
 	jumping = false;
 	left = false;
+	ibodybox.left = 8; ibodybox.right = 22;
+	ibodybox.bottom = 4; ibodybox.top = 27;
 }
 cPlayer::~cPlayer(){}
 
@@ -29,8 +31,6 @@ bool cPlayer::isPunching()
 
 void cPlayer::UpdateBox() 
 {
-	ibodybox.left = 8; ibodybox.right = 22;
-	ibodybox.bottom = 4; ibodybox.top = 27;
 	cBicho::UpdateBox();
 	
 	punchbox.bottom = y + ipunchbox.bottom;

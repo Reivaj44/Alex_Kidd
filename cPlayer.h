@@ -60,6 +60,6 @@ private:
 	cRect punchbox;
 	cRect ipunchbox;
 
-	void UpdateBox();
+	virtual void UpdateBox();
 	void ChangeBox();
 };

@@ -37,22 +37,23 @@ bool cGame::Init()
 	if(!res) return false;
 
 	//Player initialization
-	res = Data.LoadImage(IMG_PLAYER,"alex.png",GL_RGBA);
+	res = Data.LoadImage(IMG_PLAYER,"Alex.png",GL_RGBA);
 	if(!res) return false;
-	Player.SetTile(3,113); //init position
 	Player.SetWidthHeight(32,32);
+	Player.SetTile(3,113); //init position
 	Player.SetState(STATE_LOOKRIGHT);
 
-	res = Data.LoadImageA(IMG_PTERO, "ptero.png", GL_RGBA);
+	res = Data.LoadImageA(IMG_ENEMY, "Monsters.png", GL_RGBA);
 	if(!res) return false;
 
 	cPtero* Ptero = new cPtero();
+	Ptero->SetWidthHeight(32,32);
 	Ptero->SetTile(10,110);
-	Ptero->SetWidthHeight(24,16);
 
 	cPtero* Ptero2 = new cPtero();
+	Ptero2->SetWidthHeight(32,32);
 	Ptero2->SetTile(10,108);
-	Ptero2->SetWidthHeight(24,16);
+	
 
 	monsters.push_back(Ptero);
 	monsters.push_back(Ptero2);
@@ -153,7 +154,7 @@ void cGame::Render()
 	Scene.Draw(Data.GetID(IMG_BLOCKS));
 	Player.Draw(Data.GetID(IMG_PLAYER));
 	for(unsigned int i = 0; i < monsters.size(); i++) 
-		if(!monsters[i]->isDead()) monsters[i]->Draw(Data.GetID(IMG_PTERO));
+		if(!monsters[i]->isDead()) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
 
 	glutSwapBuffers();
 }

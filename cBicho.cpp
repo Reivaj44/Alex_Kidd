@@ -29,23 +29,19 @@ void cBicho::GetPosition(int &posx,int &posy)
 }
 void cBicho::SetTile(int tx,int ty)
 {
-	x = tx * TILE_SIZE;
-	y = ty * TILE_SIZE;
+	x = tx * TILE_SIZE - ibodybox.left;
+	y = ty * TILE_SIZE - ibodybox.bottom;
 	UpdateBox();
 }
 void cBicho::GetTile(int &tx,int &ty)
 {
-	tx = x / TILE_SIZE;
-	ty = y / TILE_SIZE;
+	tx = x / TILE_SIZE + ibodybox.left;
+	ty = y / TILE_SIZE + ibodybox.bottom;
 }
 void cBicho::SetWidthHeight(int width,int height)
 {
 	w = width;
 	h = height;
-	ibodybox.left = 0; ibodybox.bottom = 0;
-	ibodybox.right = width - 1;
-	ibodybox.top = height - 1;
-	UpdateBox();
 }
 
 void cBicho::GetWidthHeight(int &width,int &height)

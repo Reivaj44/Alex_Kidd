@@ -54,5 +54,5 @@ protected:
 	cRect ibodybox;
 	int seq,delay;
 
-	void UpdateBox();
+	virtual void UpdateBox();
 };
