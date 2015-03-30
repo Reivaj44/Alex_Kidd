@@ -28,7 +28,7 @@ class cPlayer: public cBicho
 {
 public:
 	cPlayer();
-	~cPlayer();
+	virtual ~cPlayer();
 
 	void SetWidthHeight(int w, int h);
 	cRect GetHitBox();

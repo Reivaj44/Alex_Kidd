@@ -4,7 +4,6 @@
 #include "cPlayer.h"
 #include "cMonster.h"
 #include "cData.h"
-#include "cPtero.h"
 
 #define GAME_WIDTH	640
 #define GAME_HEIGHT 480

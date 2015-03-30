@@ -10,8 +10,7 @@
 
 class cPlayer;
 
-class cMonster :
-	public cBicho
+class cMonster : public cBicho
 {
 public:
 	cMonster(void);

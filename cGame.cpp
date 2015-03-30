@@ -1,5 +1,7 @@
 #include "cGame.h"
 #include "Globals.h"
+#include "cPtero.h"
+#include "cSFish.h"
 
 
 cGame::cGame(void)
@@ -50,13 +52,13 @@ bool cGame::Init()
 	Ptero->SetWidthHeight(32,32);
 	Ptero->SetTile(10,110);
 
-	cPtero* Ptero2 = new cPtero();
-	Ptero2->SetWidthHeight(32,32);
-	Ptero2->SetTile(10,108);
+	cSFish* SFish2 = new cSFish();
+	SFish2->SetWidthHeight(32,32);
+	SFish2->SetTile(10,108);
 	
 
 	monsters.push_back(Ptero);
-	monsters.push_back(Ptero2);
+	monsters.push_back(SFish2);
 
 	return res;
 }

@@ -19,7 +19,7 @@ class cBicho
 public:
 	cBicho(void);
 	cBicho(int x,int y,int w,int h);
-	~cBicho(void);
+	virtual ~cBicho(void);
 
 	void SetPosition(int x,int y);
 	void GetPosition(int &x,int &y);
