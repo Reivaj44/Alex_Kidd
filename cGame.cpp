@@ -3,6 +3,7 @@
 #include "cPtero.h"
 #include "cSFish.h"
 #include "cGhost.h"
+#include "cMiniboss.h"
 
 
 cGame::cGame(void)
@@ -60,11 +61,16 @@ bool cGame::Init()
 	cGhost* Ghost = new cGhost();
 	Ghost->SetWidthHeight(32,32);
 	Ghost->SetTile(10,111);
+
+	cMiniboss* Miniboss = new cMiniboss();
+	Miniboss->SetWidthHeight(32,32);
+	Miniboss->SetTile(10,113);
 	
 
 	//monsters.push_back(Ptero);
 	//monsters.push_back(SFish);
 	monsters.push_back(Ghost);
+	monsters.push_back(Miniboss);
 
 	return res;
 }
