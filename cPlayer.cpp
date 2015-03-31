@@ -7,7 +7,7 @@ cPlayer::cPlayer()
 	intheair = false;
 	jumping = false;
 	left = false;
-	ibodybox.left = 10; ibodybox.right = 31 - 10;
+	ibodybox.left = 10; ibodybox.right = 31 - 9;
 	ibodybox.bottom = 5; ibodybox.top = 31 - 5;
 }
 cPlayer::~cPlayer(){}
