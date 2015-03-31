@@ -37,9 +37,9 @@ void cGhost::Draw(int tex_id)
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cGhost::Logic(int *map, cPlayer &player) {
+void cGhost::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks) {
 	delay %= 17;
-	if(delay==0) 
+	if(delay==0 && !player.isDead()) 
 	{
 		int xplayer, yplayer;
 		player.GetPosition(xplayer, yplayer);
@@ -56,5 +56,5 @@ void cGhost::Logic(int *map, cPlayer &player) {
 	delay++;
 	UpdateBox();
 
-	cMonster::Logic(map,player);
+	cMonster::Logic(map,player, blocks);
 }

@@ -3,6 +3,7 @@
 #include "cScene.h"
 #include "cPlayer.h"
 #include "cMonster.h"
+#include "cBlock.h"
 #include "cData.h"
 
 #define GAME_WIDTH	640
@@ -34,5 +35,6 @@ private:
 	cScene Scene;
 	cPlayer Player;
 	std::vector<cMonster*> monsters;
+	std::vector<cBlock*> blocks;
 	cData Data;
 };

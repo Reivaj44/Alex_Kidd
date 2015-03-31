@@ -11,7 +11,7 @@ public:
 	virtual void Die();
 
 	virtual void Draw(int tex_id);
-	virtual void Logic(int *map, cPlayer &player);
+	virtual void Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks);
 
 private:
 	int xdir, ydir;

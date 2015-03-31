@@ -35,7 +35,7 @@ bool cGame::Init()
 	glEnable(GL_ALPHA_TEST);
 
 	//Scene initialization
-	res = Data.LoadImage(IMG_BLOCKS,"Pantalla01.png",GL_RGBA);
+	res = Data.LoadImage(IMG_TILES,"Pantalla01.png",GL_RGBA);
 	if(!res) return false;
 	res = Scene.LoadLevel(3);
 	if(!res) return false;
@@ -49,7 +49,7 @@ bool cGame::Init()
 
 	res = Data.LoadImageA(IMG_ENEMY, "Monsters.png", GL_RGBA);
 	if(!res) return false;
-	/*
+	
 	cPtero* Ptero = new cPtero();
 	Ptero->SetWidthHeight(32,32);
 	Ptero->SetTile(10,110);
@@ -57,7 +57,7 @@ bool cGame::Init()
 	cSFish* SFish = new cSFish();
 	SFish->SetWidthHeight(32,32);
 	SFish->SetTile(10,108);
-	*/
+	
 	cGhost* Ghost = new cGhost();
 	Ghost->SetWidthHeight(32,32);
 	Ghost->SetTile(10,111);
@@ -66,11 +66,26 @@ bool cGame::Init()
 	Miniboss->SetWidthHeight(32,32);
 	Miniboss->SetTile(10,113);
 	
+	res = Data.LoadImageA(IMG_BLOCKS, "blocks.png", GL_RGBA);
+	if(!res) return false;
+
+	cBlock* Block1 = new cBlock();
+	Block1->SetWidthHeight(16,16);
+	Block1->SetTile(5,113);
+
+	cBlock* Block2 = new cBlock();
+	Block2->SetWidthHeight(16,16);
+	Block2->SetTile(5,114);
+	Block2->SetState(2);
+
 
 	//monsters.push_back(Ptero);
 	//monsters.push_back(SFish);
-	monsters.push_back(Ghost);
-	monsters.push_back(Miniboss);
+	//monsters.push_back(Ghost);
+	//monsters.push_back(Miniboss);
+
+	blocks.push_back(Block1);
+	blocks.push_back(Block2);
 
 	return res;
 }
@@ -137,13 +152,13 @@ bool cGame::Process()
 
 	if(keys[GLUT_KEY_LEFT]) 
 	{		
-		Player.MoveLeft(Scene.GetMap());	
+		Player.MoveLeft(Scene.GetMap(), blocks);	
 		keypressed=true;
 	}
 
 	else if(keys[GLUT_KEY_RIGHT]) 
 	{	
-		Player.MoveRight(Scene.GetMap());	
+		Player.MoveRight(Scene.GetMap(), blocks);	
 		keypressed=true;
 	}
 
@@ -152,8 +167,8 @@ bool cGame::Process()
 	
 	//Game Logic
 	for(unsigned int i = 0; i < monsters.size(); i++)
-			monsters[i]->Logic(Scene.GetMap(), Player);
-	Player.Logic(Scene.GetMap(),monsters);
+			monsters[i]->Logic(Scene.GetMap(), Player, blocks);
+	Player.Logic(Scene.GetMap(),monsters, blocks);
 
 	return res;
 }
@@ -165,10 +180,12 @@ void cGame::Render()
 	
 	glLoadIdentity();
 
-	Scene.Draw(Data.GetID(IMG_BLOCKS));
-	Player.Draw(Data.GetID(IMG_PLAYER));
+	Scene.Draw(Data.GetID(IMG_TILES));
 	for(unsigned int i = 0; i < monsters.size(); i++) 
 		if(!monsters[i]->isDead()) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
+	for(unsigned int i = 0; i < blocks.size(); i++) 
+		if(!blocks[i]->isDestroyed()) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
+	Player.Draw(Data.GetID(IMG_PLAYER));
 
 	glutSwapBuffers();
 }

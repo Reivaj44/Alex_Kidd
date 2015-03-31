@@ -35,7 +35,7 @@ void cPtero::Draw(int tex_id)
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cPtero::Logic(int *map, cPlayer &player) {
+void cPtero::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks) {
 	int xaux;
 	bool right = false;
 	if(state==STATE_RIGHT) right = true;
@@ -52,5 +52,5 @@ void cPtero::Logic(int *map, cPlayer &player) {
 		seq = 0;
 		delay = 0;
 	}	
-	cMonster::Logic(map,player);
+	cMonster::Logic(map,player,blocks);
 }

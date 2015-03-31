@@ -30,7 +30,7 @@ void cMiniboss::Draw(int tex_id)
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cMiniboss::Logic(int *map, cPlayer &player) {
+void cMiniboss::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks) {
 	if(state == STATE_UP) 
 	{
 		if( (yact) < 3*TILE_SIZE) 
@@ -50,5 +50,5 @@ void cMiniboss::Logic(int *map, cPlayer &player) {
 		else state = STATE_UP;
 	}
 
-	cMonster::Logic(map,player);
+	cMonster::Logic(map,player, blocks);
 }

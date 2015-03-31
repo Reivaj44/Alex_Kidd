@@ -29,6 +29,11 @@ bool cPlayer::isPunching()
 	return punching;
 }
 
+bool cPlayer::isDead()
+{
+	return state==STATE_DEAD;
+}
+
 void cPlayer::UpdateBox() 
 {
 	cBicho::UpdateBox();
@@ -60,7 +65,7 @@ void cPlayer::ChangeBox()
 	UpdateBox();
 }
 
-void cPlayer::MoveLeft(int *map)
+void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
 {
 	if(state != STATE_DEAD)
 	{
@@ -74,7 +79,11 @@ void cPlayer::MoveLeft(int *map)
 			x -= STEP_LENGTH;
 			UpdateBox();
 
-			if(CollidesMapWall(map,false)) 
+			bool collideswithblock=false;
+			for(unsigned int i = 0; i < blocks.size(); i++) 
+				if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
+			
+			if(CollidesMapWall(map,false) || collideswithblock) 
 			{
 				x = xaux;
 				UpdateBox();
@@ -90,20 +99,23 @@ void cPlayer::MoveLeft(int *map)
 	}
 }
 
-void cPlayer::MoveRight(int *map)
+void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks)
 {
 	if(state!=STATE_DEAD) {
 		if(state==STATE_CROUCHRIGHT || state==STATE_CROUCHLEFT) SetState(STATE_CROUCHRIGHT);
 		else if (!punching || intheair)
 		{
 			int xaux;
-
 			//Whats next tile?
 			xaux = x;
 			x += STEP_LENGTH;
 			UpdateBox();
 
-			if(CollidesMapWall(map,true)) {
+			bool collideswithblock=false;
+			for(unsigned int i = 0; i < blocks.size(); i++) 
+				if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
+			
+			if(CollidesMapWall(map,true) || collideswithblock) {
 				x = xaux;
 				UpdateBox();
 			}
@@ -206,7 +218,7 @@ void cPlayer::SetState(int s)
 	ChangeBox();
 }
 
-void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters)
+void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks)
 {
 	if(state==STATE_DEAD) {
 		y += 2;
@@ -216,8 +228,10 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters)
 	else {
 		if(punching) {
 			for(unsigned int i = 0; i < monsters.size(); i++) 
-				if(!monsters[i]->isDead())
-					if(monsters[i]->CollidesBox(punchbox)) monsters[i]->Die();
+				if(!monsters[i]->isDead() && monsters[i]->CollidesBox(punchbox)) monsters[i]->Die();
+			for(unsigned int i = 0; i < blocks.size(); i++) 
+				if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(punchbox)) blocks[i]->Destroy();
+
 			delay++;
 			if(delay == FRAME_DELAY)
 			{
@@ -242,14 +256,18 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters)
 				alfa = ((float)jump_alfa) * 0.017453f;
 				y = jump_y + (int)( ((float)JUMP_HEIGHT) * sin(alfa) );
 				UpdateBox();
+				
+				bool collideswithblock=false;
+				for(unsigned int i = 0; i < blocks.size(); i++) 
+				if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
 			
-				if(jump_alfa <= 90 && CollidesMapCeil(map))
+				if(jump_alfa <= 90 && (CollidesMapCeil(map) || collideswithblock))
 					jumping = false;
 
 				if(jump_alfa > 90)
 				{
 					//Over floor?
-					jumping=!CollidesMapFloor(map);
+					jumping=!(CollidesMapFloor(map) || collideswithblock) ;
 					//intheair=!CollidesMapFloor(map);
 				}
 			}
@@ -257,8 +275,12 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters)
 
 		else
 		{
+			bool collideswithblock=false;
+			for(unsigned int i = 0; i < blocks.size(); i++) 
+			if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
+			
 			//Over floor?
-			if(!CollidesMapFloor(map)) {
+			if(!(CollidesMapFloor(map) || collideswithblock)) {
 				y -= (2*STEP_LENGTH);
 				UpdateBox();
 				intheair=true;

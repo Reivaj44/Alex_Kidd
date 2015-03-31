@@ -3,6 +3,7 @@
 #include "cBicho.h"
 #include <vector>
 #include "cMonster.h"
+#include "cBlock.h"
 
 #define PLAYER_START_CX		3
 #define PLAYER_START_CY		2
@@ -33,9 +34,10 @@ public:
 	void SetWidthHeight(int w, int h);
 	cRect GetHitBox();
 	bool isPunching();
+	bool isDead();
 
-	void MoveRight(int *map);
-	void MoveLeft(int *map);
+	void MoveRight(int *map, std::vector<cBlock*> &blocks);
+	void MoveLeft(int *map, std::vector<cBlock*> &blocks);
 	void Jump(int *map);
 	void Crouch(int *map);
 	void Punch(int *map);
@@ -44,7 +46,7 @@ public:
 
 	void SetState(int s);
 
-	void Logic(int *map, std::vector<cMonster*> &monsters);
+	void Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks);
 
 	virtual void Draw(int tex_id);
 
