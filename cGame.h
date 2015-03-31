@@ -32,7 +32,7 @@ private:
 	unsigned char keys[256];
 	bool jump_key;
 	bool punch_key;
-	float cam_x, cam_y;
+	float cam_x, cam_y, cam_w, cam_h;
 	float mov_x, mov_y;
 	cScene Scene;
 	cPlayer Player;

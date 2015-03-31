@@ -20,7 +20,7 @@ bool cGame::Init()
 {
 	bool res=true;
 	cam_x = 0.25;
-	cam_y = 18.25;
+	cam_y = 1920.25;
 
 	mov_x = 0;
 	mov_y = 0;
@@ -29,7 +29,7 @@ bool cGame::Init()
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0,256,0,192,0,1);
+	gluOrtho2D(cam_x, cam_x+256, cam_y, cam_y+192);
 	glMatrixMode(GL_MODELVIEW);
 	
 	glAlphaFunc(GL_GREATER, 0.05f);
@@ -181,6 +181,7 @@ void cGame::Render()
 	
 	int play_x, play_y;
 	Player.GetPosition(play_x, play_y);
+	/*
 	float yyy = 1808-(play_y + mov_y);
 	//if ((1808-(play_y + mov_y) > 2 * 192 / 3) && (cam_y+mov_y > 0.4)) mov_y -= CAM_STEP;
 	if (play_y - mov_y > 2 * 192 / 3) mov_y += CAM_STEP;
@@ -190,10 +191,15 @@ void cGame::Render()
 		cam_y -= CAM_STEP;
 	}
 	else if (relat_x < 4.24) cam_x += CAM_STEP;*/
+	//if( (play_x - cam_x) < (256 / 3) ) cam_x = play_x - 256 / 3;
+	if( (play_x - cam_x) > (2 * 256 / 3) ) cam_x = play_x - 2 * 256 / 3;
+	if( (play_y - cam_y) < (192 / 3) ) cam_y = play_y - 192 / 3;
+	//if( (play_y - cam_y) > (2 * 192 / 3) ) cam_y = play_y - 2 * 192 / 3;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glTranslatef(-cam_x-mov_x,-cam_y+mov_y,0.0);
-	glOrtho(0,256,0,192,0,1);
+	/*glTranslatef(-cam_x-mov_x,-cam_y+mov_y,0.0);
+	glOrtho(0,256,0,192,0,1);*/
+	gluOrtho2D(cam_x, cam_x+256, cam_y, cam_y+192);
 	glMatrixMode(GL_MODELVIEW);
 
 	glLoadIdentity();
