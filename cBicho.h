@@ -6,6 +6,7 @@
 #define FRAME_DELAY		8
 #define STEP_LENGTH		2
 
+class cBlock;
 
 class cRect
 {
@@ -30,9 +31,9 @@ public:
 	cRect GetBodyBox();
 
 	bool Collides(cRect *rc);
-	bool CollidesMapWall(int *map,bool right);
-	bool CollidesMapFloor(int *map);
-	bool CollidesMapCeil(int *map);
+	bool CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks);
+	bool CollidesMapFloor(int *map, std::vector<cBlock*> &blocks);
+	bool CollidesMapCeil(int *map, std::vector<cBlock*> &blocks);
 	bool CollidesBox(const cRect &box);
 
 	void GetArea(cRect *rc);

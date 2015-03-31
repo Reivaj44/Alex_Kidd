@@ -79,11 +79,7 @@ void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
 			x -= STEP_LENGTH;
 			UpdateBox();
 
-			bool collideswithblock=false;
-			for(unsigned int i = 0; i < blocks.size(); i++) 
-				if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
-			
-			if(CollidesMapWall(map,false) || collideswithblock) 
+			if(CollidesMapWall(map,false,blocks)) 
 			{
 				x = xaux;
 				UpdateBox();
@@ -111,11 +107,8 @@ void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks)
 			x += STEP_LENGTH;
 			UpdateBox();
 
-			bool collideswithblock=false;
-			for(unsigned int i = 0; i < blocks.size(); i++) 
-				if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
 			
-			if(CollidesMapWall(map,true) || collideswithblock) {
+			if(CollidesMapWall(map,true,blocks)) {
 				x = xaux;
 				UpdateBox();
 			}
@@ -135,16 +128,16 @@ void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks)
 void cPlayer::Crouch(int *map)
 {
 	if(!intheair && state!=STATE_DEAD) {
-		if(CollidesMapWall(map,true) && state==STATE_WALKRIGHT) SetState(STATE_CROUCHRIGHT);
+		/*if(CollidesMapWall(map,true) && state==STATE_WALKRIGHT) SetState(STATE_CROUCHRIGHT);
 		else if(CollidesMapWall(map,false) && state==STATE_WALKLEFT) SetState(STATE_CROUCHLEFT);
 		else
-		{
+		{*/
 			switch(state)
 			{
 				case STATE_LOOKLEFT:	SetState(STATE_CROUCHLEFT);		break;
 				case STATE_LOOKRIGHT:	SetState(STATE_CROUCHRIGHT);		break;
 			}
-		}
+		//}
 	}
 }
 
@@ -193,7 +186,7 @@ void cPlayer::Jump(int *map)
 {
 	if(!jumping)
 	{
-		if(CollidesMapFloor(map) && (state!=STATE_CROUCHLEFT) && (state!=STATE_CROUCHRIGHT) && !punching)
+		if(!intheair && (state!=STATE_CROUCHLEFT) && (state!=STATE_CROUCHRIGHT) && !punching)
 		{
 			if(state==STATE_WALKLEFT || state==STATE_LOOKLEFT) SetState(STATE_JUMPLEFT);
 			else if(state==STATE_WALKRIGHT || state==STATE_LOOKRIGHT) SetState(STATE_JUMPRIGHT);
@@ -256,31 +249,25 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				alfa = ((float)jump_alfa) * 0.017453f;
 				y = jump_y + (int)( ((float)JUMP_HEIGHT) * sin(alfa) );
 				UpdateBox();
-				
-				bool collideswithblock=false;
-				for(unsigned int i = 0; i < blocks.size(); i++) 
-				if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
 			
-				if(jump_alfa <= 90 && (CollidesMapCeil(map) || collideswithblock))
+				if(jump_alfa <= 90 && (CollidesMapCeil(map,blocks)))
 					jumping = false;
 
 				if(jump_alfa > 90)
 				{
 					//Over floor?
-					jumping=!(CollidesMapFloor(map) || collideswithblock) ;
-					//intheair=!CollidesMapFloor(map);
+					if(CollidesMapFloor(map,blocks))
+					{	jumping=false;
+						intheair=false;
+					}
 				}
 			}
 		}
 
 		else
 		{
-			bool collideswithblock=false;
-			for(unsigned int i = 0; i < blocks.size(); i++) 
-			if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
-			
 			//Over floor?
-			if(!(CollidesMapFloor(map) || collideswithblock)) {
+			if(!CollidesMapFloor(map,blocks)) {
 				y -= (2*STEP_LENGTH);
 				UpdateBox();
 				intheair=true;

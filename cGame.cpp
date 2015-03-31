@@ -52,7 +52,7 @@ bool cGame::Init()
 	
 	cPtero* Ptero = new cPtero();
 	Ptero->SetWidthHeight(32,32);
-	Ptero->SetTile(10,110);
+	Ptero->SetTile(8,113);
 
 	cSFish* SFish = new cSFish();
 	SFish->SetWidthHeight(32,32);
@@ -75,11 +75,11 @@ bool cGame::Init()
 
 	cBlock* Block2 = new cBlock();
 	Block2->SetWidthHeight(16,16);
-	Block2->SetTile(5,114);
+	Block2->SetTile(10,113);
 	Block2->SetState(2);
 
 
-	//monsters.push_back(Ptero);
+	monsters.push_back(Ptero);
 	//monsters.push_back(SFish);
 	//monsters.push_back(Ghost);
 	//monsters.push_back(Miniboss);

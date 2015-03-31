@@ -4,8 +4,8 @@
 cBlock::cBlock(void)
 {
 	state = STATE_BROWN;
-	ibodybox.bottom=0; ibodybox.top=31;
-	ibodybox.left=0; ibodybox.right=31;
+	ibodybox.bottom=0; ibodybox.top=15;
+	ibodybox.left=0; ibodybox.right=15;
 }
 
 cBlock::~cBlock(void)
