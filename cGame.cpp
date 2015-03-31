@@ -22,12 +22,13 @@ bool cGame::Init()
 	cam_x = 0.25;
 	cam_y = 18.25;
 
+	mov_x = 0;
+	mov_y = 0;
+
 	//Graphics initialization
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glRotatef(180.0,0.0,1.0,0.0);
-	gluLookAt(cam_x,cam_y,-1.0, cam_x,cam_y,0.0, 0.0,1.0,0.0);
 	glOrtho(0,256,0,192,0,1);
 	glMatrixMode(GL_MODELVIEW);
 	
@@ -178,6 +179,23 @@ void cGame::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	
+	int play_x, play_y;
+	Player.GetPosition(play_x, play_y);
+	float yyy = 1808-(play_y + mov_y);
+	//if ((1808-(play_y + mov_y) > 2 * 192 / 3) && (cam_y+mov_y > 0.4)) mov_y -= CAM_STEP;
+	if (play_y - mov_y > 2 * 192 / 3) mov_y += CAM_STEP;
+	else if ((play_x - mov_x > 2 * 256 / 3) && (cam_x+mov_x < 4.24)) mov_x += CAM_STEP;
+	/*if (yy < 0.995 && cam_y > 0.4) {
+		init_relat_y = relat_y;
+		cam_y -= CAM_STEP;
+	}
+	else if (relat_x < 4.24) cam_x += CAM_STEP;*/
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glTranslatef(-cam_x-mov_x,-cam_y+mov_y,0.0);
+	glOrtho(0,256,0,192,0,1);
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
 
 	Scene.Draw(Data.GetID(IMG_TILES));

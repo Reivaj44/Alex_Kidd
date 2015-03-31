@@ -8,6 +8,7 @@
 
 #define GAME_WIDTH	640
 #define GAME_HEIGHT 480
+#define CAM_STEP 0.1
 
 class cGame
 {
@@ -31,7 +32,8 @@ private:
 	unsigned char keys[256];
 	bool jump_key;
 	bool punch_key;
-	double cam_x, cam_y;
+	float cam_x, cam_y;
+	float mov_x, mov_y;
 	cScene Scene;
 	cPlayer Player;
 	std::vector<cMonster*> monsters;
