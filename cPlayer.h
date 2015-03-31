@@ -8,7 +8,7 @@
 #define PLAYER_START_CX		3
 #define PLAYER_START_CY		2
 
-#define JUMP_HEIGHT		96
+#define JUMP_HEIGHT		48
 #define JUMP_STEP		4
 
 #define STATE_LOOKLEFT		0
