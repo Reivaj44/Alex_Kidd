@@ -96,6 +96,8 @@ bool cGame::Init()
 	blocks.push_back(Block2);
 	blocks.push_back(Box1);
 
+	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
+
 	return res;
 }
 
