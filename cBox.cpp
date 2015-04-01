@@ -4,7 +4,8 @@
 cBox::cBox(void)
 {
 	state = STATE_STAR;
-	box = true;
+	collisionable = true;
+	appears = true;
 	ibodybox.bottom=0; ibodybox.top=15;
 	ibodybox.left=0; ibodybox.right=15;
 }
@@ -24,14 +25,27 @@ int cBox::GetTreasure()
 	return treasure;
 }
 
-void cBox::Destroy()
+bool cBox::Appears()
 {
-	if(box && state!=STATE_SKULL)
-		state=treasure;
-
-	box = false;
+	return appears;
 }
 
+bool cBox::isCollisionable()
+{
+	return collisionable;
+}
+
+void cBox::Destroy()
+{
+	if(collisionable && state!=STATE_SKULL)
+		SetState(treasure);
+}
+
+void cBox::SetState(int st) 
+{
+	cBicho::SetState(st);
+	if(st<4) collisionable = false;
+}
 
 void cBox::Draw(int tex_id)
 {	
@@ -63,4 +77,6 @@ void cBox::Draw(int tex_id)
 
 void cBox::Logic(cPlayer player)
 {
+	if(!collisionable && CollidesBox(player.GetBodyBox())) appears=false;
+
 }

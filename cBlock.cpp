@@ -12,9 +12,14 @@ cBlock::~cBlock(void)
 {
 }
 
-bool cBlock::isDestroyed()
+bool cBlock::Appears()
 {
-	return state==STATE_DESTROYED;
+	return state!=STATE_DESTROYED;
+}
+
+bool cBlock::isCollisionable()
+{
+	return state!=STATE_DESTROYED;
 }
 
 void cBlock::Destroy()
@@ -36,4 +41,8 @@ void cBlock::Draw(int tex_id)
 	xf = xo + 0.250;
 	yf = yo - 0.250f;
 	DrawRect(tex_id,xo,yo,xf,yf);
+}
+
+void cBlock::Logic(cPlayer player)
+{
 }

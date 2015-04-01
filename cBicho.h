@@ -30,6 +30,7 @@ public:
 	void GetWidthHeight(int &w,int &h);
 	cRect GetBodyBox();
 
+	virtual bool Appears();
 	bool Collides(cRect *rc);
 	bool CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks);
 	bool CollidesMapFloor(int *map, std::vector<cBlock*> &blocks);
@@ -40,7 +41,7 @@ public:
 	void DrawRect(int tex_id,float xo,float yo,float xf,float yf);
 
 	int  GetState();
-	void SetState(int s);
+	virtual void SetState(int s);
 
 	void NextFrame(int max);
 	int  GetFrame();

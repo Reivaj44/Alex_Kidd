@@ -65,6 +65,10 @@ void cBicho::UpdateBox()
 	bodybox.top = y + ibodybox.top;
 }
 
+bool cBicho::Appears() {
+	return true;
+}
+
 bool cBicho::Collides(cRect *rc)
 {
 	return ((x>rc->left) && (x+w<rc->right) && (y>rc->bottom) && (y+h<rc->top));
@@ -86,7 +90,7 @@ bool cBicho::CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks)
 
 	bool collideswithblock=false;
 	for(unsigned int i = 0; i < blocks.size(); i++) 
-		if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
+		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
 
 	for(j=0;j<height_tiles;j++)
 	{
@@ -114,8 +118,8 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks)
 	bodyboxdown.bottom-=1;
 	for(unsigned int i = 0; i < blocks.size(); i++) 
 	{
-		if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
-		if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodyboxdown)) collideswithblockdown=true;
+		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
+		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodyboxdown)) collideswithblockdown=true;
 	}
 	on_base = false;
 	i=0;
@@ -155,7 +159,7 @@ bool cBicho::CollidesMapCeil(int *map, std::vector<cBlock*> &blocks)
 
 	bool collideswithblock=false;
 	for(unsigned int i = 0; i < blocks.size(); i++) 
-		if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
+		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
 
 	collide = false;
 	i=0;

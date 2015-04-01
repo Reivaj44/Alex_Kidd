@@ -173,8 +173,10 @@ bool cGame::Process()
 	
 	//Game Logic
 	for(unsigned int i = 0; i < monsters.size(); i++)
-			monsters[i]->Logic(Scene.GetMap(), Player, blocks);
+		monsters[i]->Logic(Scene.GetMap(), Player, blocks);
 	Player.Logic(Scene.GetMap(),monsters, blocks);
+	for(unsigned int i = 0; i < blocks.size(); i++)
+		blocks[i]->Logic(Player);
 
 	return res;
 }
@@ -209,7 +211,7 @@ void cGame::Render()
 	for(unsigned int i = 0; i < monsters.size(); i++) 
 		if(!monsters[i]->isDead()) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
 	for(unsigned int i = 0; i < blocks.size(); i++) 
-		if(!blocks[i]->isDestroyed()) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
+		if(blocks[i]->Appears()) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
 	Player.Draw(Data.GetID(IMG_PLAYER));
 
 	glutSwapBuffers();

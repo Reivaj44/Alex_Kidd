@@ -20,13 +20,18 @@ public:
 	void SetTreasure(int treas);
 	int GetTreasure();
 
+	virtual bool Appears();
+	virtual bool isCollisionable();
 	virtual void Destroy();
 
+	virtual void SetState(int st);
+
 	virtual void Draw(int tex_id);
-	void Logic(cPlayer player);
+	virtual void Logic(cPlayer player);
 
 protected:
-	bool box;
+	bool collisionable;
+	bool appears;
 	int treasure;
 };
 
