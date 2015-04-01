@@ -4,6 +4,7 @@
 #include "cSFish.h"
 #include "cGhost.h"
 #include "cMiniboss.h"
+#include "cBox.h"
 
 
 cGame::cGame(void)
@@ -77,6 +78,12 @@ bool cGame::Init()
 	Block2->SetTile(10,113);
 	Block2->SetState(2);
 
+	cBox* Box1 = new cBox();
+	Box1->SetWidthHeight(16,16);
+	Box1->SetTile(2,113);
+	Box1->SetState(6);
+	Box1->SetTreasure(1);
+
 	monsters.push_back(Ptero);
 	//monsters.push_back(SFish);
 	//monsters.push_back(Ghost);
@@ -84,6 +91,7 @@ bool cGame::Init()
 
 	blocks.push_back(Block1);
 	blocks.push_back(Block2);
+	blocks.push_back(Box1);
 
 	return res;
 }
