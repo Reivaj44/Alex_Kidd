@@ -19,11 +19,6 @@ cGame::~cGame(void)
 bool cGame::Init()
 {
 	bool res=true;
-	cam_x = 0.25;
-	cam_y = 1920.25;
-
-	mov_x = 0;
-	mov_y = 0;
 
 	//Graphics initialization
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
@@ -41,6 +36,8 @@ bool cGame::Init()
 	res = Scene.LoadLevel(3);
 	if(!res) return false;
 
+	cam_x = 0; cam_y = 1920; //s'ha de llegir de loadlevel
+
 	//Player initialization
 	res = Data.LoadImage(IMG_PLAYER,"Alex.png",GL_RGBA);
 	if(!res) return false;
@@ -51,6 +48,10 @@ bool cGame::Init()
 	res = Data.LoadImageA(IMG_ENEMY, "Monsters.png", GL_RGBA);
 	if(!res) return false;
 	
+	res = Data.LoadImageA(IMG_BLOCKS, "blocks.png", GL_RGBA);
+	if(!res) return false;
+
+	//Creem monstres i blocks de prova
 	cPtero* Ptero = new cPtero();
 	Ptero->SetWidthHeight(32,32);
 	Ptero->SetTile(8,113);
@@ -66,9 +67,6 @@ bool cGame::Init()
 	cMiniboss* Miniboss = new cMiniboss();
 	Miniboss->SetWidthHeight(32,32);
 	Miniboss->SetTile(10,113);
-	
-	res = Data.LoadImageA(IMG_BLOCKS, "blocks.png", GL_RGBA);
-	if(!res) return false;
 
 	cBlock* Block1 = new cBlock();
 	Block1->SetWidthHeight(16,16);
@@ -78,7 +76,6 @@ bool cGame::Init()
 	Block2->SetWidthHeight(16,16);
 	Block2->SetTile(10,113);
 	Block2->SetState(2);
-
 
 	monsters.push_back(Ptero);
 	//monsters.push_back(SFish);
@@ -113,8 +110,8 @@ void cGame::Finalize()
 void cGame::ReadKeyboard(unsigned char key, int x, int y, bool press)
 {
 	keys[key] = press;
-	if(key=='x' && !press) jump_key=false;
-	if(key=='c' && !press) punch_key=false;
+	if(key=='c' && !press) jump_key=false;
+	if(key=='x' && !press) punch_key=false;
 }
 
 void cGame::ReadMouse(int button, int state, int x, int y)
@@ -137,14 +134,14 @@ bool cGame::Process()
 		keypressed=true;
 	}
 
-	if(keys['x'] && !jump_key) 
+	if(keys['c'] && !jump_key) 
 	{
 		Player.Jump(Scene.GetMap()); 
 		jump_key=true;		
 		keypressed=true;
 	}
 
-	if(keys['c'] && !punch_key)
+	if(keys['x'] && !punch_key)
 	{
 		Player.Punch(Scene.GetMap());
 		punch_key=true;
@@ -181,25 +178,21 @@ void cGame::Render()
 	
 	int play_x, play_y;
 	Player.GetPosition(play_x, play_y);
-	/*
-	float yyy = 1808-(play_y + mov_y);
-	//if ((1808-(play_y + mov_y) > 2 * 192 / 3) && (cam_y+mov_y > 0.4)) mov_y -= CAM_STEP;
-	if (play_y - mov_y > 2 * 192 / 3) mov_y += CAM_STEP;
-	else if ((play_x - mov_x > 2 * 256 / 3) && (cam_x+mov_x < 4.24)) mov_x += CAM_STEP;
-	/*if (yy < 0.995 && cam_y > 0.4) {
-		init_relat_y = relat_y;
-		cam_y -= CAM_STEP;
-	}
-	else if (relat_x < 4.24) cam_x += CAM_STEP;*/
-	//if( (play_x - cam_x) < (256 / 3) ) cam_x = play_x - 256 / 3;
-	if( (play_x - cam_x) > (2 * 256 / 3) ) cam_x = play_x - 2 * 256 / 3;
-	if( (play_y - cam_y) < (192 / 3) ) cam_y = play_y - 192 / 3;
-	//if( (play_y - cam_y) > (2 * 192 / 3) ) cam_y = play_y - 2 * 192 / 3;
+	
+	if( (play_x - cam_x) > (2 * CAM_WIDTH / 3) ) cam_x = play_x - 2 * CAM_WIDTH / 3;
+	if( (play_y - cam_y) < (CAM_HEIGHT / 3) ) cam_y = play_y - CAM_HEIGHT / 3;
+	
+	int level_width = 256; //momentani, ha de llegir de rectangle del nivell
+	int level_height = 120 * 16; //momentani, ha de llegir de rectangle del nivell
+	cam_x = max(0, cam_x);
+	cam_y = max(0, cam_y);
+	cam_x = min(cam_x, level_width - CAM_WIDTH);
+	cam_y = min(cam_y, level_height - CAM_HEIGHT);
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	/*glTranslatef(-cam_x-mov_x,-cam_y+mov_y,0.0);
-	glOrtho(0,256,0,192,0,1);*/
-	gluOrtho2D(cam_x, cam_x+256, cam_y, cam_y+192);
+	
+	gluOrtho2D(cam_x, cam_x + CAM_WIDTH, cam_y, cam_y + CAM_HEIGHT);
 	glMatrixMode(GL_MODELVIEW);
 
 	glLoadIdentity();

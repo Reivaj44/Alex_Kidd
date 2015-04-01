@@ -29,13 +29,12 @@ bool cScene::LoadLevel(int level)
 	id_DL=glGenLists(1);
 	glNewList(id_DL,GL_COMPILE);
 		glPushMatrix();
-		glTranslatef(0.0,8.0,0.0);
 		glBegin(GL_QUADS);
 	
 			for(j=SCENE_HEIGHT-1;j>=0;j--)
 			{
-				px=SCENE_Xo;
-				py=SCENE_Yo+(j*TILE_SIZE);
+				px = 0;
+				py = j * TILE_SIZE;
 
 				for(i=0;i<SCENE_WIDTH;i++)
 				{

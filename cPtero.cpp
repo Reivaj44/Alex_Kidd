@@ -36,21 +36,24 @@ void cPtero::Draw(int tex_id)
 }
 
 void cPtero::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks) {
-	int xaux;
-	bool right = false;
-	if(state==STATE_RIGHT) right = true;
-	xaux = x;
-	if(right) x += STEP_LENGTH;
-	else x -= STEP_LENGTH;
-	UpdateBox();
-
-	if(CollidesMapWall(map,right,blocks) || CollidesMapWall(map,!right,blocks)) {
-		x = xaux;
+	if(state!=STATE_MONSTERDEAD)
+	{
+		int xaux;
+		bool right = false;
+		if(state==STATE_RIGHT) right = true;
+		xaux = x;
+		if(right) x += STEP_LENGTH;
+		else x -= STEP_LENGTH;
 		UpdateBox();
-		if(right) state=STATE_LEFT;
-		else state=STATE_RIGHT;
-		seq = 0;
-		delay = 0;
-	}	
-	cMonster::Logic(map,player,blocks);
+
+		if(CollidesMapWall(map,right,blocks) || CollidesMapWall(map,!right,blocks)) {
+			x = xaux;
+			UpdateBox();
+			if(right) state=STATE_LEFT;
+			else state=STATE_RIGHT;
+			seq = 0;
+			delay = 0;
+		}
+		cMonster::Logic(map,player,blocks);
+	}
 }

@@ -2,8 +2,6 @@
 
 #include "cTexture.h"
 
-#define SCENE_Xo		(2*TILE_SIZE)
-#define SCENE_Yo		TILE_SIZE
 #define SCENE_WIDTH		48
 #define SCENE_HEIGHT	120
 
@@ -11,7 +9,6 @@
 #define FILENAME_EXT	".txt"
 
 #define TILE_SIZE		16
-#define BLOCK_SIZE		24
 
 class cScene
 {

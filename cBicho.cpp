@@ -106,15 +106,12 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks)
 	tile_x = bodybox.left / TILE_SIZE;
 	tile_y = bodybox.bottom / TILE_SIZE;
 
-	width_tiles = ( (bodybox.right + 1) / TILE_SIZE ) - ( bodybox.left / TILE_SIZE ) + 1;
+	width_tiles = ( (bodybox.right) / TILE_SIZE ) - ( bodybox.left / TILE_SIZE ) + 1;
 
 	bool collideswithblock=false;
 	bool collideswithblockdown=false;
-	cRect bodyboxdown;
-	bodyboxdown.bottom=bodybox.bottom-1;
-	bodyboxdown.top=bodybox.top;
-	bodyboxdown.left=bodybox.left;
-	bodyboxdown.right=bodybox.right;
+	cRect bodyboxdown=bodybox;
+	bodyboxdown.bottom-=1;
 	for(unsigned int i = 0; i < blocks.size(); i++) 
 	{
 		if(!blocks[i]->isDestroyed() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
@@ -154,7 +151,7 @@ bool cBicho::CollidesMapCeil(int *map, std::vector<cBlock*> &blocks)
 	tile_x = bodybox.left / TILE_SIZE;
 	tile_y = y_aux / TILE_SIZE;
 
-	width_tiles = ( (bodybox.right+1) / TILE_SIZE) - (bodybox.left / TILE_SIZE) + 1;
+	width_tiles = ( (bodybox.right) / TILE_SIZE) - (bodybox.left / TILE_SIZE) + 1;
 
 	bool collideswithblock=false;
 	for(unsigned int i = 0; i < blocks.size(); i++) 
@@ -202,19 +199,14 @@ void cBicho::GetArea(cRect *rc)
 
 void cBicho::DrawRect(int tex_id,float xo,float yo,float xf,float yf)
 {
-	int screen_x,screen_y;
-
-	screen_x = x + SCENE_Xo;
-	screen_y = y + SCENE_Yo + (BLOCK_SIZE - TILE_SIZE);
-
 	glEnable(GL_TEXTURE_2D);
 	
 	glBindTexture(GL_TEXTURE_2D,tex_id);
 	glBegin(GL_QUADS);	
-		glTexCoord2f(xo,yo);	glVertex2i(screen_x  ,screen_y);
-		glTexCoord2f(xf,yo);	glVertex2i(screen_x+w,screen_y);
-		glTexCoord2f(xf,yf);	glVertex2i(screen_x+w,screen_y+h);
-		glTexCoord2f(xo,yf);	glVertex2i(screen_x  ,screen_y+h);
+		glTexCoord2f(xo,yo);	glVertex2i(x  , y);
+		glTexCoord2f(xf,yo);	glVertex2i(x+w, y);
+		glTexCoord2f(xf,yf);	glVertex2i(x+w, y+h);
+		glTexCoord2f(xo,yf);	glVertex2i(x  , y+h);
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
