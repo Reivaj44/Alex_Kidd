@@ -91,6 +91,7 @@ void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
 			}
 			if(intheair && !punching) SetState(STATE_JUMPLEFT);
 			else if(!punching) SetState(STATE_WALKLEFT);
+			else if(intheair) SetState(STATE_PUNCHLEFT);
 		}
 	}
 }
@@ -121,6 +122,7 @@ void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks)
 
 			if(intheair && !punching) SetState(STATE_JUMPRIGHT);
 			else if(!punching) SetState(STATE_WALKRIGHT);	
+			else if(intheair) SetState(STATE_PUNCHRIGHT);
 		}
 	}
 }
