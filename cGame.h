@@ -37,6 +37,10 @@ private:
 	float cam_x, cam_y;
 	cScene Scene;
 	cPlayer Player;
+	int lifes;
+	bool ring;
+	int money;
+	int score;
 	std::vector<cMonster*> monsters;
 	std::vector<cBlock*> blocks;
 	cData Data;

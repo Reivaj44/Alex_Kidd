@@ -44,7 +44,7 @@ void cBox::Destroy()
 void cBox::SetState(int st) 
 {
 	cBicho::SetState(st);
-	if(st<4) collisionable = false;
+	if(st<=4) collisionable = false;
 }
 
 void cBox::Draw(int tex_id)
@@ -67,16 +67,30 @@ void cBox::Draw(int tex_id)
 		case STATE_SMON:	xo = 0.75f; yo = 0.5f;
 								break;
 
-		case STATE_RING:	xo = 0.0f; yo = 0.5f;
+		case STATE_RING:	xo = 0.0f; yo = 0.75f;
 								break;
+
+		case STATE_LIFE:	xo = 0.5f; yo= 0.75f;
+								break;
+
 	}
 	xf = xo + 0.250;
 	yf = yo - 0.250f;
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cBox::Logic(cPlayer player)
+void cBox::Logic(cPlayer player, int &money, bool &ring, int &lifes)
 {
-	if(!collisionable && CollidesBox(player.GetBodyBox())) appears=false;
+	if(!collisionable && CollidesBox(player.GetBodyBox())) 
+	{
+		appears=false;
+		switch(GetState())
+		{
+			case STATE_BMON: money+=20; break;
+			case STATE_SMON: money+=10; break;
+			case STATE_RING: ring = true;
+			case STATE_LIFE: lifes++;
+		}
+	}
 
 }

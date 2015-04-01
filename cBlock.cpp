@@ -43,6 +43,6 @@ void cBlock::Draw(int tex_id)
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cBlock::Logic(cPlayer player)
+void cBlock::Logic(cPlayer player, int &money, bool &ring, int &lifes)
 {
 }

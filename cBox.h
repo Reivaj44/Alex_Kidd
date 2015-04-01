@@ -6,9 +6,11 @@
 #define STATE_BMON  1
 #define STATE_SMON  2
 #define STATE_RING  3
-#define STATE_SKULL 4
-#define STATE_QUEST 5
-#define STATE_STAR  6
+#define STATE_LIFE	4
+#define STATE_SKULL 5
+#define STATE_QUEST 6
+#define STATE_STAR  7
+
 
 class cBox :
 	public cBlock
@@ -27,7 +29,7 @@ public:
 	virtual void SetState(int st);
 
 	virtual void Draw(int tex_id);
-	virtual void Logic(cPlayer player);
+	virtual void Logic(cPlayer player, int &money, bool &ring, int &lifes);
 
 protected:
 	bool collisionable;

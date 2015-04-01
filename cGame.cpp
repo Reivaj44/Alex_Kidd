@@ -11,6 +11,9 @@ cGame::cGame(void)
 {
 	jump_key = false;
 	punch_key = false;
+	lifes = 3;
+	money = 0;
+	score = 0;
 }
 
 cGame::~cGame(void)
@@ -176,7 +179,7 @@ bool cGame::Process()
 		monsters[i]->Logic(Scene.GetMap(), Player, blocks);
 	Player.Logic(Scene.GetMap(),monsters, blocks);
 	for(unsigned int i = 0; i < blocks.size(); i++)
-		blocks[i]->Logic(Player);
+		blocks[i]->Logic(Player,money,ring,lifes);
 
 	return res;
 }
