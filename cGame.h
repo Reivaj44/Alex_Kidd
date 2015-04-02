@@ -29,6 +29,9 @@ public:
 	bool Process();
 	//Output
 	void Render();
+	//Load
+	bool InitIntro();
+	bool InitLevel1();
 
 private:
 	unsigned char keys[256];
@@ -41,6 +44,7 @@ private:
 	bool ring;
 	int money;
 	int score;
+	int stage;
 	std::vector<cMonster*> monsters;
 	std::vector<cBlock*> blocks;
 	cData Data;

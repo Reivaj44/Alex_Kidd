@@ -24,6 +24,8 @@ bool cGame::Init()
 {
 	bool res=true;
 
+	stage = 0;
+
 	//Graphics initialization
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	glMatrixMode(GL_PROJECTION);
@@ -34,10 +36,182 @@ bool cGame::Init()
 	glAlphaFunc(GL_GREATER, 0.05f);
 	glEnable(GL_ALPHA_TEST);
 
+	//res = Scene.LoadLevel(3);
+	//if(!res) return false;
+	//Scene.Draw(Data.GetID(IMG_INTRO));
+
 	//Scene initialization
+	/**/
+
+	PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC);
+
+	return res;
+}
+
+bool cGame::Loop()
+{
+	int t1 = glutGet(GLUT_ELAPSED_TIME);
+	int t2;
+	bool res=true;
+
+	res = Process();
+	if(res) Render();
+	do {
+		t2 = glutGet(GLUT_ELAPSED_TIME);
+	} while(t2-t1<17);
+	return res;
+}
+
+void cGame::Finalize()
+{
+}
+
+//Input
+void cGame::ReadKeyboard(unsigned char key, int x, int y, bool press)
+{
+	keys[key] = press;
+	if(key=='c' && !press) jump_key=false;
+	if(key=='x' && !press) punch_key=false;
+}
+
+void cGame::ReadMouse(int button, int state, int x, int y)
+{
+}
+
+//Process
+bool cGame::Process()
+{
+	bool res=true;
+	
+	//Process Input
+	if(keys[27])	res=false;
+
+	switch (stage) {
+		case 0:
+			if(keys['x'])
+			{
+				stage++;
+			}
+			break;
+		case 1:
+			stage++;
+			break;
+		case 2:
+			stage++;
+			res = InitLevel1();
+			break;
+		default:
+			bool keypressed = false;
+
+			if(keys[GLUT_KEY_DOWN]) 
+			{		
+				Player.Crouch(Scene.GetMap());					
+				keypressed=true;
+			}
+
+			if(keys['c'] && !jump_key) 
+			{
+				Player.Jump(Scene.GetMap()); 
+				jump_key=true;		
+				keypressed=true;
+			}
+
+			if(keys['x'] && !punch_key)
+			{
+				Player.Punch(Scene.GetMap());
+				punch_key=true;
+				keypressed=true;
+			}
+
+			if(keys[GLUT_KEY_LEFT]) 
+			{		
+				Player.MoveLeft(Scene.GetMap(), blocks);	
+				keypressed=true;
+			}
+
+			else if(keys[GLUT_KEY_RIGHT]) 
+			{	
+				Player.MoveRight(Scene.GetMap(), blocks);	
+				keypressed=true;
+			}
+
+			if(!keypressed) Player.Stop();
+
+			//Game Logic
+			for(unsigned int i = 0; i < monsters.size(); i++)
+				monsters[i]->Logic(Scene.GetMap(), Player, blocks);
+			Player.Logic(Scene.GetMap(),monsters, blocks);
+			for(unsigned int i = 0; i < blocks.size(); i++)
+				blocks[i]->Logic(Player,money,ring,lifes);
+
+			break;
+	}
+
+	return res;
+}
+
+//Output
+void cGame::Render()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	
+	switch (stage) {
+		case 0:
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		default:
+			int play_x, play_y;
+			Player.GetPosition(play_x, play_y);
+	
+			if( (play_x - cam_x) > (2 * CAM_WIDTH / 3) ) cam_x = play_x - 2 * CAM_WIDTH / 3;
+			if( (play_y - cam_y) < (CAM_HEIGHT / 3) ) cam_y = play_y - CAM_HEIGHT / 3;
+	
+			int level_width = 256; //momentani, ha de llegir de rectangle del nivell
+			int level_height = 120 * 16; //momentani, ha de llegir de rectangle del nivell
+			cam_x = max(0, cam_x);
+			cam_y = max(0, cam_y);
+			cam_x = min(cam_x, level_width - CAM_WIDTH);
+			cam_y = min(cam_y, level_height - CAM_HEIGHT);
+
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+	
+			gluOrtho2D(cam_x, cam_x + CAM_WIDTH, cam_y, cam_y + CAM_HEIGHT);
+			glMatrixMode(GL_MODELVIEW);
+
+			glLoadIdentity();
+
+			Scene.Draw(Data.GetID(IMG_TILES));
+			for(unsigned int i = 0; i < monsters.size(); i++) 
+				if(!monsters[i]->isDead()) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
+			for(unsigned int i = 0; i < blocks.size(); i++) 
+				if(blocks[i]->Appears()) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
+			Player.Draw(Data.GetID(IMG_PLAYER));
+			break;
+	}
+	
+
+	glutSwapBuffers();
+}
+
+//Load
+
+bool cGame::InitIntro() {
+	bool res = true;
+
+	res = Data.LoadImage(IMG_INTRO, "start_menu.png",GL_RGBA);
+	if(!res) return false;
+
+	return res;
+}
+bool cGame::InitLevel1() {
+	bool res = true;
 	res = Data.LoadImage(IMG_TILES,"Pantalla01.png",GL_RGBA);
 	if(!res) return false;
-	res = Scene.LoadLevel(3);
+	res = Scene.LoadLevel(3); // CACTUS: canviar num
 	if(!res) return false;
 
 	cam_x = 0; cam_y = 1920; //s'ha de llegir de loadlevel
@@ -99,125 +273,4 @@ bool cGame::Init()
 	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
 
 	return res;
-}
-
-bool cGame::Loop()
-{
-	int t1 = glutGet(GLUT_ELAPSED_TIME);
-	int t2;
-	bool res=true;
-
-	res = Process();
-	if(res) Render();
-	do {
-		t2 = glutGet(GLUT_ELAPSED_TIME);
-	} while(t2-t1<17);
-	return res;
-}
-
-void cGame::Finalize()
-{
-}
-
-//Input
-void cGame::ReadKeyboard(unsigned char key, int x, int y, bool press)
-{
-	keys[key] = press;
-	if(key=='c' && !press) jump_key=false;
-	if(key=='x' && !press) punch_key=false;
-}
-
-void cGame::ReadMouse(int button, int state, int x, int y)
-{
-}
-
-//Process
-bool cGame::Process()
-{
-	bool res=true;
-	
-	//Process Input
-	if(keys[27])	res=false;
-	
-	bool keypressed = false;
-
-	if(keys[GLUT_KEY_DOWN]) 
-	{		
-		Player.Crouch(Scene.GetMap());					
-		keypressed=true;
-	}
-
-	if(keys['c'] && !jump_key) 
-	{
-		Player.Jump(Scene.GetMap()); 
-		jump_key=true;		
-		keypressed=true;
-	}
-
-	if(keys['x'] && !punch_key)
-	{
-		Player.Punch(Scene.GetMap());
-		punch_key=true;
-		keypressed=true;
-	}
-
-	if(keys[GLUT_KEY_LEFT]) 
-	{		
-		Player.MoveLeft(Scene.GetMap(), blocks);	
-		keypressed=true;
-	}
-
-	else if(keys[GLUT_KEY_RIGHT]) 
-	{	
-		Player.MoveRight(Scene.GetMap(), blocks);	
-		keypressed=true;
-	}
-
-	if(!keypressed) Player.Stop();
-	
-	
-	//Game Logic
-	for(unsigned int i = 0; i < monsters.size(); i++)
-		monsters[i]->Logic(Scene.GetMap(), Player, blocks);
-	Player.Logic(Scene.GetMap(),monsters, blocks);
-	for(unsigned int i = 0; i < blocks.size(); i++)
-		blocks[i]->Logic(Player,money,ring,lifes);
-
-	return res;
-}
-
-//Output
-void cGame::Render()
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-	
-	int play_x, play_y;
-	Player.GetPosition(play_x, play_y);
-	
-	if( (play_x - cam_x) > (2 * CAM_WIDTH / 3) ) cam_x = play_x - 2 * CAM_WIDTH / 3;
-	if( (play_y - cam_y) < (CAM_HEIGHT / 3) ) cam_y = play_y - CAM_HEIGHT / 3;
-	
-	int level_width = 256; //momentani, ha de llegir de rectangle del nivell
-	int level_height = 120 * 16; //momentani, ha de llegir de rectangle del nivell
-	cam_x = max(0, cam_x);
-	cam_y = max(0, cam_y);
-	cam_x = min(cam_x, level_width - CAM_WIDTH);
-	cam_y = min(cam_y, level_height - CAM_HEIGHT);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	
-	gluOrtho2D(cam_x, cam_x + CAM_WIDTH, cam_y, cam_y + CAM_HEIGHT);
-	glMatrixMode(GL_MODELVIEW);
-
-	glLoadIdentity();
-
-	Scene.Draw(Data.GetID(IMG_TILES));
-	for(unsigned int i = 0; i < monsters.size(); i++) 
-		if(!monsters[i]->isDead()) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
-	for(unsigned int i = 0; i < blocks.size(); i++) 
-		if(blocks[i]->Appears()) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
-	Player.Draw(Data.GetID(IMG_PLAYER));
-
-	glutSwapBuffers();
 }
