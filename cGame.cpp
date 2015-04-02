@@ -4,7 +4,6 @@
 #include "cSFish.h"
 #include "cGhost.h"
 #include "cMiniboss.h"
-#include "cBox.h"
 
 cGame::cGame(void)
 {
@@ -73,22 +72,20 @@ bool cGame::Init()
 
 	cBlock* Block2 = new cBlock();
 	Block2->SetTile(10,113);
-	Block2->SetState(2);
+	Block2->SetState(R_GREEN);
 
-	cBox* Box1 = new cBox();
+	cBlock* Box1 = new cBlock();
 	Box1->SetTile(2,113);
-	Box1->SetState(6);
-	Box1->SetTreasure(3);
+	Box1->SetState(STAR);
+	Box1->SetTreasure(BMON);
 
-	cBox* Box2 = new cBox();
+	cBlock* Box2 = new cBlock();
 	Box2->SetTile(6,112);
-	Box2->SetState(STATE_SKULL_P);
-	Box2->SetTreasure(3);
+	Box2->SetState(SKULL_P);
 
-	cBox* Box3 = new cBox();
+	cBlock* Box3 = new cBlock();
 	Box3->SetTile(0,115);
-	Box3->SetState(STATE_SKULL);
-	Box3->SetTreasure(4);
+	Box3->SetState(SKULL);
 
 	monsters.push_back(Ptero);
 	//monsters.push_back(SFish);
