@@ -3,6 +3,9 @@
 
 cMonster::cMonster(void)
 {
+	SetWidthHeight(32,32);
+	frame_delay*=2;
+	step_length/=4;
 }
 
 

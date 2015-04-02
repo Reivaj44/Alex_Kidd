@@ -7,6 +7,8 @@ cBicho::cBicho(void)
 {
 	seq=0;
 	delay=0;
+	frame_delay=8;
+	step_length=2;
 }
 cBicho::~cBicho(void){}
 
@@ -219,7 +221,7 @@ void cBicho::DrawRect(int tex_id,float xo,float yo,float xf,float yf)
 void cBicho::NextFrame(int max)
 {
 	delay++;
-	if(delay == FRAME_DELAY)
+	if(delay == frame_delay)
 	{
 		seq++;
 		seq%=max;

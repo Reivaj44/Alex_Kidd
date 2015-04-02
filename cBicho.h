@@ -3,9 +3,6 @@
 #include "cTexture.h"
 #include "Globals.h"
 
-#define FRAME_DELAY		8
-#define STEP_LENGTH		2
-
 #define STATE_DISAPPEARED -1
 
 class cBlock;
@@ -51,12 +48,14 @@ public:
 	virtual void Draw(int tex_id) = 0;
 	
 protected:
-	int x,y;
+	float x,y;
 	int w,h;
 	int state;
 	cRect bodybox;
 	cRect ibodybox;
 	int seq,delay;
+	int frame_delay;
+	float step_length;
 
 	virtual void UpdateBox();
 };

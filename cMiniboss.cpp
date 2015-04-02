@@ -35,8 +35,8 @@ void cMiniboss::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks) {
 	{
 		if( (yact) < 3*TILE_SIZE) 
 		{
-			y+=STEP_LENGTH;
-			yact+=STEP_LENGTH;
+			y+=step_length;
+			yact+=step_length;
 		}
 		else state = STATE_DOWN;
 	}
@@ -44,8 +44,8 @@ void cMiniboss::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks) {
 	{
 		if( (yact) > 0) 
 		{
-			y-=STEP_LENGTH;
-			yact-=STEP_LENGTH;
+			y-=step_length;
+			yact-=step_length;
 		}
 		else state = STATE_UP;
 	}

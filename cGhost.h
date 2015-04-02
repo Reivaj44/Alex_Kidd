@@ -14,6 +14,8 @@ public:
 	virtual void Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks);
 
 private:
-	int xdir, ydir;
+	float xdir, ydir;
+	int wait;
+	int retard;
 };
 

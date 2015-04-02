@@ -1,4 +1,6 @@
+#pragma once
 #include "cBox.h"
+#include "cGhost.h"
 
 
 int cBox::rings_appeared = 0;
@@ -9,6 +11,7 @@ cBox::cBox(void)
 	collisionable = true;
 	appears = true;
 	poisoned = false;
+	ghost_appears = false;
 	ibodybox.bottom=0; ibodybox.top=15;
 	ibodybox.left=0; ibodybox.right=15;
 }
@@ -50,7 +53,7 @@ void cBox::Destroy()
 				if(rings_appeared==1) 
 				{
 					SetState(STATE_DISAPPEARED);
-					//apareix fantasma
+					ghost_appears = true;
 				}
 				else rings_appeared++;
 			}
@@ -100,17 +103,23 @@ void cBox::Draw(int tex_id)
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cBox::Logic(cPlayer player, int &money, bool &ring, int &lifes)
+void cBox::Logic(cPlayer player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters)
 {
 	if(state==STATE_SKULL_P)
 	{
 		cRect BodyBoxExt=player.GetBodyBox();
 		BodyBoxExt.bottom--; BodyBoxExt.top++;
 		BodyBoxExt.left--; BodyBoxExt.right++;
-		if(CollidesBox(BodyBoxExt))
-		{
-			//afegir fantasma i mirar d'eliminar el segon fantasma
-		}
+		if(CollidesBox(BodyBoxExt)) ghost_appears = true;
+	}
+	if(ghost_appears)
+	{
+		cMonster* Ghost = new cGhost();
+		int aux_x, aux_y;
+		GetTile(aux_x,aux_y);
+		Ghost->SetTile(aux_x,aux_y);
+		monsters.push_back(Ghost);
+		ghost_appears = false;
 	}
 	if(poisoned)
 	{
@@ -130,3 +139,4 @@ void cBox::Logic(cPlayer player, int &money, bool &ring, int &lifes)
 	}
 
 }
+

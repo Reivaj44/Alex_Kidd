@@ -6,6 +6,7 @@ cBlock::cBlock(void)
 	state = STATE_BROWN;
 	ibodybox.bottom=0; ibodybox.top=15;
 	ibodybox.left=0; ibodybox.right=15;
+	SetWidthHeight(16,16);
 }
 
 cBlock::~cBlock(void)
@@ -43,6 +44,6 @@ void cBlock::Draw(int tex_id)
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cBlock::Logic(cPlayer player, int &money, bool &ring, int &lifes)
+void cBlock::Logic(cPlayer player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters)
 {
 }

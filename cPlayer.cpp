@@ -76,7 +76,7 @@ void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
 			//Whats next tile?
 		
 			xaux = x;
-			x -= STEP_LENGTH;
+			x -= step_length;
 			UpdateBox();
 
 			if(CollidesMapWall(map,false,blocks)) 
@@ -105,7 +105,7 @@ void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks)
 			int xaux;
 			//Whats next tile?
 			xaux = x;
-			x += STEP_LENGTH;
+			x += step_length;
 			UpdateBox();
 
 			
@@ -233,7 +233,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(punchbox)) blocks[i]->Destroy();
 
 			delay++;
-			if(delay == FRAME_DELAY)
+			if(delay == frame_delay)
 			{
 				delay = 0;
 				punching = false;
@@ -275,7 +275,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 		{
 			//Over floor?
 			if(!CollidesMapFloor(map,blocks)) {
-				y -= (2*STEP_LENGTH);
+				y -= (2*step_length);
 				UpdateBox();
 				intheair=true;
 			}

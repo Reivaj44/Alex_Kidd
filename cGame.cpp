@@ -57,45 +57,36 @@ bool cGame::Init()
 
 	//Creem monstres i blocks de prova
 	cPtero* Ptero = new cPtero();
-	Ptero->SetWidthHeight(32,32);
-	Ptero->SetTile(8,113);
+	Ptero->SetTile(8,115);
 
 	cSFish* SFish = new cSFish();
-	SFish->SetWidthHeight(32,32);
 	SFish->SetTile(10,108);
 	
 	cGhost* Ghost = new cGhost();
-	Ghost->SetWidthHeight(32,32);
 	Ghost->SetTile(10,111);
 
 	cMiniboss* Miniboss = new cMiniboss();
-	Miniboss->SetWidthHeight(32,32);
 	Miniboss->SetTile(10,113);
 
 	cBlock* Block1 = new cBlock();
-	Block1->SetWidthHeight(16,16);
 	Block1->SetTile(5,113);
 
 	cBlock* Block2 = new cBlock();
-	Block2->SetWidthHeight(16,16);
 	Block2->SetTile(10,113);
 	Block2->SetState(2);
 
 	cBox* Box1 = new cBox();
-	Box1->SetWidthHeight(16,16);
 	Box1->SetTile(2,113);
 	Box1->SetState(6);
 	Box1->SetTreasure(3);
 
 	cBox* Box2 = new cBox();
-	Box2->SetWidthHeight(16,16);
-	Box2->SetTile(4,113);
+	Box2->SetTile(13,115);
 	Box2->SetState(6);
 	Box2->SetTreasure(3);
 
 	cBox* Box3 = new cBox();
-	Box3->SetWidthHeight(16,16);
-	Box3->SetTile(1,113);
+	Box3->SetTile(0,115);
 	Box3->SetState(6);
 	Box3->SetTreasure(4);
 
@@ -195,7 +186,7 @@ bool cGame::Process()
 		monsters[i]->Logic(Scene.GetMap(), Player, blocks);
 	Player.Logic(Scene.GetMap(),monsters, blocks);
 	for(unsigned int i = 0; i < blocks.size(); i++)
-		blocks[i]->Logic(Player,money,ring,lifes);
+		blocks[i]->Logic(Player,money,ring,lifes,monsters);
 
 	return res;
 }

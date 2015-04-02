@@ -42,8 +42,8 @@ void cPtero::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks) {
 		bool right = false;
 		if(state==STATE_RIGHT) right = true;
 		xaux = x;
-		if(right) x += STEP_LENGTH;
-		else x -= STEP_LENGTH;
+		if(right) x += step_length;
+		else x -= step_length;
 		UpdateBox();
 
 		if(CollidesMapWall(map,right,blocks) || CollidesMapWall(map,!right,blocks)) {
