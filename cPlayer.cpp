@@ -205,6 +205,11 @@ void cPlayer::Die()
 	SetState(STATE_DEAD);
 }
 
+void cPlayer::Poison()
+{
+	//paralitzar durant x segons
+}
+
 void cPlayer::SetState(int s)
 {
 	cBicho::SetState(s);

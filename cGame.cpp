@@ -6,7 +6,6 @@
 #include "cMiniboss.h"
 #include "cBox.h"
 
-
 cGame::cGame(void)
 {
 	jump_key = false;
@@ -14,6 +13,7 @@ cGame::cGame(void)
 	lifes = 3;
 	money = 0;
 	score = 0;
+	ring = 0;
 }
 
 cGame::~cGame(void)
@@ -85,7 +85,19 @@ bool cGame::Init()
 	Box1->SetWidthHeight(16,16);
 	Box1->SetTile(2,113);
 	Box1->SetState(6);
-	Box1->SetTreasure(1);
+	Box1->SetTreasure(3);
+
+	cBox* Box2 = new cBox();
+	Box2->SetWidthHeight(16,16);
+	Box2->SetTile(4,113);
+	Box2->SetState(6);
+	Box2->SetTreasure(3);
+
+	cBox* Box3 = new cBox();
+	Box3->SetWidthHeight(16,16);
+	Box3->SetTile(1,113);
+	Box3->SetState(6);
+	Box3->SetTreasure(4);
 
 	monsters.push_back(Ptero);
 	//monsters.push_back(SFish);
@@ -95,6 +107,8 @@ bool cGame::Init()
 	blocks.push_back(Block1);
 	blocks.push_back(Block2);
 	blocks.push_back(Box1);
+	blocks.push_back(Box2);
+	blocks.push_back(Box3);
 
 	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
 

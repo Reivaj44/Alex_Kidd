@@ -66,7 +66,7 @@ void cBicho::UpdateBox()
 }
 
 bool cBicho::Appears() {
-	return true;
+	return state==STATE_DISAPPEARED;
 }
 
 bool cBicho::Collides(cRect *rc)

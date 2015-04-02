@@ -20,6 +20,6 @@ public:
 	virtual void Destroy();
 
 	virtual void Draw(int tex_id);
-	virtual void Logic(cPlayer player, int &money, bool &ring, int &lifes);
+	virtual void Logic(cPlayer player, int &money, int &ring, int &lifes);
 };
 

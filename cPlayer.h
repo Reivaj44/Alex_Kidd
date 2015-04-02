@@ -43,6 +43,7 @@ public:
 	void Punch(int *map);
 	void Stop();
 	void Die();
+	void Poison();
 
 	void SetState(int s);
 

@@ -6,6 +6,8 @@
 #define FRAME_DELAY		8
 #define STEP_LENGTH		2
 
+#define STATE_DISAPPEARED -1
+
 class cBlock;
 
 class cRect
