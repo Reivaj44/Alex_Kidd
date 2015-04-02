@@ -56,7 +56,7 @@ bool cGame::Init()
 
 	//Creem monstres i blocks de prova
 	cPtero* Ptero = new cPtero();
-	Ptero->SetTile(8,115);
+	Ptero->SetTile(8,113);
 
 	cSFish* SFish = new cSFish();
 	SFish->SetTile(10,108);
@@ -180,7 +180,7 @@ bool cGame::Process()
 	
 	//Game Logic
 	for(unsigned int i = 0; i < monsters.size(); i++)
-		monsters[i]->Logic(Scene.GetMap(), Player, blocks);
+		if(monsters[i]->Appears()) monsters[i]->Logic(Scene.GetMap(), Player, blocks);
 	Player.Logic(Scene.GetMap(),monsters, blocks);
 	for(unsigned int i = 0; i < blocks.size(); i++)
 		blocks[i]->Logic(Player,money,ring,lifes,monsters);
@@ -218,7 +218,7 @@ void cGame::Render()
 	for(unsigned int i = 0; i < blocks.size(); i++) 
 		if(blocks[i]->Appears()) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
 	for(unsigned int i = 0; i < monsters.size(); i++) 
-		if(!monsters[i]->isDead()) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
+		if(monsters[i]->Appears()) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
 	Player.Draw(Data.GetID(IMG_PLAYER));
 
 	glutSwapBuffers();

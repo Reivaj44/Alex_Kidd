@@ -53,8 +53,9 @@ protected:
 	int state;
 	cRect bodybox;
 	cRect ibodybox;
-	int seq,delay;
-	int frame_delay;
+	int seq;
+	float frame_delay;
+	float delay;
 	float step_length;
 
 	virtual void UpdateBox();

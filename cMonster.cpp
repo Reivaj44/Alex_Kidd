@@ -15,15 +15,33 @@ cMonster::~cMonster(void)
 
 void cMonster::Die() 
 {
-	state = STATE_MONSTERDEAD;
+	state = STATE_EXPLODE;
 }
 
-bool cMonster::isDead() 
+bool cMonster::Appears() 
 {
-	return state == STATE_MONSTERDEAD;
+	return state != STATE_DISAPPEARED;
+}
+
+void cMonster::Draw(int tex_id)
+{
+	float xo,yo,xf,yf;
+	xo = 0.0f + (GetFrame()*0.125f); yo = 1.0f;
+	
+	delay++;
+	if(delay == (2*frame_delay))
+	{
+		seq++;
+		delay = 0;
+	}
+	if(seq==2) state = STATE_DISAPPEARED;	
+
+	xf = xo + 0.125;
+	yf = yo - 0.125f;
+	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
 void cMonster::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks)
 {
-	if(state!=STATE_MONSTERDEAD && CollidesBox(player.GetBodyBox())) player.Die();
+	if(state!=STATE_EXPLODE && CollidesBox(player.GetBodyBox())) player.Die();
 }

@@ -247,7 +247,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 		if(punching) 
 		{
 			for(unsigned int i = 0; i < monsters.size(); i++) 
-				if(!monsters[i]->isDead() && monsters[i]->CollidesBox(punchbox)) monsters[i]->Die();
+				if(monsters[i]->Appears() && monsters[i]->CollidesBox(punchbox)) monsters[i]->Die();
 			for(unsigned int i = 0; i < blocks.size(); i++) 
 				if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(punchbox)) blocks[i]->Destroy();
 

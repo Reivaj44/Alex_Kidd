@@ -16,6 +16,8 @@ cBlock::cBlock(void)
 	poisoned = false;
 	ghost_appears = false;
 	touching = false;
+	destroying = false;
+	green = false;
 }
 
 cBlock::~cBlock(void)
@@ -34,7 +36,7 @@ int cBlock::GetTreasure()
 
 bool cBlock::Appears()
 {
-	return state!=STATE_DISAPPEARED;
+	return true;
 }
 
 bool cBlock::isCollisionable()
@@ -49,6 +51,8 @@ void cBlock::Destroy()
 		if(state!=SKULL && state!=SKULL_P && state!=R_BROWN && state!=R_GREEN)
 		{
 			SetState(treasure);
+			destroying = true;
+			xdes = x; ydes = y;
 			if(treasure==RING)
 			{
 				if(rings_appeared==1) 
@@ -61,6 +65,8 @@ void cBlock::Destroy()
 		}
 		else 
 		{
+			destroying = true;
+			xdes = x; ydes = y;
 			if(state==SKULL) poisoned = true;
 			SetState(STATE_DISAPPEARED);
 		}
@@ -74,46 +80,51 @@ void cBlock::SetState(int st)
 		collisionable = false;
 		y--;
 	}
+	if(st==R_GREEN) green = true;
 }
 
 void cBlock::Draw(int tex_id)
 {	
-	float xo,yo,xf,yf;
-	switch(GetState())
+	if(destroying) DrawRock(tex_id);
+	if(state!=STATE_DISAPPEARED)
 	{
-		case SKULL:	xo = 0.0f; yo = 0.25f;
-								break;
+		float xo,yo,xf,yf;
+		switch(GetState())
+		{
+			case SKULL:	xo = 0.0f; yo = 0.25f;
+									break;
 
-		case QUEST:	xo = 0.250f; yo = 0.25f;
-								break;
+			case QUEST:	xo = 0.250f; yo = 0.25f;
+									break;
 
-		case STAR:	xo = 0.5f; yo = 0.25f;
-								break;
+			case STAR:	xo = 0.5f; yo = 0.25f;
+									break;
 
-		case SKULL_P:	xo = 0.75f; yo = 0.25f;
-								break;
+			case SKULL_P:	xo = 0.75f; yo = 0.25f;
+									break;
 
-		case BMON:	xo = 0.5f; yo = 0.5f;
-								break;
+			case BMON:	xo = 0.5f; yo = 0.5f;
+									break;
 
-		case SMON:	xo = 0.75f; yo = 0.5f;
-								break;
+			case SMON:	xo = 0.75f; yo = 0.5f;
+									break;
 
-		case RING:	xo = 0.0f; yo = 0.75f;
-								break;
+			case RING:	xo = 0.0f; yo = 0.75f;
+									break;
 
-		case LIFE:	xo = 0.5f; yo= 0.75f;
-								break;
+			case LIFE:	xo = 0.5f; yo= 0.75f;
+									break;
 
-		case R_BROWN:	xo = 0.0f; yo = 0.5f;
-								break;
+			case R_BROWN:	xo = 0.0f; yo = 0.5f;
+									break;
 
-		case R_GREEN:	xo = 0.250f; yo = 0.5f;
-								break;
+			case R_GREEN:	xo = 0.250f; yo = 0.5f;
+									break;
+		}
+		xf = xo + 0.250;
+		yf = yo - 0.250f;
+		DrawRect(tex_id,xo,yo,xf,yf);
 	}
-	xf = xo + 0.250;
-	yf = yo - 0.250f;
-	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
 void cBlock::Logic(cPlayer &player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters)
@@ -155,4 +166,42 @@ void cBlock::Logic(cPlayer &player, int &money, bool &ring, int &lifes, std::vec
 		SetState(STATE_DISAPPEARED);
 	}
 
+}
+
+void cBlock::DrawRock(int tex_id)
+{
+	float xdes2 = x+(x-xdes);
+	float xo = 0.0f; float yo = 1.0f;
+	float xf = 0.125f; float yf = 0.75f;
+	if(green)
+	{
+		xo+=0.125; xf+=0.125;
+	}
+
+	glEnable(GL_TEXTURE_2D);
+	
+	glBindTexture(GL_TEXTURE_2D,tex_id);
+	glBegin(GL_QUADS);	
+		glTexCoord2f(xo,yo);	glVertex2i(xdes  , ydes);
+		glTexCoord2f(xf,yo);	glVertex2i(xdes+w/2, ydes);
+		glTexCoord2f(xf,yf);	glVertex2i(xdes+w/2, ydes+h);
+		glTexCoord2f(xo,yf);	glVertex2i(xdes  , ydes+h);
+	glEnd();
+
+	glBegin(GL_QUADS);	
+		glTexCoord2f(xo,yo);	glVertex2i(xdes2+w/2  , ydes);
+		glTexCoord2f(xf,yo);	glVertex2i(xdes2+w, ydes);
+		glTexCoord2f(xf,yf);	glVertex2i(xdes2+w, ydes+h);
+		glTexCoord2f(xo,yf);	glVertex2i(xdes2+w/2  , ydes+h);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+
+	delay++;
+	if(delay==1)
+	{
+		ydes-=3;
+		xdes-=0.25;
+		delay=0;
+	}
 }

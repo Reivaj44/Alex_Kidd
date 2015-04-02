@@ -45,5 +45,10 @@ protected:
 	bool touching;
 	bool ghost_appears;
 	int treasure;
+	bool green;
+	bool destroying;
+	float xdes, ydes;
+
+	void DrawRock(int tex_id);
 };
 

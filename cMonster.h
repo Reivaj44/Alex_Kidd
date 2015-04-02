@@ -8,7 +8,7 @@
 #define STATE_RIGHT		1
 #define STATE_UP		2
 #define STATE_DOWN		3
-#define STATE_MONSTERDEAD		4
+#define STATE_EXPLODE	4
 
 class cPlayer;
 
@@ -19,8 +19,8 @@ public:
 	virtual ~cMonster(void);
 
 	virtual void Die();
-	bool isDead();
-	virtual void Draw(int tex_id) = 0;
+	bool Appears();
+	virtual void Draw(int tex_id);
 	virtual void Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks);
 };
 
