@@ -7,6 +7,8 @@ cPlayer::cPlayer()
 	intheair = false;
 	jumping = false;
 	left = false;
+	poisoned = false;
+	retard = 0;
 	ibodybox.left = 10; ibodybox.right = 31 - 10;
 	ibodybox.bottom = 5; ibodybox.top = 31 - 5;
 }
@@ -67,7 +69,7 @@ void cPlayer::ChangeBox()
 
 void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
 {
-	if(state != STATE_DEAD)
+	if(state != STATE_DEAD && !poisoned)
 	{
 		if(state==STATE_CROUCHLEFT || state==STATE_CROUCHRIGHT)	SetState(STATE_CROUCHLEFT);
 		else if (!punching || intheair)
@@ -98,7 +100,7 @@ void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
 
 void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks)
 {
-	if(state!=STATE_DEAD) {
+	if(state!=STATE_DEAD && !poisoned) {
 		if(state==STATE_CROUCHRIGHT || state==STATE_CROUCHLEFT) SetState(STATE_CROUCHRIGHT);
 		else if (!punching || intheair)
 		{
@@ -129,7 +131,7 @@ void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks)
 
 void cPlayer::Crouch(int *map)
 {
-	if(!intheair && state!=STATE_DEAD) {
+	if(!intheair && state!=STATE_DEAD && !poisoned && !punching) {
 		/*if(CollidesMapWall(map,true) && state==STATE_WALKRIGHT) SetState(STATE_CROUCHRIGHT);
 		else if(CollidesMapWall(map,false) && state==STATE_WALKLEFT) SetState(STATE_CROUCHLEFT);
 		else
@@ -145,7 +147,7 @@ void cPlayer::Crouch(int *map)
 
 void cPlayer::Punch(int *map)
 {
-	if(state!=STATE_CROUCHLEFT && state!=STATE_CROUCHRIGHT && !punching && state!=STATE_DEAD)
+	if(state!=STATE_CROUCHLEFT && state!=STATE_CROUCHRIGHT && !punching && state!=STATE_DEAD && !poisoned)
 	{
 		punching = true;
 		if(!left) SetState(STATE_PUNCHRIGHT);
@@ -186,7 +188,7 @@ void cPlayer::Stop()
 
 void cPlayer::Jump(int *map)
 {
-	if(!jumping)
+	if(!jumping && !poisoned)
 	{
 		if(!intheair && (state!=STATE_CROUCHLEFT) && (state!=STATE_CROUCHRIGHT) && !punching)
 		{
@@ -207,7 +209,7 @@ void cPlayer::Die()
 
 void cPlayer::Poison()
 {
-	//paralitzar durant x segons
+	poisoned = true;
 }
 
 void cPlayer::SetState(int s)
@@ -220,13 +222,30 @@ void cPlayer::SetState(int s)
 
 void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks)
 {
-	if(state==STATE_DEAD) {
+	if(poisoned)
+	{
+		Stop();
+		if(CollidesMapFloor(map,blocks)) {
+			if(retard%4==0) x--;
+			else if(retard%2==0) x++;
+			retard++;
+			if(retard > 50)
+			{
+				poisoned = false;
+				retard = 0;
+			}
+		}
+	}
+	if(state==STATE_DEAD) 
+	{
 		y += 2;
 		UpdateBox();
 	}
 
-	else {
-		if(punching) {
+	else 
+	{
+		if(punching) 
+		{
 			for(unsigned int i = 0; i < monsters.size(); i++) 
 				if(!monsters[i]->isDead() && monsters[i]->CollidesBox(punchbox)) monsters[i]->Die();
 			for(unsigned int i = 0; i < blocks.size(); i++) 

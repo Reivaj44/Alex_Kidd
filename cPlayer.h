@@ -63,6 +63,9 @@ private:
 	cRect punchbox;
 	cRect ipunchbox;
 
+	bool poisoned;
+	int retard;
+
 	virtual void UpdateBox();
 	void ChangeBox();
 };

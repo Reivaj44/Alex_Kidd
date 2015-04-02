@@ -81,13 +81,13 @@ bool cGame::Init()
 	Box1->SetTreasure(3);
 
 	cBox* Box2 = new cBox();
-	Box2->SetTile(13,115);
-	Box2->SetState(6);
+	Box2->SetTile(6,112);
+	Box2->SetState(STATE_SKULL_P);
 	Box2->SetTreasure(3);
 
 	cBox* Box3 = new cBox();
 	Box3->SetTile(0,115);
-	Box3->SetState(6);
+	Box3->SetState(STATE_SKULL);
 	Box3->SetTreasure(4);
 
 	monsters.push_back(Ptero);
@@ -218,10 +218,10 @@ void cGame::Render()
 	glLoadIdentity();
 
 	Scene.Draw(Data.GetID(IMG_TILES));
-	for(unsigned int i = 0; i < monsters.size(); i++) 
-		if(!monsters[i]->isDead()) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
 	for(unsigned int i = 0; i < blocks.size(); i++) 
 		if(blocks[i]->Appears()) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
+	for(unsigned int i = 0; i < monsters.size(); i++) 
+		if(!monsters[i]->isDead()) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
 	Player.Draw(Data.GetID(IMG_PLAYER));
 
 	glutSwapBuffers();

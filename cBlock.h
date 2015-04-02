@@ -22,6 +22,6 @@ public:
 	virtual void Destroy();
 
 	virtual void Draw(int tex_id);
-	virtual void Logic(cPlayer player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters);
+	virtual void Logic(cPlayer &player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters);
 };
 

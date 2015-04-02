@@ -31,13 +31,14 @@ public:
 	virtual void SetState(int st);
 
 	virtual void Draw(int tex_id);
-	virtual void Logic(cPlayer player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters);
+	virtual void Logic(cPlayer &player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters);
 
 protected:
 	bool collisionable;
 	bool appears;
 	static int rings_appeared;
 	bool poisoned;
+	bool touching;
 	bool ghost_appears;
 	int treasure;
 };

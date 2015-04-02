@@ -12,6 +12,7 @@ cBox::cBox(void)
 	appears = true;
 	poisoned = false;
 	ghost_appears = false;
+	touching = false;
 	ibodybox.bottom=0; ibodybox.top=15;
 	ibodybox.left=0; ibodybox.right=15;
 }
@@ -58,7 +59,11 @@ void cBox::Destroy()
 				else rings_appeared++;
 			}
 		}
-		else poisoned = true;
+		else 
+		{
+			SetState(STATE_DISAPPEARED);
+			poisoned = true;
+		}
 	}
 }
 
@@ -103,14 +108,18 @@ void cBox::Draw(int tex_id)
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cBox::Logic(cPlayer player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters)
+void cBox::Logic(cPlayer &player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters)
 {
 	if(state==STATE_SKULL_P)
 	{
 		cRect BodyBoxExt=player.GetBodyBox();
 		BodyBoxExt.bottom--; BodyBoxExt.top++;
 		BodyBoxExt.left--; BodyBoxExt.right++;
-		if(CollidesBox(BodyBoxExt)) ghost_appears = true;
+		if(CollidesBox(BodyBoxExt)) {
+			if(!touching) ghost_appears = true;
+			touching = true;
+		}
+		else touching = false;
 	}
 	if(ghost_appears)
 	{
