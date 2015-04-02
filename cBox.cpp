@@ -1,12 +1,13 @@
 #include "cBox.h"
 
 
+int cBox::rings_appeared = 0;
+
 cBox::cBox(void)
 {
 	state = STATE_STAR;
 	collisionable = true;
 	appears = true;
-	ring_appeared = false;
 	poisoned = false;
 	ibodybox.bottom=0; ibodybox.top=15;
 	ibodybox.left=0; ibodybox.right=15;
@@ -43,8 +44,16 @@ void cBox::Destroy()
 	{
 		if(state!=STATE_SKULL && state!=STATE_SKULL_P)
 		{
-			if(treasure==STATE_RING) ring_appeared = true;
 			SetState(treasure);
+			if(treasure==STATE_RING)
+			{
+				if(rings_appeared==1) 
+				{
+					SetState(STATE_DISAPPEARED);
+					//apareix fantasma
+				}
+				else rings_appeared++;
+			}
 		}
 		else poisoned = true;
 	}
@@ -91,7 +100,7 @@ void cBox::Draw(int tex_id)
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cBox::Logic(cPlayer player, int &money, int &ring, int &lifes)
+void cBox::Logic(cPlayer player, int &money, bool &ring, int &lifes)
 {
 	if(state==STATE_SKULL_P)
 	{
@@ -103,17 +112,7 @@ void cBox::Logic(cPlayer player, int &money, int &ring, int &lifes)
 			//afegir fantasma i mirar d'eliminar el segon fantasma
 		}
 	}
-	if(ring_appeared)
-	{
-		if(ring==HV_RING || ring==AP_RING)
-		{
-			SetState(STATE_DISAPPEARED);
-			//afegir fantasma i mirar d'eliminar el segon fantasma
-		}
-		else ring = AP_RING;
-		ring_appeared = false;
-	}
-	else if(poisoned)
+	if(poisoned)
 	{
 		player.Poison();
 		poisoned = false;
@@ -124,7 +123,7 @@ void cBox::Logic(cPlayer player, int &money, int &ring, int &lifes)
 		{
 			case STATE_BMON: money+=20; break;
 			case STATE_SMON: money+=10; break;
-			case STATE_RING: ring = HV_RING; break;
+			case STATE_RING: ring = true; break;
 			case STATE_LIFE: lifes++; break;
 		}
 		SetState(STATE_DISAPPEARED);

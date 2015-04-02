@@ -12,9 +12,9 @@
 #define STATE_STAR  7
 #define STATE_SKULL_P	8
 
-#define NO_RING 0
+/*#define NO_RING 0
 #define HV_RING 1
-#define AP_RING	2
+#define AP_RING	2*/
 
 class cBox :
 	public cBlock
@@ -33,12 +33,12 @@ public:
 	virtual void SetState(int st);
 
 	virtual void Draw(int tex_id);
-	virtual void Logic(cPlayer player, int &money, int &ring, int &lifes);
+	virtual void Logic(cPlayer player, int &money, bool &ring, int &lifes);
 
 protected:
 	bool collisionable;
 	bool appears;
-	bool ring_appeared;
+	static int rings_appeared;
 	bool poisoned;
 	int treasure;
 };

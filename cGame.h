@@ -38,7 +38,7 @@ private:
 	cScene Scene;
 	cPlayer Player;
 	int lifes;
-	int ring;
+	bool ring;
 	int money;
 	int score;
 	std::vector<cMonster*> monsters;
