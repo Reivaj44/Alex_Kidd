@@ -28,7 +28,7 @@ public:
 	void SetTreasure(int treas);
 	int GetTreasure();
 
-	virtual bool Appears();
+	virtual bool Appears(int cam_x, int cam_y);
 	virtual bool isCollisionable();
 	virtual void Destroy();
 

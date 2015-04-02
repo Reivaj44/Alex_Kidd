@@ -18,6 +18,7 @@ cBlock::cBlock(void)
 	touching = false;
 	destroying = false;
 	green = false;
+	ydes = 0;
 }
 
 cBlock::~cBlock(void)
@@ -34,9 +35,10 @@ int cBlock::GetTreasure()
 	return treasure;
 }
 
-bool cBlock::Appears()
+bool cBlock::Appears(int cam_x, int cam_y)
 {
-	return true;
+	if ((ydes+h)<cam_y) destroying = false;
+	return (destroying || cBicho::Appears(cam_x, cam_y));
 }
 
 bool cBlock::isCollisionable()

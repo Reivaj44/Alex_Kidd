@@ -1,7 +1,9 @@
+#pragma once
 #include "cBicho.h"
 #include "cScene.h"
 #include "Globals.h"
 #include "cBlock.h"
+#include "cData.h"
 
 cBicho::cBicho(void)
 {
@@ -67,8 +69,14 @@ void cBicho::UpdateBox()
 	bodybox.top = y + ibodybox.top;
 }
 
-bool cBicho::Appears() {
-	return state!=STATE_DISAPPEARED;
+bool cBicho::Appears(int cam_x, int cam_y) {
+	cRect boxcamera;
+	boxcamera.bottom = cam_y;
+	boxcamera.left = cam_x;
+	boxcamera.top = cam_y + CAM_HEIGHT;
+	boxcamera.right = cam_x + CAM_WIDTH;
+	bool incamera = CollidesBox(boxcamera);
+	return (state!=STATE_DISAPPEARED && incamera);
 }
 
 bool cBicho::Collides(cRect *rc)

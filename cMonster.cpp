@@ -13,14 +13,14 @@ cMonster::~cMonster(void)
 {
 }
 
+bool cMonster::isDead()
+{
+	return (state==STATE_DISAPPEARED || state==STATE_EXPLODE);
+}
+
 void cMonster::Die() 
 {
 	state = STATE_EXPLODE;
-}
-
-bool cMonster::Appears() 
-{
-	return state != STATE_DISAPPEARED;
 }
 
 void cMonster::Draw(int tex_id)

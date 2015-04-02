@@ -9,8 +9,7 @@
 #define GAME_WIDTH	640
 #define GAME_HEIGHT 480
 #define CAM_STEP 0.1
-#define CAM_WIDTH 256
-#define CAM_HEIGHT 192
+
 
 class cGame
 {

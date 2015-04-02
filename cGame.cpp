@@ -180,10 +180,10 @@ bool cGame::Process()
 	
 	//Game Logic
 	for(unsigned int i = 0; i < monsters.size(); i++)
-		if(monsters[i]->Appears()) monsters[i]->Logic(Scene.GetMap(), Player, blocks);
+		if(monsters[i]->Appears(cam_x, cam_y)) monsters[i]->Logic(Scene.GetMap(), Player, blocks);
 	Player.Logic(Scene.GetMap(),monsters, blocks);
 	for(unsigned int i = 0; i < blocks.size(); i++)
-		blocks[i]->Logic(Player,money,ring,lifes,monsters);
+		if(blocks[i]->Appears(cam_x, cam_y)) blocks[i]->Logic(Player,money,ring,lifes,monsters);
 
 	return res;
 }
@@ -216,9 +216,9 @@ void cGame::Render()
 
 	Scene.Draw(Data.GetID(IMG_TILES));
 	for(unsigned int i = 0; i < blocks.size(); i++) 
-		if(blocks[i]->Appears()) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
+		if(blocks[i]->Appears(cam_x, cam_y)) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
 	for(unsigned int i = 0; i < monsters.size(); i++) 
-		if(monsters[i]->Appears()) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
+		if(monsters[i]->Appears(cam_x, cam_y)) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
 	Player.Draw(Data.GetID(IMG_PLAYER));
 
 	glutSwapBuffers();

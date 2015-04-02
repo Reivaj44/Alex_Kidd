@@ -18,8 +18,8 @@ public:
 	cMonster(void);
 	virtual ~cMonster(void);
 
+	bool isDead();
 	virtual void Die();
-	bool Appears();
 	virtual void Draw(int tex_id);
 	virtual void Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks);
 };
