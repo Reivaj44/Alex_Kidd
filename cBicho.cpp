@@ -135,7 +135,7 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks)
 	i=0;
 	while((i<width_tiles) && !on_base)
 	{
-		if( (bodybox.bottom % TILE_SIZE) == 0 )
+		if( (int(bodybox.bottom) % TILE_SIZE) == 0 )
 		{
 			if((map[ (tile_x + i) + ((tile_y - 1) * SCENE_WIDTH) ] != 0) || collideswithblockdown)
 				on_base = true;
@@ -144,7 +144,7 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks)
 		{
 			if((map[ (tile_x + i) + (tile_y * SCENE_WIDTH) ] != 0) || collideswithblock)
 			{
-				y += TILE_SIZE - (bodybox.bottom % TILE_SIZE);
+				y += TILE_SIZE - (int(bodybox.bottom) % TILE_SIZE);
 				UpdateBox();
 				on_base = true;
 			}

@@ -21,6 +21,8 @@ bool cMonster::isDead()
 void cMonster::Die() 
 {
 	state = STATE_EXPLODE;
+	seq = 0;
+	delay = 0;
 }
 
 void cMonster::Draw(int tex_id)
@@ -29,7 +31,7 @@ void cMonster::Draw(int tex_id)
 	xo = 0.0f + (GetFrame()*0.125f); yo = 1.0f;
 	
 	delay++;
-	if(delay == (2*frame_delay))
+	if(delay == (frame_delay))
 	{
 		seq++;
 		delay = 0;

@@ -65,7 +65,7 @@ bool cGame::Init()
 	Ghost->SetTile(10,111);
 
 	cMiniboss* Miniboss = new cMiniboss();
-	Miniboss->SetTile(10,113);
+	Miniboss->SetTile(10,107);
 
 	cBlock* Block1 = new cBlock();
 	Block1->SetTile(5,113);
@@ -90,7 +90,7 @@ bool cGame::Init()
 	monsters.push_back(Ptero);
 	//monsters.push_back(SFish);
 	//monsters.push_back(Ghost);
-	//monsters.push_back(Miniboss);
+	monsters.push_back(Miniboss);
 
 	blocks.push_back(Block1);
 	blocks.push_back(Block2);

@@ -16,5 +16,20 @@ private:
 	float yact;
 	int lifes;
 	bool touched;
+	bool booblechange;
+
+	class cBooble
+	{
+	public:
+		cRect bodybox;
+		float dir_x;
+		float dir_y;
+		float inc_y;
+	};
+
+	std::vector<cBooble*> boobles;
+
+	bool CollidesBoobles(cRect &playerbox);
+	void DrawBoobles(int tex_id);
 };
 

@@ -19,6 +19,7 @@ cBlock::cBlock(void)
 	destroying = false;
 	green = false;
 	ydes = 0;
+	xinc = 2.5;
 }
 
 cBlock::~cBlock(void)
@@ -203,7 +204,8 @@ void cBlock::DrawRock(int tex_id)
 	if(delay==1)
 	{
 		ydes-=3;
-		xdes-=0.25;
+		xdes-=xinc;
+		if(xinc>0.5) xinc*=0.80;
 		delay=0;
 	}
 }

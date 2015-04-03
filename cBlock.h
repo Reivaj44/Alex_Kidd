@@ -47,7 +47,7 @@ protected:
 	int treasure;
 	bool green;
 	bool destroying;
-	float xdes, ydes;
+	float xdes, ydes, xinc;
 
 	void DrawRock(int tex_id);
 };

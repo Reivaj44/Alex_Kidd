@@ -10,7 +10,7 @@ class cBlock;
 class cRect
 {
 public:
-	int left,top,
+	float left,top,
 		right,bottom;
 };
 
@@ -54,8 +54,8 @@ protected:
 	cRect bodybox;
 	cRect ibodybox;
 	int seq;
-	float frame_delay;
-	float delay;
+	int frame_delay;
+	int delay;
 	float step_length;
 
 	virtual void UpdateBox();
