@@ -20,13 +20,14 @@ public:
 	bool LoadLevel(int level);
 	void Draw(int tex_id);
 	int *GetMap();
-
-	std::vector<cRect*> rects;				//rectangles dimensions
-	std::vector<int> isWater;
+	int GetNumRects();
+	cRect* GetRectangles(int i);
+	int GetIsWater(int i);
 
 private:
 	int map[SCENE_WIDTH * SCENE_HEIGHT];	//scene
-					//tells if a rectangle is water
+	std::vector<cRect*> rects;				//rectangles dimensions
+	std::vector<int> isWater;				//tells if a rectangle is water
 	int id_DL;								//actual level display list
 	int bg_DL;								//actual background display list
 };

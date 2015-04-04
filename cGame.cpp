@@ -194,12 +194,12 @@ bool cGame::Process()
 	{
 		unsigned int i = 0; 
 		bool rect_found = false;
-		while (i < Scene.rects.size() && !rect_found) 
+		while (i < Scene.GetNumRects() && !rect_found) 
 		{	
-			if(cBicho::BoxInsideBox( *(Scene.rects[i]), Player.GetBodyBox() ) ) rect_found = true;
+			if(cBicho::BoxInsideBox( *(Scene.GetRectangles(i)), Player.GetBodyBox() ) ) rect_found = true;
 			else i++;
 		}
-		if(!Player.isSwimming() && rect_found && Scene.isWater[i]==1) {
+		if(!Player.isSwimming() && rect_found && Scene.GetIsWater(i)==1) {
 			Player.Swim();
 		}
 		for(unsigned int i = 0; i < monsters.size(); i++)

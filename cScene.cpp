@@ -137,3 +137,15 @@ int* cScene::GetMap()
 {
 	return map;
 }
+
+int cScene::GetNumRects() {
+	return rects.size();
+}
+
+cRect* cScene::GetRectangles(int i) {
+	return rects[i];
+}
+
+int cScene::GetIsWater(int i) {
+	return isWater[i];
+}
