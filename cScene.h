@@ -23,6 +23,7 @@ public:
 	int GetNumRects();
 	cRect* GetRectangles(int i);
 	int GetIsWater(int i);
+	void GetPlayerInitPosition(int* x, int* y);
 
 private:
 	int map[SCENE_WIDTH * SCENE_HEIGHT];	//scene
@@ -30,4 +31,5 @@ private:
 	std::vector<int> isWater;				//tells if a rectangle is water
 	int id_DL;								//actual level display list
 	int bg_DL;								//actual background display list
+	int player_x, player_y;
 };

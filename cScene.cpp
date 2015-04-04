@@ -30,6 +30,9 @@ bool cScene::LoadLevel(int level)
 	glNewList(id_DL,GL_COMPILE);
 		glPushMatrix();
 		glBegin(GL_QUADS);
+			
+			fscanf(fd,"%d",&player_x);
+			fscanf(fd,"%d",&player_y);
 
 			fscanf(fd,"%d",&num_quads);
 			int water;
@@ -130,7 +133,6 @@ void cScene::Draw(int tex_id)
 	glBindTexture(GL_TEXTURE_2D,tex_id);
 	glCallList(bg_DL);
 	glCallList(id_DL);
-	//glCallList(bg_DL);
 	glDisable(GL_TEXTURE_2D);
 }
 int* cScene::GetMap()
@@ -148,4 +150,9 @@ cRect* cScene::GetRectangles(int i) {
 
 int cScene::GetIsWater(int i) {
 	return isWater[i];
+}
+
+void cScene::GetPlayerInitPosition(int* x, int* y) {
+	*x = player_x;
+	*y = player_y;
 }

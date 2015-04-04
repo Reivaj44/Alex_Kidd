@@ -302,7 +302,9 @@ bool cGame::InitLevel1() {
 	//Player initialization
 	res = Data.LoadImage(IMG_PLAYER,"Alex.png",GL_RGBA);
 	if(!res) return false;
-	Player.SetTile(3,113); //init position
+	int play_x,play_y;
+	Scene.GetPlayerInitPosition(&play_x,&play_y);
+	Player.SetTile(play_x,play_y); //init position
 	Player.SetState(STATE_LOOKRIGHT);
 	//Player.Swim();
 
