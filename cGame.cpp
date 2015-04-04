@@ -42,8 +42,8 @@ bool cGame::Init()
 
 	//Scene initialization
 	/**/
-
-	PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC);
+	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
+	res = InitIntro(true);
 
 	return res;
 }
@@ -87,18 +87,39 @@ bool cGame::Process()
 	if(keys[27])	res=false;
 
 	switch (stage) {
-		case 0:
-			if(keys['x'])
-			{
-				stage++;
+		case IMG_INTRO:
+			if(keys['x']) {
+				switch (option) {
+					case IMG_INSTRUC:
+						stage = option;
+
+						break;
+					case IMG_CREDITS:
+						stage = option;
+
+						break;
+					default:
+						stage = 4;
+						res = InitLevel1();
+						break;
+				}
 			}
+
+			/*if(keys[GLUT_KEY_UP]) 
+			{		
+				option = (option - 1)%3;
+			}
+			if(keys[GLUT_KEY_DOWN]) 
+			{		
+				option = (option + 1)%3;
+			}*/
+
 			break;
-		case 1:
+		case IMG_INSTRUC:
 			stage++;
 			break;
-		case 2:
+		case IMG_CREDITS:
 			stage++;
-			res = InitLevel1();
 			break;
 		default:
 			bool keypressed = false;
@@ -154,9 +175,12 @@ bool cGame::Process()
 void cGame::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	bool res = true;
 	
 	switch (stage) {
 		case 0:
+			res = InitIntro(false);
 			break;
 		case 1:
 			break;
@@ -199,11 +223,36 @@ void cGame::Render()
 
 //Load
 
-bool cGame::InitIntro() {
+bool cGame::InitIntro(bool first) {
 	bool res = true;
 
-	res = Data.LoadImage(IMG_INTRO, "start_menu.png",GL_RGBA);
-	if(!res) return false;
+	if (first) {
+		option = 0;
+		res = Data.LoadImage(IMG_INTRO, "start.png",GL_RGB);
+		if(!res) return false;
+	}
+	else {
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluOrtho2D(-320,320,-240,240);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D,IMG_INTRO);
+		glRotatef(180.0,0.0,1.0,0.0);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0,0.0);	glVertex2i(-320,-240);
+			glTexCoord2f(1.0,0.0);	glVertex2i(320,-240);
+			glTexCoord2f(1.0,1.0);	glVertex2i(320,240);
+			glTexCoord2f(0.0,1.0);	glVertex2i(-320,240);
+		glEnd();
+		glColor3f(1.0,1.0,1.0);
+		glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
+	}
+
+	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
 
 	return res;
 }
@@ -270,7 +319,7 @@ bool cGame::InitLevel1() {
 	blocks.push_back(Block2);
 	blocks.push_back(Box1);
 
-	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
+	//PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP); // CACTUS: activar
 
 	return res;
 }
