@@ -325,7 +325,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				punching = false;
 			}
 		}
-		if(jumping)
+		if(jumping && !swimming)
 		{
 			float alfa;
 			jump_alfa += JUMP_STEP;
@@ -356,6 +356,17 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				}
 			}
 		}
+		else if(!jumping && !swimming)
+		{
+			//Over floor?
+			if(!CollidesMapFloor(map,blocks)) {
+				y -= (1.5*step_length);
+				UpdateBox();
+				intheair=true;
+			}
+
+			else intheair=false;
+		}
 		if(swimming && !poisoned && delay%2==0) 
 		{
 			if(!down_press)
@@ -365,17 +376,6 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				CollidesMapCeil(map,blocks);
 			}
 			down_press = false;
-		}
-		else if(!swimming)
-		{
-			//Over floor?
-			if(!CollidesMapFloor(map,blocks)) {
-				y -= (2*step_length);
-				UpdateBox();
-				intheair=true;
-			}
-
-			else intheair=false;
 		}
 	}
 }
