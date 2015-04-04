@@ -228,7 +228,7 @@ bool cGame::InitIntro(bool first) {
 
 	if (first) {
 		option = 0;
-		res = Data.LoadImage(IMG_INTRO, "start.png",GL_RGB);
+		res = Data.LoadImage(IMG_INTRO, "start_menu.png",GL_RGBA);
 		if(!res) return false;
 	}
 	else {
@@ -236,20 +236,16 @@ bool cGame::InitIntro(bool first) {
 		glLoadIdentity();
 		gluOrtho2D(-320,320,-240,240);
 		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
 		glLoadIdentity();
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,IMG_INTRO);
-		glRotatef(180.0,0.0,1.0,0.0);
+		glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_INTRO));
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0,0.0);	glVertex2i(-320,-240);
-			glTexCoord2f(1.0,0.0);	glVertex2i(320,-240);
-			glTexCoord2f(1.0,1.0);	glVertex2i(320,240);
-			glTexCoord2f(0.0,1.0);	glVertex2i(-320,240);
+			glTexCoord2f(0.0,1.0);	glVertex2i(-320,-240);
+			glTexCoord2f(1.0,1.0);	glVertex2i(320,-240);
+			glTexCoord2f(1.0,0.0);	glVertex2i(320,240);
+			glTexCoord2f(0.0,0.0);	glVertex2i(-320,240);
 		glEnd();
-		glColor3f(1.0,1.0,1.0);
 		glDisable(GL_TEXTURE_2D);
-		glPopMatrix();
 	}
 
 	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
