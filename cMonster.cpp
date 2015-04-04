@@ -44,7 +44,7 @@ void cMonster::Draw(int tex_id)
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cMonster::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks)
+void cMonster::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle)
 {
 	if(state!=STATE_EXPLODE && CollidesBox(player.GetBodyBox())) player.Die();
 }
