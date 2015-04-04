@@ -7,13 +7,17 @@
 #define CAM_HEIGHT 192
 
 //Image array size
-#define NUM_IMG		4
+#define NUM_IMG		8
 
 //Image identifiers
-#define IMG_TILES	0
-#define IMG_PLAYER	1
-#define IMG_ENEMY	2
-#define IMG_BLOCKS	3
+#define IMG_INTRO	0
+#define IMG_INSTRUC	1
+#define IMG_CREDITS	2
+#define IMG_MAP		3
+#define IMG_TILES	4
+#define IMG_PLAYER	5
+#define IMG_ENEMY	6
+#define IMG_BLOCKS	7
 /*
 #define IMG_ENEMY1	2
 #define IMG_ENEMY2	3

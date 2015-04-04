@@ -5,6 +5,7 @@
 #include "cMonster.h"
 #include "cBlock.h"
 #include "cData.h"
+#include "cTexture.h"
 
 #define GAME_WIDTH	640
 #define GAME_HEIGHT 480
@@ -28,6 +29,9 @@ public:
 	bool Process();
 	//Output
 	void Render();
+	//Load
+	bool InitIntro(bool first);
+	bool InitLevel1();
 
 private:
 	unsigned char keys[256];
@@ -42,6 +46,8 @@ private:
 	bool ring;
 	int money;
 	int score;
+	int stage;
+	unsigned int option;
 	std::vector<cMonster*> monsters;
 	std::vector<cBlock*> blocks;
 	cData Data;
