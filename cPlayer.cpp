@@ -252,26 +252,32 @@ void cPlayer::Poison()
 
 void cPlayer::Swim()
 {
+	swimming = true;
 	if(left) SetState(STATE_SWIMLEFT);
 	else SetState(STATE_SWIMRIGHT);
+}
+
+void cPlayer::Resurrect(int tile_x, int tile_y)
+{
+	if(swimming) SetState(STATE_SWIMRIGHT);
+	else SetState(STATE_LOOKRIGHT);
+	SetTile(tile_x, tile_y);
 }
 
 void cPlayer::SetState(int s)
 {
 	cBicho::SetState(s);
-	if(	state==STATE_LOOKLEFT	|| state==STATE_WALKLEFT	|| state==STATE_JUMPLEFT || 
-		state==STATE_CROUCHLEFT || state==STATE_PUNCHLEFT	|| state==STATE_SWIMLEFT ||		state==STATE_SPUNCHLEFT) left = true;
+	if(	state==STATE_LOOKLEFT	|| state==STATE_WALKLEFT	|| state==STATE_JUMPLEFT	|| 
+		state==STATE_CROUCHLEFT || state==STATE_PUNCHLEFT	|| state==STATE_SWIMLEFT	|| state==STATE_SPUNCHLEFT) left = true;
 	else left = false;
-	if( state==STATE_SWIMLEFT	|| state==STATE_SWIMRIGHT	|| state==STATE_SPUNCHLEFT ||	state==STATE_SPUNCHRIGHT) 
+	if( state==STATE_SWIMLEFT	|| state==STATE_SWIMRIGHT	|| state==STATE_SPUNCHLEFT	|| state==STATE_SPUNCHRIGHT) 
 	{
-		swimming = true;
 		frame_delay = 16;
 		step_length = 1;
 	}
 	else
 	{
 		step_length = 2;
-		swimming = false;
 		frame_delay = 8;
 	}
 	if( state==STATE_PUNCHLEFT	|| state==STATE_PUNCHRIGHT	|| state==STATE_SPUNCHLEFT	|| state==STATE_SPUNCHRIGHT) punching = true;
@@ -297,7 +303,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 	}
 	if(state==STATE_DEAD) 
 	{
-		y += 2;
+		y += 1;
 		UpdateBox();
 	}
 

@@ -21,6 +21,13 @@ void cGhost::Die()
 {
 }
 
+bool cGhost::Appears(int cam_x, int cam_y)
+{
+	bool appear = cBicho::Appears(cam_x, cam_y);
+	if(!appear) state = STATE_DISAPPEARED;
+	return appear;
+}
+
 void cGhost::Draw(int tex_id)
 {	
 	float xo,yo,xf,yf;

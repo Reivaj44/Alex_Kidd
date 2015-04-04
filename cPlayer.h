@@ -26,6 +26,7 @@
 #define STATE_SPUNCHLEFT	12
 #define STATE_SPUNCHRIGHT	13
 #define STATE_DEAD			14
+#define STATE_RESURRECTED	15
 
 class cMonster;
 
@@ -49,6 +50,7 @@ public:
 	void Die();
 	void Poison();
 	void Swim();
+	void Resurrect(int tile_x, int tile_y);
 
 	void SetState(int s);
 

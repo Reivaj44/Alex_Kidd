@@ -9,6 +9,8 @@ cGame::cGame(void)
 {
 	jump_key = false;
 	punch_key = false;
+	reappears = false;
+	delay = 0;
 	lifes = 3;
 	money = 0;
 	score = 0;
@@ -179,12 +181,23 @@ bool cGame::Process()
 	
 	
 	//Game Logic
-	for(unsigned int i = 0; i < monsters.size(); i++)
-		if(monsters[i]->Appears(cam_x, cam_y)) monsters[i]->Logic(Scene.GetMap(), Player, blocks);
-	Player.Logic(Scene.GetMap(),monsters, blocks);
-	for(unsigned int i = 0; i < blocks.size(); i++)
-		if(blocks[i]->Appears(cam_x, cam_y)) blocks[i]->Logic(Player,money,ring,lifes,monsters);
+	if(Player.isDead() && !Player.Appears(cam_x, cam_y)) 
+	{
+		Player.Resurrect(3,113);
+		cam_x = 0; //valor inicial rectangle
+		cam_y = 1920; //valor inicial rectangle
+		reappears = true;
+		delay = 0;
+	}
 
+	if(!reappears && delay%20==0)
+	{
+		for(unsigned int i = 0; i < monsters.size(); i++)
+			if(monsters[i]->Appears(cam_x, cam_y)) monsters[i]->Logic(Scene.GetMap(), Player, blocks);
+		Player.Logic(Scene.GetMap(),monsters, blocks);
+		for(unsigned int i = 0; i < blocks.size(); i++)
+			if(blocks[i]->Appears(cam_x, cam_y)) blocks[i]->Logic(Player,money,ring,lifes,monsters);
+	}
 	return res;
 }
 
@@ -192,34 +205,40 @@ bool cGame::Process()
 void cGame::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+	if(!reappears && delay%20==0)
+	{
+		int play_x, play_y;
+		Player.GetPosition(play_x, play_y);
 	
-	int play_x, play_y;
-	Player.GetPosition(play_x, play_y);
+		if( (play_x - cam_x) > (CAM_WIDTH / 2) ) cam_x = play_x - CAM_WIDTH / 2;
+		if( (play_y - cam_y) < (CAM_HEIGHT / 2) ) cam_y = play_y - CAM_HEIGHT / 2;
 	
-	if( (play_x - cam_x) > (CAM_WIDTH / 2) ) cam_x = play_x - CAM_WIDTH / 2;
-	if( (play_y - cam_y) < (CAM_HEIGHT / 2) ) cam_y = play_y - CAM_HEIGHT / 2;
+		int level_width = 256; //momentani, ha de llegir de rectangle del nivell
+		int level_height = 120 * 16; //momentani, ha de llegir de rectangle del nivell
+		cam_x = max(0, cam_x);
+		cam_y = max(0, cam_y);
+		cam_x = min(cam_x, level_width - CAM_WIDTH);
+		cam_y = min(cam_y, level_height - CAM_HEIGHT);
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
 	
-	int level_width = 256; //momentani, ha de llegir de rectangle del nivell
-	int level_height = 120 * 16; //momentani, ha de llegir de rectangle del nivell
-	cam_x = max(0, cam_x);
-	cam_y = max(0, cam_y);
-	cam_x = min(cam_x, level_width - CAM_WIDTH);
-	cam_y = min(cam_y, level_height - CAM_HEIGHT);
+		gluOrtho2D(cam_x, cam_x + CAM_WIDTH, cam_y, cam_y + CAM_HEIGHT);
+		glMatrixMode(GL_MODELVIEW);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	
-	gluOrtho2D(cam_x, cam_x + CAM_WIDTH, cam_y, cam_y + CAM_HEIGHT);
-	glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 
-	glLoadIdentity();
-
-	Scene.Draw(Data.GetID(IMG_TILES));
-	for(unsigned int i = 0; i < blocks.size(); i++) 
-		if(blocks[i]->Appears(cam_x, cam_y)) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
-	for(unsigned int i = 0; i < monsters.size(); i++) 
-		if(monsters[i]->Appears(cam_x, cam_y)) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
-	Player.Draw(Data.GetID(IMG_PLAYER));
-
+		Scene.Draw(Data.GetID(IMG_TILES));
+		for(unsigned int i = 0; i < blocks.size(); i++) 
+			if(blocks[i]->Appears(cam_x, cam_y)) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
+		for(unsigned int i = 0; i < monsters.size(); i++) 
+			if(monsters[i]->Appears(cam_x, cam_y)) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
+		Player.Draw(Data.GetID(IMG_PLAYER));
+	}
+	else 
+	{	
+		reappears = false;
+		delay++;
+	}
 	glutSwapBuffers();
 }
