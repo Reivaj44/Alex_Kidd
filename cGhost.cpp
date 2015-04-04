@@ -3,7 +3,11 @@
 
 cGhost::cGhost(void)
 {
-	state = STATE_RIGHT;
+	xdir = 0;
+	ydir = 0;
+	state = STATE_LEFT;
+	wait = 0;
+	retard = 0;
 	ibodybox.left = 8; ibodybox.right = 31-8;
 	ibodybox.bottom = 8; ibodybox.top = 31-8;
 }
@@ -15,6 +19,13 @@ cGhost::~cGhost(void)
 
 void cGhost::Die()
 {
+}
+
+bool cGhost::Appears(int cam_x, int cam_y)
+{
+	bool appear = cBicho::Appears(cam_x, cam_y);
+	if(!appear) state = STATE_DISAPPEARED;
+	return appear;
 }
 
 void cGhost::Draw(int tex_id)
@@ -38,23 +49,26 @@ void cGhost::Draw(int tex_id)
 }
 
 void cGhost::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks) {
-	delay %= 17;
-	if(delay==0 && !player.isDead()) 
+	if(wait>100) 
 	{
-		int xplayer, yplayer;
-		player.GetPosition(xplayer, yplayer);
-		xdir = xplayer - bodybox.left;
-		ydir = yplayer - bodybox.bottom;
-		float modulo = sqrt(float(xdir*xdir + ydir*ydir));
-		xdir /= (modulo/2.0f);
-		ydir /= (modulo/2.0f);
-		if(xdir>0) state = STATE_RIGHT;
-		else state = STATE_LEFT;
+		retard %= 30;
+		if(retard==0 && !player.isDead()) 
+		{
+			int xplayer, yplayer;
+			player.GetPosition(xplayer, yplayer);
+			xdir = xplayer - bodybox.left;
+			ydir = yplayer - bodybox.bottom;
+			float modulo = sqrt(float(xdir*xdir + ydir*ydir));
+			xdir /= (modulo);
+			ydir /= (modulo);
+			if(xdir>0) state = STATE_RIGHT;
+			else state = STATE_LEFT;
+		}
+		x+=xdir;
+		y+=ydir;
+		retard++;
+		UpdateBox();
+		cMonster::Logic(map,player, blocks);
 	}
-	x+=xdir;
-	y+=ydir;
-	delay++;
-	UpdateBox();
-
-	cMonster::Logic(map,player, blocks);
+	else wait++;
 }

@@ -3,15 +3,14 @@
 #include "cTexture.h"
 #include "Globals.h"
 
-#define FRAME_DELAY		8
-#define STEP_LENGTH		2
+#define STATE_DISAPPEARED -1
 
 class cBlock;
 
 class cRect
 {
 public:
-	int left,top,
+	float left,top,
 		right,bottom;
 };
 
@@ -30,7 +29,7 @@ public:
 	void GetWidthHeight(int &w,int &h);
 	cRect GetBodyBox();
 
-	virtual bool Appears();
+	virtual bool Appears(int cam_x, int cam_y);
 	bool Collides(cRect *rc);
 	bool CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks);
 	bool CollidesMapFloor(int *map, std::vector<cBlock*> &blocks);
@@ -47,14 +46,19 @@ public:
 	int  GetFrame();
 
 	virtual void Draw(int tex_id) = 0;
+
+	static bool BoxInsideBox(cRect& BigBox, cRect& SmallBox);
 	
 protected:
-	int x,y;
+	float x,y;
 	int w,h;
 	int state;
 	cRect bodybox;
 	cRect ibodybox;
-	int seq,delay;
+	int seq;
+	int frame_delay;
+	int delay;
+	float step_length;
 
 	virtual void UpdateBox();
 };
