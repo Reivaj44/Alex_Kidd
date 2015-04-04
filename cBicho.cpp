@@ -253,3 +253,11 @@ void cBicho::SetState(int s)
 {
 	state = s;
 }
+
+bool cBicho::BoxInsideBox(cRect& BigBox, cRect& SmallBox)
+{
+	return (SmallBox.bottom >= BigBox.bottom*16	&& 
+			SmallBox.left	>= BigBox.left*16	&&
+			SmallBox.top	<= BigBox.top*16	&&
+			SmallBox.right	<= BigBox.right*16	);
+}

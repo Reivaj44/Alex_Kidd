@@ -46,6 +46,8 @@ public:
 	int  GetFrame();
 
 	virtual void Draw(int tex_id) = 0;
+
+	static bool BoxInsideBox(cRect& BigBox, cRect& SmallBox);
 	
 protected:
 	float x,y;

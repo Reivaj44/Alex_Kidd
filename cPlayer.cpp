@@ -40,6 +40,11 @@ bool cPlayer::isDead()
 	return state==STATE_DEAD;
 }
 
+bool cPlayer::isSwimming()
+{
+	return swimming;
+}
+
 void cPlayer::UpdateBox() 
 {
 	cBicho::UpdateBox();

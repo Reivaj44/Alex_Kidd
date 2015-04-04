@@ -21,10 +21,12 @@ public:
 	void Draw(int tex_id);
 	int *GetMap();
 
+	std::vector<cRect*> rects;				//rectangles dimensions
+	std::vector<int> isWater;
+
 private:
 	int map[SCENE_WIDTH * SCENE_HEIGHT];	//scene
-	std::vector<cRect*> rects;				//rectangles dimensions
-	std::vector<int> isWater;				//tells if a rectangle is water
+					//tells if a rectangle is water
 	int id_DL;								//actual level display list
 	int bg_DL;								//actual background display list
 };

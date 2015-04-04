@@ -192,6 +192,16 @@ bool cGame::Process()
 
 	if(!reappears && delay%20==0)
 	{
+		unsigned int i = 0; 
+		bool rect_found = false;
+		while (i < Scene.rects.size() && !rect_found) 
+		{	
+			if(cBicho::BoxInsideBox( *(Scene.rects[i]), Player.GetBodyBox() ) ) rect_found = true;
+			else i++;
+		}
+		if(!Player.isSwimming() && rect_found && Scene.isWater[i]==1) {
+			Player.Swim();
+		}
 		for(unsigned int i = 0; i < monsters.size(); i++)
 			if(monsters[i]->Appears(cam_x, cam_y)) monsters[i]->Logic(Scene.GetMap(), Player, blocks);
 		Player.Logic(Scene.GetMap(),monsters, blocks);

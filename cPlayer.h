@@ -40,6 +40,7 @@ public:
 	cRect GetHitBox();
 	bool isPunching();
 	bool isDead();
+	bool isSwimming();
 
 	void MoveRight(int *map, std::vector<cBlock*> &blocks);
 	void MoveLeft(int *map, std::vector<cBlock*> &blocks);
