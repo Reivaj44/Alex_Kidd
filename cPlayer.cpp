@@ -260,6 +260,7 @@ void cPlayer::Poison()
 void cPlayer::Swim()
 {
 	swimming = true;
+	intheair = false;
 	if(left) SetState(STATE_SWIMLEFT);
 	else SetState(STATE_SWIMRIGHT);
 }
@@ -294,20 +295,6 @@ void cPlayer::SetState(int s)
 
 void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks)
 {
-	if(poisoned)
-	{
-		if(!swimming) Stop();
-		if(swimming || CollidesMapFloor(map,blocks)) {
-			if(retard%4==0) x--;
-			else if(retard%2==0) x++;
-			retard++;
-			if(retard > 50)
-			{
-				poisoned = false;
-				retard = 0;
-			}
-		}
-	}
 	if(state==STATE_DEAD) 
 	{
 		y += 1;
@@ -316,6 +303,20 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 
 	else 
 	{
+		if(poisoned)
+		{
+			if(!swimming) Stop();
+			if(swimming || CollidesMapFloor(map,blocks)) {
+				if(retard%4==0) x--;
+				else if(retard%2==0) x++;
+				retard++;
+				if(retard > 50)
+				{
+					poisoned = false;
+					retard = 0;
+				}
+			}
+		}
 		if(punching) 
 		{
 			for(unsigned int i = 0; i < monsters.size(); i++) 
