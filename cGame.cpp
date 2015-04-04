@@ -48,7 +48,7 @@ bool cGame::Init()
 	if(!res) return false;
 	Player.SetTile(3,113); //init position
 	Player.SetState(STATE_LOOKRIGHT);
-	Player.Swim();
+	//Player.Swim();
 
 	res = Data.LoadImageA(IMG_ENEMY, "Monsters.png", GL_RGBA);
 	if(!res) return false;

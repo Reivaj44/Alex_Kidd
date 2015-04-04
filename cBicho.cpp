@@ -177,19 +177,19 @@ bool cBicho::CollidesMapCeil(int *map, std::vector<cBlock*> &blocks)
 	i=0;
 	while((i<width_tiles) && !collide) 
 	{
-		/*if( (y_aux % TILE_SIZE) == 0) 
+		if( (y_aux % TILE_SIZE) == 0) 
 		{
 			if((map[ (tile_x + i) + ((tile_y) * SCENE_WIDTH) ] != 0) || collideswithblock)
 				collide = true;
 		}
-		else {*/
+		else {
 			if((map[ (tile_x + i) + ((tile_y) * SCENE_WIDTH) ] != 0) || collideswithblock)
 			{
 				y -= (y_aux % TILE_SIZE);
 				UpdateBox();
 				collide = true;
 			}
-		//}
+		}
 		i++;
 	}
 	return collide;
