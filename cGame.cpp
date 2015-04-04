@@ -44,9 +44,9 @@ bool cGame::Init()
 	//Player initialization
 	res = Data.LoadImage(IMG_PLAYER,"Alex.png",GL_RGBA);
 	if(!res) return false;
-	Player.SetWidthHeight(32,32);
 	Player.SetTile(3,113); //init position
 	Player.SetState(STATE_LOOKRIGHT);
+	Player.Swim();
 
 	res = Data.LoadImageA(IMG_ENEMY, "Monsters.png", GL_RGBA);
 	if(!res) return false;
@@ -75,7 +75,7 @@ bool cGame::Init()
 	Block2->SetState(R_GREEN);
 
 	cBlock* Box1 = new cBlock();
-	Box1->SetTile(2,113);
+	Box1->SetTile(1,113);
 	Box1->SetState(STAR);
 	Box1->SetTreasure(BMON);
 
@@ -90,7 +90,7 @@ bool cGame::Init()
 	monsters.push_back(Ptero);
 	//monsters.push_back(SFish);
 	//monsters.push_back(Ghost);
-	monsters.push_back(Miniboss);
+	//monsters.push_back(Miniboss);
 
 	blocks.push_back(Block1);
 	blocks.push_back(Block2);
@@ -145,7 +145,7 @@ bool cGame::Process()
 
 	if(keys[GLUT_KEY_DOWN]) 
 	{		
-		Player.Crouch(Scene.GetMap());					
+		Player.Crouch(Scene.GetMap(),blocks);					
 		keypressed=true;
 	}
 
@@ -196,8 +196,8 @@ void cGame::Render()
 	int play_x, play_y;
 	Player.GetPosition(play_x, play_y);
 	
-	if( (play_x - cam_x) > (2 * CAM_WIDTH / 3) ) cam_x = play_x - 2 * CAM_WIDTH / 3;
-	if( (play_y - cam_y) < (CAM_HEIGHT / 3) ) cam_y = play_y - CAM_HEIGHT / 3;
+	if( (play_x - cam_x) > (CAM_WIDTH / 2) ) cam_x = play_x - CAM_WIDTH / 2;
+	if( (play_y - cam_y) < (CAM_HEIGHT / 2) ) cam_y = play_y - CAM_HEIGHT / 2;
 	
 	int level_width = 256; //momentani, ha de llegir de rectangle del nivell
 	int level_height = 120 * 16; //momentani, ha de llegir de rectangle del nivell
