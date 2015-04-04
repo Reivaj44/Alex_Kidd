@@ -74,11 +74,12 @@ bool cBicho::Appears(const cRect &cam) {
 	return (state!=STATE_DISAPPEARED && incamera);
 }
 
-bool cBicho::Collides(cRect *rc)
+bool cBicho::Collides(const cRect &rc)
 {
-	return ((x>rc->left) && (x+w<rc->right) && (y>rc->bottom) && (y+h<rc->top));
+	return ((bodybox.left<(rc.left*16)) || (bodybox.right>(rc.right*16)) || (bodybox.bottom<(rc.bottom*16)) || (bodybox.top>(rc.top*16)));
 }
-bool cBicho::CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks)
+
+bool cBicho::CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks, const cRect &rectangle)
 {
 	int tile_x,tile_y;
 	int j;
@@ -91,14 +92,15 @@ bool cBicho::CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks)
 	tile_y = bodybox.bottom / TILE_SIZE;
 	
 	height_tiles = int( bodybox.top / TILE_SIZE) - int(bodybox.bottom / TILE_SIZE) + 1;
+	
+	if(Collides(rectangle)) return true;
 
-	bool collideswithblock=false;
 	for(unsigned int i = 0; i < blocks.size(); i++) 
-		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
+		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodybox)) return true;
 
 	for(j=0;j<height_tiles;j++)
 	{
-		if((map[ tile_x + ((tile_y+j)*SCENE_WIDTH) ] != 0) || collideswithblock)	return true;
+		if((map[ tile_x + ((tile_y+j)*SCENE_WIDTH) ] != 0))	return true;
 	}
 	
 	return false;
@@ -116,76 +118,71 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks)
 
 	width_tiles = int( (bodybox.right) / TILE_SIZE ) - int( bodybox.left / TILE_SIZE ) + 1;
 
-	bool collideswithblock=false;
-	bool collideswithblockdown=false;
+	bool collides=false;
+	bool collides_down=false;
 	cRect bodyboxdown=bodybox;
 	bodyboxdown.bottom-=1;
-	for(unsigned int i = 0; i < blocks.size(); i++) 
-	{
-		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
-		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodyboxdown)) collideswithblockdown=true;
-	}
-	on_base = false;
 	i=0;
-	while((i<width_tiles) && !on_base)
+	while(i<blocks.size() && !collides && !collides_down)
 	{
-		if( (int(bodybox.bottom) % TILE_SIZE) == 0 )
-		{
-			if((map[ (tile_x + i) + ((tile_y - 1) * SCENE_WIDTH) ] != 0) || collideswithblockdown)
-				on_base = true;
-		}
-		else
-		{
-			if((map[ (tile_x + i) + (tile_y * SCENE_WIDTH) ] != 0) || collideswithblock)
-			{
-				y += TILE_SIZE - (int(bodybox.bottom) % TILE_SIZE);
-				UpdateBox();
-				on_base = true;
-			}
-		}
+		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodybox)) collides=true;
+		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodyboxdown)) collides_down=true;
 		i++;
 	}
-	return on_base;
+	i=0;
+	while((i<width_tiles) && !collides && !collides_down)
+	{
+		if( (int(bodybox.bottom) % TILE_SIZE) == 0 && (map[ (tile_x + i) + ((tile_y - 1) * SCENE_WIDTH) ] != 0) )
+			collides_down = true;
+		else if((map[ (tile_x + i) + (tile_y * SCENE_WIDTH) ] != 0))
+			collides = true;
+		i++;
+	}
+	if(collides)
+	{
+			y += TILE_SIZE - (int(bodybox.bottom) % TILE_SIZE);
+			UpdateBox();
+	}
+
+	return (collides || collides_down);
 }
 
-bool cBicho::CollidesMapCeil(int *map, std::vector<cBlock*> &blocks)
+bool cBicho::CollidesMapCeil(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle)
 {
 	int tile_x,tile_y;
 	int width_tiles;
 	int i;
-	bool collide;
+	bool collide = false;
 
 	int y_aux = bodybox.top+1;
 	tile_x = bodybox.left / TILE_SIZE;
 	tile_y = bodybox.top / TILE_SIZE;
 
 	width_tiles = int( bodybox.right / TILE_SIZE) - int(bodybox.left / TILE_SIZE) + 1;
+	
+	if(Collides(rectangle)) collide = true;
 
-	bool collideswithblock=false;
-	i=0;
-	while( ( i<blocks.size() ) && !collideswithblock) 
-	{
-		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
-		i++;
-	}
-	collide = false;
-	i=0;
-	while((i<width_tiles) && !collide) 
-	{
-		/*if( (y_aux % TILE_SIZE) == 0) 
+	if(!collide) {
+		i=0;
+		while( ( i<blocks.size() ) && !collide) 
 		{
-			if((map[ (tile_x + i) + ((tile_y) * SCENE_WIDTH) ] != 0) || collideswithblock)
-				collide = true;
+			if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodybox)) collide=true;
+			i++;
 		}
-		else {*/
-			if((map[ (tile_x + i) + ((tile_y) * SCENE_WIDTH) ] != 0) || collideswithblock)
-			{
-				y -= (y_aux % TILE_SIZE);
-				UpdateBox();
-				collide = true;
-			}
-		//}
-		i++;
+	}
+	
+	if(!collide) {
+		i=0;
+		while((i<width_tiles) && !collide) 
+		{
+			if((map[ (tile_x + i) + ((tile_y) * SCENE_WIDTH) ] != 0)) collide = true;
+			i++;
+		}
+	}
+	if(collide) 
+	{
+		y -= (y_aux % TILE_SIZE);
+		UpdateBox();
 	}
 	return collide;
 }

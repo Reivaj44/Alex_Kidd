@@ -30,10 +30,10 @@ public:
 	cRect GetBodyBox();
 
 	virtual bool Appears(const cRect &cam);
-	bool Collides(cRect *rc);
-	bool CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks);
+	bool Collides(const cRect &rc);
+	bool CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks, const cRect &rectangle);
 	bool CollidesMapFloor(int *map, std::vector<cBlock*> &blocks);
-	bool CollidesMapCeil(int *map, std::vector<cBlock*> &blocks);
+	bool CollidesMapCeil(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle);
 	bool CollidesBox(const cRect &box);
 
 	void GetArea(cRect *rc);

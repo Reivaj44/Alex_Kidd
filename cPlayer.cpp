@@ -88,7 +88,7 @@ void cPlayer::ChangeBox()
 	UpdateBox();
 }
 
-void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
+void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle)
 {
 	if(state != STATE_DEAD && !poisoned)
 	{
@@ -102,7 +102,7 @@ void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
 			x -= step_length;
 			UpdateBox();
 
-			if(CollidesMapWall(map,false,blocks)) 
+			if(CollidesMapWall(map,false,blocks, rectangle)) 
 			{
 				x = xaux;
 				UpdateBox();
@@ -124,7 +124,7 @@ void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
 	}
 }
 
-void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks)
+void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle)
 {
 	if(state!=STATE_DEAD && !poisoned) {
 		if(state==STATE_CROUCHRIGHT || state==STATE_CROUCHLEFT) SetState(STATE_CROUCHRIGHT);
@@ -137,7 +137,7 @@ void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks)
 			UpdateBox();
 
 			
-			if(CollidesMapWall(map,true,blocks)) {
+			if(CollidesMapWall(map,true,blocks, rectangle)) {
 				x = xaux;
 				UpdateBox();
 			}
@@ -293,7 +293,7 @@ void cPlayer::SetState(int s)
 	ChangeBox();
 }
 
-void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks)
+void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks, const cRect &rectangle)
 {
 	if(state==STATE_DEAD) 
 	{
@@ -349,7 +349,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				y = jump_y + (int)( ((float)JUMP_HEIGHT) * sin(alfa) );
 				UpdateBox();
 			
-				if(jump_alfa <= 90 && (CollidesMapCeil(map,blocks)))
+				if(jump_alfa <= 90 && (CollidesMapCeil(map,blocks,rectangle)))
 					jumping = false;
 
 				if(jump_alfa > 90)
@@ -379,7 +379,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 			{
 				y++;
 				UpdateBox();
-				CollidesMapCeil(map,blocks);
+				CollidesMapCeil(map,blocks,rectangle);
 			}
 			down_press = false;
 		}

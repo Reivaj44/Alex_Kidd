@@ -42,8 +42,8 @@ public:
 	bool isDead();
 	bool isSwimming();
 
-	void MoveRight(int *map, std::vector<cBlock*> &blocks);
-	void MoveLeft(int *map, std::vector<cBlock*> &blocks);
+	void MoveRight(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle);
+	void MoveLeft(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle);
 	void Jump(int *map);
 	void Crouch(int *map, std::vector<cBlock*> &blocks);
 	void Punch(int *map);
@@ -55,7 +55,7 @@ public:
 
 	void SetState(int s);
 
-	void Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks);
+	void Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks, const cRect& Rectangle);
 
 	virtual void Draw(int tex_id);
 

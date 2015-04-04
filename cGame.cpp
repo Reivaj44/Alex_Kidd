@@ -144,13 +144,13 @@ bool cGame::Process()
 
 			if(keys[GLUT_KEY_LEFT]) 
 			{		
-				Player.MoveLeft(Scene.GetMap(), blocks);	
+				Player.MoveLeft(Scene.GetMap(), blocks, *(Scene.GetRectangles(rectangle)));	
 				keypressed=true;
 			}
 
 			else if(keys[GLUT_KEY_RIGHT]) 
 			{	
-				Player.MoveRight(Scene.GetMap(), blocks);	
+				Player.MoveRight(Scene.GetMap(), blocks, *(Scene.GetRectangles(rectangle)));	
 				keypressed=true;
 			}
 
@@ -180,8 +180,8 @@ bool cGame::Process()
 					Player.Swim();
 				}
 				for(unsigned int i = 0; i < monsters.size(); i++)
-					if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks);
-				Player.Logic(Scene.GetMap(),monsters, blocks);
+					if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, *(Scene.GetRectangles(rectangle)));
+				Player.Logic(Scene.GetMap(),monsters, blocks, *(Scene.GetRectangles(rectangle)));
 				for(unsigned int i = 0; i < blocks.size(); i++)
 					if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,ring,lifes,monsters);
 			}
@@ -218,16 +218,13 @@ void cGame::Render()
 				int level_width = Scene.GetRectangles(rectangle)->right*16; 
 				int level_height = Scene.GetRectangles(rectangle)->top*16; 
 				
-			
 				if( (play_x - cam.left) > (CAM_WIDTH / 2) ) cam.left = play_x - CAM_WIDTH / 2;
 				if( (play_y - cam.bottom) < (CAM_HEIGHT / 2) ) cam.bottom = play_y - CAM_HEIGHT / 2;
 				cam.top = cam.bottom + CAM_HEIGHT;
 				cam.right = cam.left + CAM_WIDTH;
 				
-				//cam.left = max(0, cam.left); //necessari?
 				cam.bottom = max(0, cam.bottom);
 				cam.left = min(cam.left, level_width - CAM_WIDTH);
-				//cam.bottom = min(cam.bottom, level_height - CAM_HEIGHT); //necessari?
 				cam.top = cam.bottom + CAM_HEIGHT;
 				cam.right = cam.left + CAM_WIDTH;
 
