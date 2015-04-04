@@ -20,6 +20,7 @@ bool cMonster::isDead()
 
 void cMonster::Die() 
 {
+	mciSendString("play SOUNDS/dead_enemie.wav", NULL, 0, NULL);
 	state = STATE_EXPLODE;
 	seq = 0;
 	delay = 0;

@@ -178,6 +178,7 @@ void cPlayer::Punch(int *map)
 {
 	if(state!=STATE_CROUCHLEFT && state!=STATE_CROUCHRIGHT && !punching && state!=STATE_DEAD && !poisoned)
 	{
+		mciSendString("play SOUNDS/punch.wav", NULL, 0, NULL);
 		if(swimming)
 		{
 			if(left) SetState(STATE_SPUNCHLEFT);
@@ -232,6 +233,7 @@ void cPlayer::Jump(int *map)
 		{
 			if(state==STATE_WALKLEFT || state==STATE_LOOKLEFT) SetState(STATE_JUMPLEFT);
 			else if(state==STATE_WALKRIGHT || state==STATE_LOOKRIGHT) SetState(STATE_JUMPRIGHT);
+			mciSendString("play SOUNDS/jump.wav", NULL, 0, NULL);
 			jumping = true;
 			intheair = true;
 			jump_alfa = 0;
