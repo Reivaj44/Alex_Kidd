@@ -9,6 +9,8 @@
 
 #define GAME_WIDTH	640
 #define GAME_HEIGHT 480
+#define CAM_WIDTH 256
+#define CAM_HEIGHT 192
 #define CAM_STEP 0.1
 
 
@@ -35,11 +37,12 @@ public:
 
 private:
 	unsigned char keys[256];
+	int rectangle;
 	bool jump_key;
 	bool punch_key;
 	bool reappears;
 	int delay;
-	float cam_x, cam_y;
+	cRect cam;
 	cScene Scene;
 	cPlayer Player;
 	int lifes;

@@ -15,6 +15,7 @@ cGame::cGame(void)
 	money = 0;
 	score = 0;
 	ring = 0;
+	rectangle = 0;
 }
 
 cGame::~cGame(void)
@@ -31,7 +32,7 @@ bool cGame::Init()
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(cam_x, cam_x+256, cam_y, cam_y+192);
+	gluOrtho2D(cam.left, cam.right, cam.bottom, cam.top);
 	glMatrixMode(GL_MODELVIEW);
 	
 	glAlphaFunc(GL_GREATER, 0.05f);
@@ -157,11 +158,11 @@ bool cGame::Process()
 			
 			
 			//Game Logic
-			if(Player.isDead() && !Player.Appears(cam_x, cam_y)) 
+			if(Player.isDead() && !Player.Appears(cam)) 
 			{
 				Player.Resurrect(3,113);
-				cam_x = 0; //valor inicial rectangle
-				cam_y = 1920; //valor inicial rectangle
+				cam.left = Scene.GetRectangles(0)->left*16; //valor inicial rectangle
+				cam.bottom = Scene.GetRectangles(0)->top*16-CAM_HEIGHT; //valor inicial rectangle
 				reappears = true;
 				delay = 0;
 			}
@@ -179,10 +180,10 @@ bool cGame::Process()
 					Player.Swim();
 				}
 				for(unsigned int i = 0; i < monsters.size(); i++)
-					if(monsters[i]->Appears(cam_x, cam_y)) monsters[i]->Logic(Scene.GetMap(), Player, blocks);
+					if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks);
 				Player.Logic(Scene.GetMap(),monsters, blocks);
 				for(unsigned int i = 0; i < blocks.size(); i++)
-					if(blocks[i]->Appears(cam_x, cam_y)) blocks[i]->Logic(Player,money,ring,lifes,monsters);
+					if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,ring,lifes,monsters);
 			}
 
 			break;
@@ -211,30 +212,38 @@ void cGame::Render()
 			{
 				int play_x, play_y;
 				Player.GetPosition(play_x, play_y);
+
+				if(rectangle<(Scene.GetNumRects()-1) && cBicho::BoxInsideBox( *(Scene.GetRectangles(rectangle+1)), cam ) ) rectangle++;
+				
+				int level_width = Scene.GetRectangles(rectangle)->right*16; 
+				int level_height = Scene.GetRectangles(rectangle)->top*16; 
+				
 			
-				if( (play_x - cam_x) > (CAM_WIDTH / 2) ) cam_x = play_x - CAM_WIDTH / 2;
-				if( (play_y - cam_y) < (CAM_HEIGHT / 2) ) cam_y = play_y - CAM_HEIGHT / 2;
-			
-				int level_width = 256; //momentani, ha de llegir de rectangle del nivell
-				int level_height = 120 * 16; //momentani, ha de llegir de rectangle del nivell
-				cam_x = max(0, cam_x);
-				cam_y = max(0, cam_y);
-				cam_x = min(cam_x, level_width - CAM_WIDTH);
-				cam_y = min(cam_y, level_height - CAM_HEIGHT);
+				if( (play_x - cam.left) > (CAM_WIDTH / 2) ) cam.left = play_x - CAM_WIDTH / 2;
+				if( (play_y - cam.bottom) < (CAM_HEIGHT / 2) ) cam.bottom = play_y - CAM_HEIGHT / 2;
+				cam.top = cam.bottom + CAM_HEIGHT;
+				cam.right = cam.left + CAM_WIDTH;
+				
+				//cam.left = max(0, cam.left); //necessari?
+				cam.bottom = max(0, cam.bottom);
+				cam.left = min(cam.left, level_width - CAM_WIDTH);
+				//cam.bottom = min(cam.bottom, level_height - CAM_HEIGHT); //necessari?
+				cam.top = cam.bottom + CAM_HEIGHT;
+				cam.right = cam.left + CAM_WIDTH;
 
 				glMatrixMode(GL_PROJECTION);
 				glLoadIdentity();
 			
-				gluOrtho2D(cam_x, cam_x + CAM_WIDTH, cam_y, cam_y + CAM_HEIGHT);
+				gluOrtho2D(cam.left, cam.right, cam.bottom, cam.top);
 				glMatrixMode(GL_MODELVIEW);
 
 				glLoadIdentity();
 
 				Scene.Draw(Data.GetID(IMG_TILES));
 				for(unsigned int i = 0; i < blocks.size(); i++) 
-					if(blocks[i]->Appears(cam_x, cam_y)) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
+					if(blocks[i]->Appears(cam)) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
 				for(unsigned int i = 0; i < monsters.size(); i++) 
-					if(monsters[i]->Appears(cam_x, cam_y)) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
+					if(monsters[i]->Appears(cam)) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
 				Player.Draw(Data.GetID(IMG_PLAYER));
 			}
 			else 
@@ -285,8 +294,11 @@ bool cGame::InitLevel1() {
 	res = Scene.LoadLevel(3); // CACTUS: canviar num
 	if(!res) return false;
 
-	cam_x = 0; cam_y = 1920; //s'ha de llegir de loadlevel
-
+	cam.left = Scene.GetRectangles(0)->left*16;
+	cam.top = Scene.GetRectangles(0)->top*16;
+	cam.bottom = cam.top - CAM_HEIGHT;
+	cam.right = cam.left + CAM_WIDTH;
+	
 	//Player initialization
 	res = Data.LoadImage(IMG_PLAYER,"Alex.png",GL_RGBA);
 	if(!res) return false;

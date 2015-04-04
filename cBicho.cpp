@@ -69,13 +69,8 @@ void cBicho::UpdateBox()
 	bodybox.top = y + ibodybox.top;
 }
 
-bool cBicho::Appears(int cam_x, int cam_y) {
-	cRect boxcamera;
-	boxcamera.bottom = cam_y;
-	boxcamera.left = cam_x;
-	boxcamera.top = cam_y + CAM_HEIGHT;
-	boxcamera.right = cam_x + CAM_WIDTH;
-	bool incamera = CollidesBox(boxcamera);
+bool cBicho::Appears(const cRect &cam) {
+	bool incamera = CollidesBox(cam);
 	return (state!=STATE_DISAPPEARED && incamera);
 }
 

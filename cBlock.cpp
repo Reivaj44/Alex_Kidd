@@ -36,10 +36,10 @@ int cBlock::GetTreasure()
 	return treasure;
 }
 
-bool cBlock::Appears(int cam_x, int cam_y)
+bool cBlock::Appears(const cRect &cam)
 {
-	if ((ydes+h)<cam_y) destroying = false;
-	return (destroying || cBicho::Appears(cam_x, cam_y));
+	if ((ydes+h)<cam.bottom) destroying = false;
+	return (destroying || cBicho::Appears(cam));
 }
 
 bool cBlock::isCollisionable()

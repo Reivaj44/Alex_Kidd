@@ -21,9 +21,9 @@ void cGhost::Die()
 {
 }
 
-bool cGhost::Appears(int cam_x, int cam_y)
+bool cGhost::Appears(const cRect &cam)
 {
-	bool appear = cBicho::Appears(cam_x, cam_y);
+	bool appear = cBicho::Appears(cam);
 	if(!appear) state = STATE_DISAPPEARED;
 	return appear;
 }

@@ -29,7 +29,7 @@ public:
 	void GetWidthHeight(int &w,int &h);
 	cRect GetBodyBox();
 
-	virtual bool Appears(int cam_x, int cam_y);
+	virtual bool Appears(const cRect &cam);
 	bool Collides(cRect *rc);
 	bool CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks);
 	bool CollidesMapFloor(int *map, std::vector<cBlock*> &blocks);

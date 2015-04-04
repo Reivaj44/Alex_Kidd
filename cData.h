@@ -3,9 +3,6 @@
 #include "cTexture.h"
 #include "Globals.h"
 
-#define CAM_WIDTH 256
-#define CAM_HEIGHT 192
-
 //Image array size
 #define NUM_IMG		8
 
