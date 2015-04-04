@@ -1,16 +1,12 @@
-#pragma once
 #include "cBicho.h"
 #include "cScene.h"
 #include "Globals.h"
 #include "cBlock.h"
-#include "cData.h"
 
 cBicho::cBicho(void)
 {
 	seq=0;
 	delay=0;
-	frame_delay=8;
-	step_length=2;
 }
 cBicho::~cBicho(void){}
 
@@ -69,14 +65,8 @@ void cBicho::UpdateBox()
 	bodybox.top = y + ibodybox.top;
 }
 
-bool cBicho::Appears(int cam_x, int cam_y) {
-	cRect boxcamera;
-	boxcamera.bottom = cam_y;
-	boxcamera.left = cam_x;
-	boxcamera.top = cam_y + CAM_HEIGHT;
-	boxcamera.right = cam_x + CAM_WIDTH;
-	bool incamera = CollidesBox(boxcamera);
-	return (state!=STATE_DISAPPEARED && incamera);
+bool cBicho::Appears() {
+	return true;
 }
 
 bool cBicho::Collides(cRect *rc)
@@ -95,7 +85,8 @@ bool cBicho::CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks)
 	tile_x = x_aux / TILE_SIZE;
 	tile_y = bodybox.bottom / TILE_SIZE;
 	
-	height_tiles = int( bodybox.top / TILE_SIZE) - int(bodybox.bottom / TILE_SIZE) + 1;
+	width_tiles  = (bodybox.left - bodybox.right + 1) / TILE_SIZE;
+	height_tiles = ( bodybox.top / TILE_SIZE) - (bodybox.bottom / TILE_SIZE) + 1;
 
 	bool collideswithblock=false;
 	for(unsigned int i = 0; i < blocks.size(); i++) 
@@ -119,7 +110,7 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks)
 	tile_x = bodybox.left / TILE_SIZE;
 	tile_y = bodybox.bottom / TILE_SIZE;
 
-	width_tiles = int( (bodybox.right) / TILE_SIZE ) - int( bodybox.left / TILE_SIZE ) + 1;
+	width_tiles = ( (bodybox.right) / TILE_SIZE ) - ( bodybox.left / TILE_SIZE ) + 1;
 
 	bool collideswithblock=false;
 	bool collideswithblockdown=false;
@@ -134,7 +125,7 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks)
 	i=0;
 	while((i<width_tiles) && !on_base)
 	{
-		if( (int(bodybox.bottom) % TILE_SIZE) == 0 )
+		if( (bodybox.bottom % TILE_SIZE) == 0 )
 		{
 			if((map[ (tile_x + i) + ((tile_y - 1) * SCENE_WIDTH) ] != 0) || collideswithblockdown)
 				on_base = true;
@@ -143,7 +134,7 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks)
 		{
 			if((map[ (tile_x + i) + (tile_y * SCENE_WIDTH) ] != 0) || collideswithblock)
 			{
-				y += TILE_SIZE - (int(bodybox.bottom) % TILE_SIZE);
+				y += TILE_SIZE - (bodybox.bottom % TILE_SIZE);
 				UpdateBox();
 				on_base = true;
 			}
@@ -162,34 +153,31 @@ bool cBicho::CollidesMapCeil(int *map, std::vector<cBlock*> &blocks)
 
 	int y_aux = bodybox.top+1;
 	tile_x = bodybox.left / TILE_SIZE;
-	tile_y = bodybox.top / TILE_SIZE;
+	tile_y = y_aux / TILE_SIZE;
 
-	width_tiles = int( bodybox.right / TILE_SIZE) - int(bodybox.left / TILE_SIZE) + 1;
+	width_tiles = ( (bodybox.right) / TILE_SIZE) - (bodybox.left / TILE_SIZE) + 1;
 
 	bool collideswithblock=false;
-	i=0;
-	while( ( i<blocks.size() ) && !collideswithblock) 
-	{
+	for(unsigned int i = 0; i < blocks.size(); i++) 
 		if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(bodybox)) collideswithblock=true;
-		i++;
-	}
+
 	collide = false;
 	i=0;
 	while((i<width_tiles) && !collide) 
 	{
-		/*if( (y_aux % TILE_SIZE) == 0) 
+		if( (y_aux % TILE_SIZE) == 0) 
 		{
 			if((map[ (tile_x + i) + ((tile_y) * SCENE_WIDTH) ] != 0) || collideswithblock)
 				collide = true;
 		}
-		else {*/
+		else {
 			if((map[ (tile_x + i) + ((tile_y) * SCENE_WIDTH) ] != 0) || collideswithblock)
 			{
 				y -= (y_aux % TILE_SIZE);
 				UpdateBox();
 				collide = true;
 			}
-		//}
+		}
 		i++;
 	}
 	return collide;
@@ -231,7 +219,7 @@ void cBicho::DrawRect(int tex_id,float xo,float yo,float xf,float yf)
 void cBicho::NextFrame(int max)
 {
 	delay++;
-	if(delay == frame_delay)
+	if(delay == FRAME_DELAY)
 	{
 		seq++;
 		seq%=max;
@@ -252,12 +240,4 @@ int cBicho::GetState()
 void cBicho::SetState(int s)
 {
 	state = s;
-}
-
-bool cBicho::BoxInsideBox(cRect& BigBox, cRect& SmallBox)
-{
-	return (SmallBox.bottom >= BigBox.bottom*16	&& 
-			SmallBox.left	>= BigBox.left*16	&&
-			SmallBox.top	<= BigBox.top*16	&&
-			SmallBox.right	<= BigBox.right*16	);
 }

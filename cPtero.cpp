@@ -16,38 +16,34 @@ cPtero::~cPtero(void)
 }
 
 void cPtero::Draw(int tex_id)
-{
-	if(state==STATE_EXPLODE) cMonster::Draw(tex_id);
-	else
+{	
+	float xo,yo,xf,yf;
+	bool left = false;
+	switch(GetState())
 	{
-		float xo,yo,xf,yf;
-		bool left = false;
-		switch(GetState())
-		{
-			case STATE_LEFT:	xo = 0.125f + (GetFrame()*0.125f); yo = 0.125f;
-									NextFrame(2);
-									left = true; break;
-			//1..4
-			case STATE_RIGHT:	xo = 0.0f + (GetFrame()*0.125f); yo = 0.125f;
-									NextFrame(2);
-									break;
-		}
-		xf = xo + 0.125;
-		if(left) xf = xo - 0.125;
-		yf = yo - 0.125f;
-		DrawRect(tex_id,xo,yo,xf,yf);
+		case STATE_LEFT:	xo = 0.125f + (GetFrame()*0.125f); yo = 0.125f;
+								NextFrame(2);
+								left = true; break;
+		//1..4
+		case STATE_RIGHT:	xo = 0.0f + (GetFrame()*0.125f); yo = 0.125f;
+								NextFrame(2);
+								break;
 	}
+	xf = xo + 0.125;
+	if(left) xf = xo - 0.125;
+	yf = yo - 0.125f;
+	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
 void cPtero::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks) {
-	if(state!=STATE_EXPLODE)
+	if(state!=STATE_MONSTERDEAD)
 	{
 		int xaux;
 		bool right = false;
 		if(state==STATE_RIGHT) right = true;
 		xaux = x;
-		if(right) x += step_length;
-		else x -= step_length;
+		if(right) x += STEP_LENGTH;
+		else x -= STEP_LENGTH;
 		UpdateBox();
 
 		if(CollidesMapWall(map,right,blocks) || CollidesMapWall(map,!right,blocks)) {

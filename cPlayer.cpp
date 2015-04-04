@@ -7,14 +7,8 @@ cPlayer::cPlayer()
 	intheair = false;
 	jumping = false;
 	left = false;
-	swimming = false;
-	poisoned = false;
-	retard = 0;
-	punch_delay = 0;
-	w = 64;
-	h = 32;
-	down_press = false;
-	SetState(STATE_LOOKRIGHT);
+	ibodybox.left = 10; ibodybox.right = 31 - 10;
+	ibodybox.bottom = 5; ibodybox.top = 31 - 5;
 }
 cPlayer::~cPlayer(){}
 
@@ -40,11 +34,6 @@ bool cPlayer::isDead()
 	return state==STATE_DEAD;
 }
 
-bool cPlayer::isSwimming()
-{
-	return swimming;
-}
-
 void cPlayer::UpdateBox() 
 {
 	cBicho::UpdateBox();
@@ -56,50 +45,38 @@ void cPlayer::UpdateBox()
 
 	if(left)
 	{
-		punchbox.left = x + 63 - ipunchbox.right;
-		punchbox.right = x + 63 - ipunchbox.left;
+		punchbox.left = x + 31 - ipunchbox.right;
+		punchbox.right = x + 31 - ipunchbox.left;
 	}
 }
 
 void cPlayer::ChangeBox()
 {
-	ipunchbox.left = 32; ipunchbox.right = 32;
-	ipunchbox.bottom = 16; ipunchbox.top = 16;
-	if(swimming) 
+	if(punching) 
 	{
-		ibodybox.left = 31-8;	ibodybox.right = 32 + 8;
-		ibodybox.bottom = 8;	ibodybox.top = 31 - 8;	
-		if(punching)
-		{
-			ipunchbox.left = 32+11; ipunchbox.right = 32+18;
-			ipunchbox.bottom = 8; ipunchbox.top = 15;
-		}
+		ipunchbox.left = 22; ipunchbox.right = 30;
+		ipunchbox.bottom = 12; ipunchbox.top = 19;
 	}
-	else 
+	else
 	{
-		ibodybox.left = 16+10; ibodybox.right = 16+31 - 10;
-		ibodybox.bottom = 5; ibodybox.top = 31 - 5;
-		if(punching) 
-		{
-			ipunchbox.left = 16+22; ipunchbox.right = 16+30;
-			ipunchbox.bottom = 12; ipunchbox.top = 19;
-		}
+		ipunchbox.left = 0; ipunchbox.right = 0;
+		ipunchbox.bottom = 0; ipunchbox.top = 0;
 	}
 	UpdateBox();
 }
 
 void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
 {
-	if(state != STATE_DEAD && !poisoned)
+	if(state != STATE_DEAD)
 	{
 		if(state==STATE_CROUCHLEFT || state==STATE_CROUCHRIGHT)	SetState(STATE_CROUCHLEFT);
-		else if (!punching || intheair || swimming)
+		else if (!punching || intheair)
 		{
 			int xaux;
 			//Whats next tile?
 		
 			xaux = x;
-			x -= step_length;
+			x -= STEP_LENGTH;
 			UpdateBox();
 
 			if(CollidesMapWall(map,false,blocks)) 
@@ -107,18 +84,12 @@ void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
 				x = xaux;
 				UpdateBox();
 			}
-			else if(state != STATE_WALKLEFT && state != STATE_SWIMLEFT)
+			else if(state != STATE_WALKLEFT)
 			{
 				seq = 0;
 				delay = 0;
 			}
-			if(swimming) 
-			{
-				if(punching) SetState(STATE_SPUNCHLEFT);
-				else SetState(STATE_SWIMLEFT);
-			}
-			else if(intheair && punching) SetState(STATE_PUNCHLEFT);
-			else if(intheair) SetState(STATE_JUMPLEFT);
+			if(intheair && !punching) SetState(STATE_JUMPLEFT);
 			else if(!punching) SetState(STATE_WALKLEFT);
 		}
 	}
@@ -126,14 +97,14 @@ void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks)
 
 void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks)
 {
-	if(state!=STATE_DEAD && !poisoned) {
+	if(state!=STATE_DEAD) {
 		if(state==STATE_CROUCHRIGHT || state==STATE_CROUCHLEFT) SetState(STATE_CROUCHRIGHT);
-		else if (!punching || intheair || swimming)
+		else if (!punching || intheair)
 		{
 			int xaux;
 			//Whats next tile?
 			xaux = x;
-			x += step_length;
+			x += STEP_LENGTH;
 			UpdateBox();
 
 			
@@ -142,58 +113,41 @@ void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks)
 				UpdateBox();
 			}
 
-			else if(state != STATE_WALKRIGHT && state!=STATE_SWIMRIGHT)
+			else if(state != STATE_WALKRIGHT)
 			{
 				seq = 0;
 				delay = 0;
 			}
-			if(swimming) 
-			{
-				if(punching) SetState(STATE_SPUNCHRIGHT);
-				else SetState(STATE_SWIMRIGHT);
-			}
-			else if(intheair && punching) SetState(STATE_PUNCHRIGHT);
-			else if(intheair) SetState(STATE_JUMPRIGHT);
+
+			if(intheair && !punching) SetState(STATE_JUMPRIGHT);
 			else if(!punching) SetState(STATE_WALKRIGHT);	
 		}
 	}
 }
 
-void cPlayer::Crouch(int *map, std::vector<cBlock*> &blocks)
+void cPlayer::Crouch(int *map)
 {
-	if(swimming && state!=STATE_DEAD && !poisoned)
-	{
-		y--;
-		UpdateBox();
-		CollidesMapFloor(map,blocks);
-		down_press = true;
-		if(!punching && left) SetState(STATE_SWIMLEFT); 
-		else if(!punching) SetState(STATE_SWIMRIGHT);
-	}
-	else if(!intheair && state!=STATE_DEAD && !poisoned && !punching) {
-		switch(state)
-		{
-			case STATE_LOOKLEFT:	SetState(STATE_CROUCHLEFT);		break;
-			case STATE_LOOKRIGHT:	SetState(STATE_CROUCHRIGHT);	break;
-		}
+	if(!intheair && state!=STATE_DEAD) {
+		/*if(CollidesMapWall(map,true) && state==STATE_WALKRIGHT) SetState(STATE_CROUCHRIGHT);
+		else if(CollidesMapWall(map,false) && state==STATE_WALKLEFT) SetState(STATE_CROUCHLEFT);
+		else
+		{*/
+			switch(state)
+			{
+				case STATE_LOOKLEFT:	SetState(STATE_CROUCHLEFT);		break;
+				case STATE_LOOKRIGHT:	SetState(STATE_CROUCHRIGHT);		break;
+			}
+		//}
 	}
 }
 
 void cPlayer::Punch(int *map)
 {
-	if(state!=STATE_CROUCHLEFT && state!=STATE_CROUCHRIGHT && !punching && state!=STATE_DEAD && !poisoned)
+	if(state!=STATE_CROUCHLEFT && state!=STATE_CROUCHRIGHT && !punching && state!=STATE_DEAD)
 	{
-		mciSendString("play SOUNDS/punch.wav", NULL, 0, NULL);
-		if(swimming)
-		{
-			if(left) SetState(STATE_SPUNCHLEFT);
-			else SetState(STATE_SPUNCHRIGHT);
-		}
-		else
-		{
-			if(!left) SetState(STATE_PUNCHRIGHT);
-			else SetState(STATE_PUNCHLEFT);
-		}
+		punching = true;
+		if(!left) SetState(STATE_PUNCHRIGHT);
+		else SetState(STATE_PUNCHLEFT);
 		seq = 0;
 		delay = 0;
 	}
@@ -205,26 +159,24 @@ void cPlayer::Stop()
 		switch(state)
 		{
 			case STATE_WALKLEFT:	SetState(STATE_LOOKLEFT);		break;
-			case STATE_WALKRIGHT:	SetState(STATE_LOOKRIGHT);		break;
+			case STATE_WALKRIGHT:	SetState(STATE_LOOKRIGHT);	break;
 			case STATE_JUMPLEFT:	SetState(STATE_LOOKLEFT);		break;
-			case STATE_JUMPRIGHT:	SetState(STATE_LOOKRIGHT);		break;
+			case STATE_JUMPRIGHT:	SetState(STATE_LOOKRIGHT);	break;
 			case STATE_CROUCHLEFT:	SetState(STATE_LOOKLEFT);		break;
-			case STATE_CROUCHRIGHT:	SetState(STATE_LOOKRIGHT);		break;
+			case STATE_CROUCHRIGHT:	SetState(STATE_LOOKRIGHT);	break;
 			case STATE_PUNCHLEFT:	SetState(STATE_LOOKLEFT);		break;
-			case STATE_PUNCHRIGHT:	SetState(STATE_LOOKRIGHT);		break;
-			case STATE_SPUNCHRIGHT:	SetState(STATE_SWIMRIGHT);		break;
-			case STATE_SPUNCHLEFT:	SetState(STATE_SWIMLEFT);		break;
+			case STATE_PUNCHRIGHT:	SetState(STATE_LOOKRIGHT);	break;
 		}
 	}
 	else if(intheair && !punching && state!=STATE_DEAD) {
 		switch(state) 
 		{
 			case STATE_WALKLEFT:		SetState(STATE_JUMPLEFT);		break;
-			case STATE_WALKRIGHT:		SetState(STATE_JUMPRIGHT);		break;
-			case STATE_LOOKRIGHT:		SetState(STATE_JUMPRIGHT);		break;
+			case STATE_WALKRIGHT:		SetState(STATE_JUMPRIGHT);	break;
+			case STATE_LOOKRIGHT:		SetState(STATE_JUMPRIGHT);	break;
 			case STATE_LOOKLEFT:		SetState(STATE_JUMPLEFT);		break;
 			case STATE_PUNCHLEFT:		SetState(STATE_JUMPLEFT);		break;
-			case STATE_PUNCHRIGHT:		SetState(STATE_JUMPRIGHT);		break;
+			case STATE_PUNCHRIGHT:		SetState(STATE_JUMPRIGHT);	break;
 		}
 	}
 		
@@ -232,13 +184,12 @@ void cPlayer::Stop()
 
 void cPlayer::Jump(int *map)
 {
-	if(!jumping && !poisoned && !swimming)
+	if(!jumping)
 	{
 		if(!intheair && (state!=STATE_CROUCHLEFT) && (state!=STATE_CROUCHRIGHT) && !punching)
 		{
 			if(state==STATE_WALKLEFT || state==STATE_LOOKLEFT) SetState(STATE_JUMPLEFT);
 			else if(state==STATE_WALKRIGHT || state==STATE_LOOKRIGHT) SetState(STATE_JUMPRIGHT);
-			mciSendString("play SOUNDS/jump.wav", NULL, 0, NULL);
 			jumping = true;
 			intheair = true;
 			jump_alfa = 0;
@@ -252,86 +203,36 @@ void cPlayer::Die()
 	SetState(STATE_DEAD);
 }
 
-void cPlayer::Poison()
-{
-	poisoned = true;
-}
-
-void cPlayer::Swim()
-{
-	swimming = true;
-	intheair = false;
-	if(left) SetState(STATE_SWIMLEFT);
-	else SetState(STATE_SWIMRIGHT);
-}
-
-void cPlayer::Resurrect(int tile_x, int tile_y)
-{
-	if(swimming) SetState(STATE_SWIMRIGHT);
-	else SetState(STATE_LOOKRIGHT);
-	SetTile(tile_x, tile_y);
-}
-
 void cPlayer::SetState(int s)
 {
 	cBicho::SetState(s);
-	if(	state==STATE_LOOKLEFT	|| state==STATE_WALKLEFT	|| state==STATE_JUMPLEFT	|| 
-		state==STATE_CROUCHLEFT || state==STATE_PUNCHLEFT	|| state==STATE_SWIMLEFT	|| state==STATE_SPUNCHLEFT) left = true;
+	if(state==STATE_LOOKLEFT || state==STATE_WALKLEFT || state==STATE_JUMPLEFT || state==STATE_CROUCHLEFT || state==STATE_PUNCHLEFT) left = true;
 	else left = false;
-	if( state==STATE_SWIMLEFT	|| state==STATE_SWIMRIGHT	|| state==STATE_SPUNCHLEFT	|| state==STATE_SPUNCHRIGHT) 
-	{
-		frame_delay = 16;
-		step_length = 1;
-	}
-	else
-	{
-		step_length = 2;
-		frame_delay = 8;
-	}
-	if( state==STATE_PUNCHLEFT	|| state==STATE_PUNCHRIGHT	|| state==STATE_SPUNCHLEFT	|| state==STATE_SPUNCHRIGHT) punching = true;
-	else punching = false;
 	ChangeBox();
 }
 
 void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks)
 {
-	if(state==STATE_DEAD) 
-	{
-		y += 1;
+	if(state==STATE_DEAD) {
+		y += 2;
 		UpdateBox();
 	}
 
-	else 
-	{
-		if(poisoned)
-		{
-			if(!swimming) Stop();
-			if(swimming || CollidesMapFloor(map,blocks)) {
-				if(retard%4==0) x--;
-				else if(retard%2==0) x++;
-				retard++;
-				if(retard > 50)
-				{
-					poisoned = false;
-					retard = 0;
-				}
-			}
-		}
-		if(punching) 
-		{
+	else {
+		if(punching) {
 			for(unsigned int i = 0; i < monsters.size(); i++) 
 				if(!monsters[i]->isDead() && monsters[i]->CollidesBox(punchbox)) monsters[i]->Die();
 			for(unsigned int i = 0; i < blocks.size(); i++) 
 				if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(punchbox)) blocks[i]->Destroy();
 
-			punch_delay++;
-			if(punch_delay >= frame_delay && (!swimming || !poisoned) )
+			delay++;
+			if(delay == FRAME_DELAY)
 			{
-				punch_delay = 0;
+				delay = 0;
 				punching = false;
 			}
 		}
-		if(jumping && !swimming)
+		if(jumping)
 		{
 			float alfa;
 			jump_alfa += JUMP_STEP;
@@ -362,26 +263,17 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				}
 			}
 		}
-		else if(!jumping && !swimming)
+
+		else
 		{
 			//Over floor?
 			if(!CollidesMapFloor(map,blocks)) {
-				y -= (1.5*step_length);
+				y -= (2*STEP_LENGTH);
 				UpdateBox();
 				intheair=true;
 			}
 
 			else intheair=false;
-		}
-		if(swimming && !poisoned && delay%2==0) 
-		{
-			if(!down_press)
-			{
-				y++;
-				UpdateBox();
-				CollidesMapCeil(map,blocks);
-			}
-			down_press = false;
 		}
 	}
 }
@@ -389,59 +281,49 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 void cPlayer::Draw(int tex_id)
 {	
 	float xo,yo,xf,yf;
+	bool left = false;
 	switch(GetState())
 	{
 		//5
-		case STATE_LOOKLEFT:	xo = 0.25f;	yo = 0.25f; 
+		case STATE_LOOKLEFT:	xo = 0.625f;	yo = 0.125f;
+								left = true; 
 								break;
 		//5
-		case STATE_LOOKRIGHT:	xo = 0.0f;	yo = 0.25f;
+		case STATE_LOOKRIGHT:	xo = 0.500f;	yo = 0.125f;
 								break;
 		//4..1
-		case STATE_WALKLEFT:	xo = 0.25f + (GetFrame()*0.25f); yo = 0.125;
+		case STATE_WALKLEFT:	xo = 0.125f + (GetFrame()*0.125f); yo = 0.125;
 								NextFrame(4);
-								break;
+								left = true; break;
 		//1..4
-		case STATE_WALKRIGHT:	xo = 0.0f + (GetFrame()*0.25f); yo = 0.125f;
+		case STATE_WALKRIGHT:	xo = 0.0f + (GetFrame()*0.125f); yo = 0.125f;
 								NextFrame(4);
 								break;
 		//6
-		case STATE_JUMPLEFT:	xo = 0.5f; yo = 0.25f;
-								break;
+		case STATE_JUMPLEFT:	xo = 0.750f; yo = 0.125f;
+								left = true; break;
 		//6
-		case STATE_JUMPRIGHT:	xo = 0.25f; yo = 0.25;
+		case STATE_JUMPRIGHT:	xo = 0.625f; yo = 0.125;
 								break;
 		//7
-		case STATE_CROUCHLEFT:	xo = 0.75f; yo = 0.25f;
-								break;
+		case STATE_CROUCHLEFT:	xo = 0.875f; yo = 0.125f;
+								left = true; break;
 		//7
-		case STATE_CROUCHRIGHT:	xo = 0.5f; yo = 0.25f;
+		case STATE_CROUCHRIGHT:	xo = 0.750f; yo = 0.125f;
 								break;
 
-		case STATE_PUNCHLEFT:	xo = 1.0f; yo = 0.25f;
+		case STATE_PUNCHLEFT:	xo = 1.0f; yo = 0.125f;
+								left = true; break;
+
+		case STATE_PUNCHRIGHT:	xo = 0.875f; yo = 0.125f;
 								break;
 
-		case STATE_PUNCHRIGHT:	xo = 0.75f; yo = 0.25f;
-								break;
-
-		case STATE_SWIMLEFT:	xo = 0.25f + (GetFrame()*0.25f); yo = 0.375;
-								NextFrame(2); break;
-
-		case STATE_SWIMRIGHT:	xo = 0.0f + (GetFrame()*0.25f);	yo = 0.375;
-								NextFrame(2); break;
-
-		case STATE_SPUNCHLEFT:	xo = 0.75f; yo = 0.375;
-								break;
-
-		case STATE_SPUNCHRIGHT:	xo = 0.5f;	yo = 0.375f;
-								break;
-
-		case STATE_DEAD:		xo = 0.0f + (GetFrame()*0.25f); yo = 0.875f;
+		case STATE_DEAD:		xo = 0.0f + (GetFrame()*0.125f); yo = 0.5f;
 								NextFrame(3); break;
 	}
 
 	yf = yo - 0.125f;
-	float ix = 0.25f;
+	float ix = 0.125f;
 	xf = xo + ix;
 
 	if(left) xf = xo - ix;

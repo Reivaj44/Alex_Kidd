@@ -21,12 +21,7 @@
 #define STATE_CROUCHRIGHT	7
 #define STATE_PUNCHLEFT		8
 #define STATE_PUNCHRIGHT	9
-#define STATE_SWIMRIGHT		10
-#define STATE_SWIMLEFT		11
-#define STATE_SPUNCHLEFT	12
-#define STATE_SPUNCHRIGHT	13
-#define STATE_DEAD			14
-#define STATE_RESURRECTED	15
+#define STATE_DEAD			10
 
 class cMonster;
 
@@ -40,18 +35,14 @@ public:
 	cRect GetHitBox();
 	bool isPunching();
 	bool isDead();
-	bool isSwimming();
 
 	void MoveRight(int *map, std::vector<cBlock*> &blocks);
 	void MoveLeft(int *map, std::vector<cBlock*> &blocks);
 	void Jump(int *map);
-	void Crouch(int *map, std::vector<cBlock*> &blocks);
+	void Crouch(int *map);
 	void Punch(int *map);
 	void Stop();
 	void Die();
-	void Poison();
-	void Swim();
-	void Resurrect(int tile_x, int tile_y);
 
 	void SetState(int s);
 
@@ -63,19 +54,13 @@ private:
 	bool left;
 	bool intheair;
 	bool punching;
-	bool swimming;
 
 	bool jumping;
 	int jump_alfa;
 	int jump_y;
-	bool down_press;
 
 	cRect punchbox;
 	cRect ipunchbox;
-	int punch_delay;
-
-	bool poisoned;
-	int retard;
 
 	virtual void UpdateBox();
 	void ChangeBox();

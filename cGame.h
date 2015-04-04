@@ -5,11 +5,13 @@
 #include "cMonster.h"
 #include "cBlock.h"
 #include "cData.h"
+#include "cTexture.h"
 
 #define GAME_WIDTH	640
 #define GAME_HEIGHT 480
 #define CAM_STEP 0.1
-
+#define CAM_WIDTH 256
+#define CAM_HEIGHT 192
 
 class cGame
 {
@@ -28,13 +30,14 @@ public:
 	bool Process();
 	//Output
 	void Render();
+	//Load
+	bool InitIntro(bool first);
+	bool InitLevel1();
 
 private:
 	unsigned char keys[256];
 	bool jump_key;
 	bool punch_key;
-	bool reappears;
-	int delay;
 	float cam_x, cam_y;
 	cScene Scene;
 	cPlayer Player;
@@ -42,6 +45,8 @@ private:
 	bool ring;
 	int money;
 	int score;
+	int stage;
+	unsigned int option;
 	std::vector<cMonster*> monsters;
 	std::vector<cBlock*> blocks;
 	cData Data;
