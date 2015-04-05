@@ -41,11 +41,13 @@ public:
 private:
 	unsigned char keys[256];
 	int rectangle;
+	int rectangle_player;
 	bool jump_key;
 	bool punch_key;
 	bool up_key;
 	bool down_key;
 	bool reappears;
+	int check_x, check_y;
 	int delay;
 	cRect cam;
 	cScene Scene;
@@ -62,6 +64,7 @@ private:
 	std::vector<cBlock*> blocks;
 	cData Data;
 
-	cRect GetBorder(const cPlayer &player);
+	cRect GetBorder();
 	int GetRectanglePlayer(const cPlayer &player);
+	void CalculateCamResurrect();
 };

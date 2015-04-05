@@ -165,13 +165,13 @@ bool cGame::Process()
 
 			if(keys[GLUT_KEY_LEFT]) 
 			{		
-				Player.MoveLeft(Scene.GetMap(), blocks, GetBorder(Player));	
+				Player.MoveLeft(Scene.GetMap(), blocks, GetBorder());	
 				keypressed=true;
 			}
 
 			else if(keys[GLUT_KEY_RIGHT]) 
 			{	
-				Player.MoveRight(Scene.GetMap(), blocks, GetBorder(Player));	
+				Player.MoveRight(Scene.GetMap(), blocks, GetBorder());	
 				keypressed=true;
 			}
 
@@ -181,24 +181,27 @@ bool cGame::Process()
 			//Game Logic
 			if(Player.isDead() && !Player.Appears(cam)) 
 			{
-				Player.Resurrect(3,113);
-				cam.left = Scene.GetRectangles(0)->left; //valor inicial rectangle
-				cam.bottom = Scene.GetRectangles(0)->top-CAM_HEIGHT; //valor inicial rectangle
+				Player.Resurrect(check_x,check_y);
+				CalculateCamResurrect();
 				reappears = true;
 				delay = 0;
 			}
 
-			if(!reappears && delay%20==0)
+			if(!reappears && delay%40==0)
 			{
-				int rect = GetRectanglePlayer(Player);
-				if(!Player.isSwimming() && Scene.GetIsWater(rect)==1) {
-					Player.Swim();
+				if(!Player.isDead())
+				{
+					rectangle_player = GetRectanglePlayer(Player);
+					if(!Player.isSwimming() && Scene.GetIsWater(rectangle_player)==1) {
+						Player.Swim();
+					}
 				}
+
 				for(unsigned int i = 0; i < monsters.size(); i++)
-					if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder(Player));
-				Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder(Player));
+					if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder());
+				Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder());
 				for(unsigned int i = 0; i < blocks.size(); i++)
-					if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,ring,lifes,monsters);
+					if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,lifes,monsters,check_x,check_y);
 			}
 
 			break;
@@ -322,25 +325,32 @@ void cGame::Render()
 			glDisable(GL_TEXTURE_2D);
 			break;
 		default:
-			if(!reappears && delay%20==0)
+			if(!reappears && delay%40==0)
 			{
-				int play_x, play_y;
-				Player.GetPosition(play_x, play_y);
+				if(!Player.isDead())
+				{
+					int play_x, play_y;
+					Player.GetPosition(play_x, play_y);
 
-				if(rectangle<(Scene.GetNumRects()-1) && cBicho::BoxInsideBox( *(Scene.GetRectangles(rectangle+1)), cam ) ) rectangle++;
+					if(rectangle<(Scene.GetNumRects()-1) && cBicho::BoxInsideBox( *(Scene.GetRectangles(rectangle+1)), cam ) ) 
+					{
+						rectangle++;
+						//check_x = Scene.GetRectangles(rectangle)->top; posicio inici nou rectangle
+					}
 				
-				int level_width = Scene.GetRectangles(rectangle)->right; 
-				int level_height = Scene.GetRectangles(rectangle)->top; 
+					int level_width = Scene.GetRectangles(rectangle)->right; 
+					int level_height = Scene.GetRectangles(rectangle)->top; 
 				
-				if( (play_x - cam.left) > (CAM_WIDTH / 2) ) cam.left = play_x - CAM_WIDTH / 2;
-				if( (play_y - cam.bottom) < (CAM_HEIGHT / 2) ) cam.bottom = play_y - CAM_HEIGHT / 2;
-				cam.top = cam.bottom + CAM_HEIGHT;
-				cam.right = cam.left + CAM_WIDTH;
+					if( (play_x - cam.left) > (CAM_WIDTH / 2) ) cam.left = play_x - CAM_WIDTH / 2;
+					if( (play_y - cam.bottom) < (CAM_HEIGHT / 2) ) cam.bottom = play_y - CAM_HEIGHT / 2;
+					cam.top = cam.bottom + CAM_HEIGHT;
+					cam.right = cam.left + CAM_WIDTH;
 				
-				cam.bottom = max(0, cam.bottom);
-				cam.left = min(cam.left, level_width - CAM_WIDTH);
-				cam.top = cam.bottom + CAM_HEIGHT;
-				cam.right = cam.left + CAM_WIDTH;
+					cam.bottom = max(0, cam.bottom);
+					cam.left = min(cam.left, level_width - CAM_WIDTH);
+					cam.top = cam.bottom + CAM_HEIGHT;
+					cam.right = cam.left + CAM_WIDTH;
+				}
 
 				glMatrixMode(GL_PROJECTION);
 				glLoadIdentity();
@@ -355,7 +365,8 @@ void cGame::Render()
 					if(blocks[i]->Appears(cam)) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
 				for(unsigned int i = 0; i < monsters.size(); i++) 
 					if(monsters[i]->Appears(cam)) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
-				Player.Draw(Data.GetID(IMG_PLAYER));
+				if(Player.isPoweredUp()) Player.Draw(Data.GetID(IMG_PLAYER_B));
+				else Player.Draw(Data.GetID(IMG_PLAYER));
 			}
 			else 
 			{	
@@ -446,9 +457,10 @@ bool cGame::InitLevel1() {
 	//Player initialization
 	res = Data.LoadImage(IMG_PLAYER,"Alex.png",GL_RGBA);
 	if(!res) return false;
-	int play_x,play_y;
-	Scene.GetPlayerInitPosition(&play_x,&play_y);
-	Player.SetTile(play_x,play_y); //init position
+	res = Data.LoadImage(IMG_PLAYER_B,"Alex_big.png",GL_RGBA);
+	if(!res) return false;
+	Scene.GetPlayerInitPosition(check_x, check_y);
+	Player.SetTile(check_x, check_y); //init position
 	Player.SetState(STATE_LOOKRIGHT);
 
 	res = Data.LoadImageA(IMG_ENEMY, "Monsters.png", GL_RGBA);
@@ -459,7 +471,7 @@ bool cGame::InitLevel1() {
 
 	//Creem monstres i blocks de prova
 	cPtero* Ptero = new cPtero();
-	Ptero->SetTile(8,113);
+	Ptero->SetTile(8,90);
 
 	cSFish* SFish = new cSFish();
 	SFish->SetTile(10,108);
@@ -481,9 +493,9 @@ bool cGame::InitLevel1() {
 	Block2->SetState(R_GREEN);
 
 	cBlock* Box1 = new cBlock();
-	Box1->SetTile(1,113);
-	Box1->SetState(STAR);
-	Box1->SetTreasure(BMON);
+	Box1->SetTile(10,86);
+	Box1->SetState(CHBX);
+	//Box1->SetTreasure(BMON);
 
 	cBlock* Box2 = new cBlock();
 	Box2->SetTile(6,112);
@@ -491,7 +503,8 @@ bool cGame::InitLevel1() {
 
 	cBlock* Box3 = new cBlock();
 	Box3->SetTile(0,115);
-	Box3->SetState(SKULL);
+	Box3->SetState(QUEST);
+	Box3->SetTreasure(RING);
 
 	monsters.push_back(Ptero);
 	monsters.push_back(Frog);
@@ -510,10 +523,9 @@ bool cGame::InitLevel1() {
 	return res;
 }
 
-cRect cGame::GetBorder(const cPlayer &player)
+cRect cGame::GetBorder()
 {
-	int p = GetRectanglePlayer(player);
-	cRect playRect = *(Scene.GetRectangles(p));
+	cRect playRect = *(Scene.GetRectangles(rectangle_player));
 	cRect camRect  = *(Scene.GetRectangles(rectangle));
 	cRect aux;
 	aux.top		= min(camRect.top,		playRect.top,		cam.top);
@@ -534,3 +546,35 @@ int cGame::GetRectanglePlayer(const cPlayer &player)
 	}
 	return i;
 }
+
+void cGame::CalculateCamResurrect()
+{
+	cRect playRect = *(Scene.GetRectangles(rectangle_player));
+	int x = (check_x * TILE_SIZE);
+	int y = (check_y * TILE_SIZE);
+	cam.left = x - (CAM_WIDTH/2);
+	cam.right = x + (CAM_WIDTH/2 +1);
+	cam.top = y + (CAM_HEIGHT/2);
+	cam.bottom = y - (CAM_HEIGHT/2 +1);
+	if(cam.left < playRect.left) 
+	{
+		cam.left = playRect.left;
+		cam.right = cam.left + CAM_WIDTH;
+	}
+	if(cam.right > playRect.right)
+	{
+		cam.right = playRect.right;
+		cam.left = cam.right - CAM_WIDTH;
+	}
+	if(cam.bottom < playRect.bottom)
+	{
+		cam.bottom = playRect.bottom;
+		cam.top = cam.bottom + CAM_HEIGHT;
+	}
+	if(cam.top > playRect.top)
+	{
+		cam.top = playRect.top;
+		cam.bottom = cam.top - CAM_HEIGHT;
+	}
+}
+	

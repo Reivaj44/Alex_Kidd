@@ -79,9 +79,9 @@ void cBlock::Destroy()
 void cBlock::SetState(int st) 
 {
 	cBicho::SetState(st);
-	if(st<=4) {
+	if(st<=4 || st>=11) {
 		collisionable = false;
-		y--;
+		if(st<=4) y--;
 	}
 	if(st==R_GREEN) green = true;
 }
@@ -94,34 +94,40 @@ void cBlock::Draw(int tex_id)
 		float xo,yo,xf,yf;
 		switch(GetState())
 		{
-			case SKULL:	xo = 0.0f; yo = 0.25f;
+			case SKULL:		xo = 0.0f; yo = 0.25f;
 									break;
 
-			case QUEST:	xo = 0.250f; yo = 0.25f;
+			case QUEST:		xo = 0.25f; yo = 0.25f;
 									break;
 
-			case STAR:	xo = 0.5f; yo = 0.25f;
+			case STAR:		xo = 0.5f; yo = 0.25f;
 									break;
 
 			case SKULL_P:	xo = 0.75f; yo = 0.25f;
 									break;
 
-			case BMON:	xo = 0.5f; yo = 0.5f;
+			case BMON:		xo = 0.5f; yo = 0.5f;
 									break;
 
-			case SMON:	xo = 0.75f; yo = 0.5f;
+			case SMON:		xo = 0.75f; yo = 0.5f;
 									break;
 
-			case RING:	xo = 0.0f; yo = 0.75f;
+			case RING:		xo = 0.0f; yo = 0.75f;
 									break;
 
-			case LIFE:	xo = 0.5f; yo= 0.75f;
+			case LIFE:		xo = 0.5f; yo= 0.75f;
 									break;
 
 			case R_BROWN:	xo = 0.0f; yo = 0.5f;
 									break;
 
-			case R_GREEN:	xo = 0.250f; yo = 0.5f;
+			case R_GREEN:	xo = 0.25f; yo = 0.5f;
+									break;
+
+			case CHBX:		xo = 0.25f; yo = 1.0f;
+									break;
+
+			case CHBXT:		xo = 0.5f; yo = 1.0f;
 									break;
 		}
 		xf = xo + 0.250;
@@ -130,7 +136,7 @@ void cBlock::Draw(int tex_id)
 	}
 }
 
-void cBlock::Logic(cPlayer &player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters)
+void cBlock::Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster*> &monsters, int &check_x, int &check_y)
 {
 	if(state==SKULL_P)
 	{
@@ -163,10 +169,11 @@ void cBlock::Logic(cPlayer &player, int &money, bool &ring, int &lifes, std::vec
 		{
 			case BMON: money+=20; break;
 			case SMON: money+=10; break;
-			case RING: ring = true; break;
+			case RING: player.PowerUp(); break;
 			case LIFE: lifes++; break;
+			case CHBX: GetTile(check_x,check_y); SetState(CHBXT); break;
 		}
-		SetState(STATE_DISAPPEARED);
+		if(state!=CHBXT && state!=CHBX) SetState(STATE_DISAPPEARED);
 	}
 
 }

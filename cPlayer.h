@@ -41,6 +41,7 @@ public:
 	bool isPunching();
 	bool isDead();
 	bool isSwimming();
+	bool isPoweredUp();
 
 	void MoveRight(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle);
 	void MoveLeft(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle);
@@ -52,6 +53,7 @@ public:
 	void Poison();
 	void Swim();
 	void Resurrect(int tile_x, int tile_y);
+	void PowerUp();
 
 	void SetState(int s);
 
@@ -64,6 +66,7 @@ private:
 	bool intheair;
 	bool punching;
 	bool swimming;
+	bool mario_jump;
 
 	bool jumping;
 	int jump_alfa;

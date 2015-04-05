@@ -9,6 +9,7 @@ cPlayer::cPlayer()
 	left = false;
 	swimming = false;
 	poisoned = false;
+	mario_jump = false;
 	retard = 0;
 	punch_delay = 0;
 	w = 64;
@@ -270,6 +271,9 @@ void cPlayer::Resurrect(int tile_x, int tile_y)
 	if(swimming) SetState(STATE_SWIMRIGHT);
 	else SetState(STATE_LOOKRIGHT);
 	SetTile(tile_x, tile_y);
+	mario_jump = false;
+	jumping = false;
+	intheair = false;
 }
 
 void cPlayer::SetState(int s)
@@ -291,6 +295,16 @@ void cPlayer::SetState(int s)
 	if( state==STATE_PUNCHLEFT	|| state==STATE_PUNCHRIGHT	|| state==STATE_SPUNCHLEFT	|| state==STATE_SPUNCHRIGHT) punching = true;
 	else punching = false;
 	ChangeBox();
+}
+
+void cPlayer::PowerUp()
+{
+	mario_jump = true;
+}
+
+bool cPlayer::isPoweredUp()
+{
+	return mario_jump;
 }
 
 void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks, const cRect &rectangle)

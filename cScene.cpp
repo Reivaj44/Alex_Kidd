@@ -152,7 +152,7 @@ int cScene::GetIsWater(int i) {
 	return isWater[i];
 }
 
-void cScene::GetPlayerInitPosition(int* x, int* y) {
-	*x = player_x;
-	*y = player_y;
+void cScene::GetPlayerInitPosition(int &x, int &y) {
+	x = player_x;
+	y = player_y;
 }
