@@ -43,6 +43,8 @@ private:
 	int rectangle;
 	bool jump_key;
 	bool punch_key;
+	bool up_key;
+	bool down_key;
 	bool reappears;
 	int delay;
 	cRect cam;

@@ -10,6 +10,8 @@ cGame::cGame(void)
 {
 	jump_key = false;
 	punch_key = false;
+	up_key = false;
+	down_key = false;
 	reappears = false;
 	delay = 0;
 	lifes = 3;
@@ -71,6 +73,8 @@ void cGame::ReadKeyboard(unsigned char key, int x, int y, bool press)
 	keys[key] = press;
 	if(key=='c' && !press) jump_key=false;
 	if(key=='x' && !press) punch_key=false;
+	if(key==GLUT_KEY_DOWN && !press) down_key = false;
+	if(key==GLUT_KEY_UP && !press) up_key = false;
 }
 
 void cGame::ReadMouse(int button, int state, int x, int y)
@@ -87,7 +91,7 @@ bool cGame::Process()
 
 	switch (stage) {
 		case IMG_INTRO:
-			if(keys['x']) {
+			if(keys['x'] && !punch_key) {
 				switch (option) {
 					case IMG_INSTRUC:
 						res = InitInstrucc();
@@ -100,34 +104,40 @@ bool cGame::Process()
 						//res = InitLevel1();
 						break;
 				}
+				punch_key=true;
 			}
 
-			if(keys[GLUT_KEY_UP]) 
+			if(keys[GLUT_KEY_UP] && !up_key) 
 			{		
 				if(option==0)
 					option = 2;
 				else
 					option--;
+				up_key = true;
 			}
-			else if(keys[GLUT_KEY_DOWN]) 
+			else if(keys[GLUT_KEY_DOWN] && !down_key) 
 			{		
 				option = (option + 1)%3;
+				down_key = true;
 			}
 
 			break;
 		case IMG_INSTRUC:
-			if(keys['x']) {
+			if(keys['x'] && !punch_key) {
 				res = InitIntro();
+				punch_key=true;
 			}
 			break;
 		case IMG_CREDITS:
-			if(keys['x']) {
+			if(keys['x'] && !punch_key) {
 				res = InitIntro();
+				punch_key=true;
 			}
 			break;
 		case IMG_MAP:
-			if(keys['x']) {
+			if(keys['x'] && !punch_key) {
 				res = InitLevel1();
+				punch_key=true;
 			}
 			break;
 		default:
