@@ -55,6 +55,11 @@ void cPlayer::UpdateBox()
 	punchbox.left = x + ipunchbox.left;
 	punchbox.right = x + ipunchbox.right;
 
+	mariobox.bottom = y + imariobox.bottom;
+	mariobox.top = y + imariobox.top;
+	mariobox.left = x + imariobox.left;
+	mariobox.right = x + imariobox.right;
+
 	if(left)
 	{
 		punchbox.left = x + 63 - ipunchbox.right;
@@ -66,6 +71,8 @@ void cPlayer::ChangeBox()
 {
 	ipunchbox.left = 32; ipunchbox.right = 32;
 	ipunchbox.bottom = 16; ipunchbox.top = 16;
+	imariobox.left = 32; imariobox.right = 32;
+	imariobox.bottom = 16; imariobox.top = 16;
 	if(swimming) 
 	{
 		ibodybox.left = 31-8;	ibodybox.right = 32 + 8;
@@ -85,7 +92,14 @@ void cPlayer::ChangeBox()
 			ipunchbox.left = 16+22; ipunchbox.right = 16+30;
 			ipunchbox.bottom = 12; ipunchbox.top = 19;
 		}
+		if(mario_jump)
+		{
+			imariobox.left = 16+10; imariobox.right = 16+31-10;
+			imariobox.bottom = 4; imariobox.top = 5;
+		}
+
 	}
+	
 	UpdateBox();
 }
 
@@ -251,6 +265,8 @@ void cPlayer::Jump(int *map)
 void cPlayer::Die()
 {
 	SetState(STATE_DEAD);
+	PlaySound(TEXT("Sounds/nada.wav"), NULL, SND_ASYNC);
+	mciSendString("play SOUNDS/smb_mariodie.wav", NULL, 0, NULL);
 }
 
 void cPlayer::Poison()
@@ -268,8 +284,16 @@ void cPlayer::Swim()
 
 void cPlayer::Resurrect(int tile_x, int tile_y)
 {
-	if(swimming) SetState(STATE_SWIMRIGHT);
-	else SetState(STATE_LOOKRIGHT);
+	if(swimming) 
+	{
+		SetState(STATE_SWIMRIGHT);
+		PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
+	}
+	else
+	{
+		SetState(STATE_LOOKRIGHT);
+		PlaySound(TEXT("Sounds/04-Underwater.wav"), NULL, SND_ASYNC | SND_LOOP);
+	}
 	SetTile(tile_x, tile_y);
 	mario_jump = false;
 	jumping = false;
@@ -300,6 +324,7 @@ void cPlayer::SetState(int s)
 void cPlayer::PowerUp()
 {
 	mario_jump = true;
+	ChangeBox();
 }
 
 bool cPlayer::isPoweredUp()
@@ -369,6 +394,16 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				if(jump_alfa > 90)
 				{
 					//Over floor?
+					if(mario_jump)
+						for(unsigned int i = 0; i < monsters.size(); i++) 
+							if(!monsters[i]->isDead() && monsters[i]->CollidesBox(mariobox))
+							{
+								monsters[i]->Die();
+								jumping = true;
+								intheair = true;
+								jump_alfa = 0;
+								jump_y = y;
+							}
 					if(CollidesMapFloor(map,blocks))
 					{	jumping=false;
 						intheair=false;

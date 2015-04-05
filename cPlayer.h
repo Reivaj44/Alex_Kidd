@@ -77,6 +77,9 @@ private:
 	cRect ipunchbox;
 	int punch_delay;
 
+	cRect mariobox;
+	cRect imariobox;
+
 	bool poisoned;
 	int retard;
 

@@ -51,6 +51,7 @@ void cBlock::Destroy()
 {
 	if(collisionable)
 	{
+		mciSendString("play SOUNDS/smb_breakblock.wav", NULL, 0, NULL);
 		if(state!=SKULL && state!=SKULL_P && state!=R_BROWN && state!=R_GREEN)
 		{
 			SetState(treasure);
@@ -167,11 +168,11 @@ void cBlock::Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster
 	{
 		switch(GetState())
 		{
-			case BMON: money+=20; break;
-			case SMON: money+=10; break;
-			case RING: player.PowerUp(); break;
-			case LIFE: lifes++; break;
-			case CHBX: GetTile(check_x,check_y); SetState(CHBXT); break;
+			case BMON: money+=20; mciSendString("play SOUNDS/smb_coin.wav", NULL, 0, NULL); break;
+			case SMON: money+=10; mciSendString("play SOUNDS/smb_coin.wav", NULL, 0, NULL); break;
+			case RING: player.PowerUp(); mciSendString("play SOUNDS/smb_powerup.wav", NULL, 0, NULL); break;
+			case LIFE: lifes++; mciSendString("play SOUNDS/smb_1-up.wav", NULL, 0, NULL); break;
+			case CHBX: GetTile(check_x,check_y); mciSendString("play SOUNDS/smb3_pause.wav", NULL, 0, NULL); SetState(CHBXT); break;
 		}
 		if(state!=CHBXT && state!=CHBX) SetState(STATE_DISAPPEARED);
 	}

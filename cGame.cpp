@@ -187,13 +187,14 @@ bool cGame::Process()
 				delay = 0;
 			}
 
-			if(!reappears && delay%40==0)
+			if(!reappears && delay%100==0)
 			{
 				if(!Player.isDead())
 				{
 					rectangle_player = GetRectanglePlayer(Player);
 					if(!Player.isSwimming() && Scene.GetIsWater(rectangle_player)==1) {
 						Player.Swim();
+						PlaySound(TEXT("Sounds/04-Underwater.wav"), NULL, SND_ASYNC);
 					}
 				}
 
@@ -325,7 +326,7 @@ void cGame::Render()
 			glDisable(GL_TEXTURE_2D);
 			break;
 		default:
-			if(!reappears && delay%40==0)
+			if(!reappears && delay%100==0)
 			{
 				if(!Player.isDead())
 				{
@@ -471,7 +472,7 @@ bool cGame::InitLevel1() {
 
 	//Creem monstres i blocks de prova
 	cPtero* Ptero = new cPtero();
-	Ptero->SetTile(8,90);
+	Ptero->SetTile(8,113);
 
 	cSFish* SFish = new cSFish();
 	SFish->SetTile(10,108);
@@ -490,7 +491,8 @@ bool cGame::InitLevel1() {
 
 	cBlock* Block2 = new cBlock();
 	Block2->SetTile(10,113);
-	Block2->SetState(R_GREEN);
+	Block2->SetState(STAR);
+	Block2->SetTreasure(BMON);
 
 	cBlock* Box1 = new cBlock();
 	Box1->SetTile(10,86);
@@ -507,7 +509,7 @@ bool cGame::InitLevel1() {
 	Box3->SetTreasure(RING);
 
 	monsters.push_back(Ptero);
-	monsters.push_back(Frog);
+	//monsters.push_back(Frog);
 	//monsters.push_back(SFish);
 	//monsters.push_back(Ghost);
 	//monsters.push_back(Miniboss);
@@ -518,7 +520,7 @@ bool cGame::InitLevel1() {
 	blocks.push_back(Box2);
 	blocks.push_back(Box3);
 
-	//PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP); // CACTUS: activar
+	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP); // CACTUS: activar
 
 	return res;
 }
@@ -528,9 +530,9 @@ cRect cGame::GetBorder()
 	cRect playRect = *(Scene.GetRectangles(rectangle_player));
 	cRect camRect  = *(Scene.GetRectangles(rectangle));
 	cRect aux;
-	aux.top		= min(camRect.top,		playRect.top,		cam.top);
+	aux.top		= min(camRect.top,		min(playRect.top,		cam.top));
 	aux.bottom	= min(camRect.bottom,	playRect.bottom);
-	aux.left	= min(camRect.left,		playRect.left,		cam.left);
+	aux.left	= max(camRect.left,		max(playRect.left,		cam.left));
 	aux.right	= min(camRect.right,	playRect.right);
 	return aux;
 }
