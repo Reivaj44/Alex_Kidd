@@ -42,13 +42,13 @@ bool cScene::LoadLevel(int level)
 				int w;
 				cRect* rec = new cRect();
 				fscanf(fd,"%f",&f);
-				rec->top = f;
+				rec->top = f*16+15;
 				fscanf(fd,"%f",&f);
-				rec->bottom = f;
+				rec->bottom = f*16;
 				fscanf(fd,"%f",&f);
-				rec->left = f;
+				rec->left = f*16;
 				fscanf(fd,"%f",&f);
-				rec->right = f;
+				rec->right = f*16+15;
 				rects.push_back(rec);
 				
 				fscanf(fd,"%d",&water);
