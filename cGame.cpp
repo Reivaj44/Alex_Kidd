@@ -144,13 +144,13 @@ bool cGame::Process()
 
 			if(keys[GLUT_KEY_LEFT]) 
 			{		
-				Player.MoveLeft(Scene.GetMap(), blocks, *(Scene.GetRectangles(rectangle)));	
+				Player.MoveLeft(Scene.GetMap(), blocks, GetBorder(Player));	
 				keypressed=true;
 			}
 
 			else if(keys[GLUT_KEY_RIGHT]) 
 			{	
-				Player.MoveRight(Scene.GetMap(), blocks, *(Scene.GetRectangles(rectangle)));	
+				Player.MoveRight(Scene.GetMap(), blocks, GetBorder(Player));	
 				keypressed=true;
 			}
 
@@ -161,27 +161,21 @@ bool cGame::Process()
 			if(Player.isDead() && !Player.Appears(cam)) 
 			{
 				Player.Resurrect(3,113);
-				cam.left = Scene.GetRectangles(0)->left*16; //valor inicial rectangle
-				cam.bottom = Scene.GetRectangles(0)->top*16-CAM_HEIGHT; //valor inicial rectangle
+				cam.left = Scene.GetRectangles(0)->left; //valor inicial rectangle
+				cam.bottom = Scene.GetRectangles(0)->top-CAM_HEIGHT; //valor inicial rectangle
 				reappears = true;
 				delay = 0;
 			}
 
 			if(!reappears && delay%20==0)
 			{
-				unsigned int i = 0; 
-				bool rect_found = false;
-				while (i < Scene.GetNumRects() && !rect_found) 
-				{	
-					if(cBicho::BoxInsideBox( *(Scene.GetRectangles(i)), Player.GetBodyBox() ) ) rect_found = true;
-					else i++;
-				}
-				if(!Player.isSwimming() && rect_found && Scene.GetIsWater(i)==1) {
+				int rect = GetRectanglePlayer(Player);
+				if(!Player.isSwimming() && Scene.GetIsWater(rect)==1) {
 					Player.Swim();
 				}
 				for(unsigned int i = 0; i < monsters.size(); i++)
-					if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, *(Scene.GetRectangles(rectangle)));
-				Player.Logic(Scene.GetMap(),monsters, blocks, *(Scene.GetRectangles(rectangle)));
+					if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder(Player));
+				Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder(Player));
 				for(unsigned int i = 0; i < blocks.size(); i++)
 					if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,ring,lifes,monsters);
 			}
@@ -215,8 +209,8 @@ void cGame::Render()
 
 				if(rectangle<(Scene.GetNumRects()-1) && cBicho::BoxInsideBox( *(Scene.GetRectangles(rectangle+1)), cam ) ) rectangle++;
 				
-				int level_width = Scene.GetRectangles(rectangle)->right*16; 
-				int level_height = Scene.GetRectangles(rectangle)->top*16; 
+				int level_width = Scene.GetRectangles(rectangle)->right; 
+				int level_height = Scene.GetRectangles(rectangle)->top; 
 				
 				if( (play_x - cam.left) > (CAM_WIDTH / 2) ) cam.left = play_x - CAM_WIDTH / 2;
 				if( (play_y - cam.bottom) < (CAM_HEIGHT / 2) ) cam.bottom = play_y - CAM_HEIGHT / 2;
@@ -291,8 +285,8 @@ bool cGame::InitLevel1() {
 	res = Scene.LoadLevel(3); // CACTUS: canviar num
 	if(!res) return false;
 
-	cam.left = Scene.GetRectangles(0)->left*16;
-	cam.top = Scene.GetRectangles(0)->top*16;
+	cam.left = Scene.GetRectangles(0)->left;
+	cam.top = Scene.GetRectangles(0)->top;
 	cam.bottom = cam.top - CAM_HEIGHT;
 	cam.right = cam.left + CAM_WIDTH;
 	
@@ -303,7 +297,6 @@ bool cGame::InitLevel1() {
 	Scene.GetPlayerInitPosition(&play_x,&play_y);
 	Player.SetTile(play_x,play_y); //init position
 	Player.SetState(STATE_LOOKRIGHT);
-	//Player.Swim();
 
 	res = Data.LoadImageA(IMG_ENEMY, "Monsters.png", GL_RGBA);
 	if(!res) return false;
@@ -358,4 +351,29 @@ bool cGame::InitLevel1() {
 	//PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP); // CACTUS: activar
 
 	return res;
+}
+
+cRect cGame::GetBorder(const cPlayer &player)
+{
+	int p = GetRectanglePlayer(player);
+	cRect playRect = *(Scene.GetRectangles(p));
+	cRect camRect  = *(Scene.GetRectangles(rectangle));
+	cRect aux;
+	aux.top		= min(camRect.top,		playRect.top,		cam.top);
+	aux.bottom	= min(camRect.bottom,	playRect.bottom);
+	aux.left	= min(camRect.left,		playRect.left,		cam.left);
+	aux.right	= min(camRect.right,	playRect.right);
+	return aux;
+}
+
+int cGame::GetRectanglePlayer(const cPlayer &player)
+{
+	unsigned int i = 0; 
+	bool rect_found = false;
+	while (i < Scene.GetNumRects() && !rect_found) 
+	{	
+		if(Player.InBox( *(Scene.GetRectangles(i))) ) rect_found = true;
+		else i++;
+	}
+	return i;
 }

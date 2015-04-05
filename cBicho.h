@@ -30,7 +30,6 @@ public:
 	cRect GetBodyBox();
 
 	virtual bool Appears(const cRect &cam);
-	bool Collides(const cRect &rc);
 	bool CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks, const cRect &rectangle);
 	bool CollidesMapFloor(int *map, std::vector<cBlock*> &blocks);
 	bool CollidesMapCeil(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle);
@@ -47,7 +46,9 @@ public:
 
 	virtual void Draw(int tex_id) = 0;
 
-	static bool BoxInsideBox(cRect& BigBox, cRect& SmallBox);
+	static bool CollidesBorder(const cRect &box, const cRect &border);
+	static bool BoxInsideBox(const cRect& BigBox, const cRect& SmallBox);
+	bool InBox(const cRect &box);
 	
 protected:
 	float x,y;

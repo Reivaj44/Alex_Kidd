@@ -9,8 +9,8 @@
 
 #define GAME_WIDTH	640
 #define GAME_HEIGHT 480
-#define CAM_WIDTH 256
-#define CAM_HEIGHT 192
+#define CAM_WIDTH 255
+#define CAM_HEIGHT 191
 #define CAM_STEP 0.1
 
 
@@ -54,4 +54,7 @@ private:
 	std::vector<cMonster*> monsters;
 	std::vector<cBlock*> blocks;
 	cData Data;
+
+	cRect GetBorder(const cPlayer &player);
+	int GetRectanglePlayer(const cPlayer &player);
 };
