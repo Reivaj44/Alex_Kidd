@@ -32,7 +32,9 @@ public:
 	//Output
 	void Render();
 	//Load
-	bool InitIntro(bool first);
+	bool InitIntro();
+	bool InitInstrucc();
+	bool InitCredits();
 	bool InitLevel1();
 
 private:
@@ -50,7 +52,7 @@ private:
 	int money;
 	int score;
 	int stage;
-	unsigned int option;
+	int option;
 	std::vector<cMonster*> monsters;
 	std::vector<cBlock*> blocks;
 	cData Data;

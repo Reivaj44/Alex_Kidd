@@ -41,7 +41,7 @@ bool cGame::Init()
 	//Scene initialization
 	/**/
 	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
-	res = InitIntro(true);
+	res = InitIntro();
 
 	return res;
 }
@@ -90,11 +90,11 @@ bool cGame::Process()
 				switch (option) {
 					case IMG_INSTRUC:
 						stage = option;
-
+						res = InitInstrucc();
 						break;
 					case IMG_CREDITS:
 						stage = option;
-
+						res = InitCredits();
 						break;
 					default:
 						stage = 4;
@@ -103,20 +103,26 @@ bool cGame::Process()
 				}
 			}
 
-			/*if(keys[GLUT_KEY_UP]) 
+			if(keys[GLUT_KEY_UP]) 
 			{		
-				option = (option - 1)%3;
+				if(option==0)
+					option = 2;
+				else
+					option--;
 			}
-			if(keys[GLUT_KEY_DOWN]) 
+			else if(keys[GLUT_KEY_DOWN]) 
 			{		
 				option = (option + 1)%3;
-			}*/
+			}
 
 			break;
 		case IMG_INSTRUC:
 			stage++;
 			break;
 		case IMG_CREDITS:
+			stage++;
+			break;
+		case IMG_MAP:
 			stage++;
 			break;
 		default:
@@ -200,12 +206,77 @@ void cGame::Render()
 	bool res = true;
 	
 	switch (stage) {
-		case 0:
-			res = InitIntro(false);
+		case IMG_INTRO:
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluOrtho2D(-320,320,-240,240);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_INTRO));
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.0,1.0);	glVertex2i(-320,-240);
+				glTexCoord2f(1.0,1.0);	glVertex2i(320,-240);
+				glTexCoord2f(1.0,0.0);	glVertex2i(320,240);
+				glTexCoord2f(0.0,0.0);	glVertex2i(-320,240);
+			glEnd();
+			int arr_x,arr_y;
+			switch (option) {
+				case 0: //-20,-63
+					arr_x = -20;
+					arr_y = -63;
+					break;
+				case 1: //-60,-130
+					arr_x = -60;
+					arr_y = -130;
+					break;
+				case 2: //8,-195
+					arr_x = 8;
+					arr_y = -195;
+					break;
+			}
+			glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_ARROWS));
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.0,1.0);	glVertex2i(arr_x-8,arr_y-8);
+				glTexCoord2f(0.5,1.0);	glVertex2i(arr_x+8,arr_y-8);
+				glTexCoord2f(0.5,0.0);	glVertex2i(arr_x+8,arr_y+8);
+				glTexCoord2f(0.0,0.0);	glVertex2i(arr_x-8,arr_y+8);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
 			break;
-		case 1:
+		case IMG_INSTRUC:
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluOrtho2D(-320,320,-240,240);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_INSTRUC));
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.0,1.0);	glVertex2i(-320,-240);
+				glTexCoord2f(1.0,1.0);	glVertex2i(320,-240);
+				glTexCoord2f(1.0,0.0);	glVertex2i(320,240);
+				glTexCoord2f(0.0,0.0);	glVertex2i(-320,240);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
 			break;
-		case 2:
+		case IMG_CREDITS:
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluOrtho2D(-320,320,-240,240);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_CREDITS));
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.0,1.0);	glVertex2i(-320,-240);
+				glTexCoord2f(1.0,1.0);	glVertex2i(320,-240);
+				glTexCoord2f(1.0,0.0);	glVertex2i(320,240);
+				glTexCoord2f(0.0,0.0);	glVertex2i(-320,240);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+			break;
+		case IMG_MAP:
 			break;
 		default:
 			if(!reappears && delay%20==0)
@@ -254,33 +325,41 @@ void cGame::Render()
 	glutSwapBuffers();
 }
 
-bool cGame::InitIntro(bool first) {
+bool cGame::InitIntro() {
 	bool res = true;
 
-	if (first) {
-		option = 0;
-		res = Data.LoadImage(IMG_INTRO, "start_menu.png",GL_RGBA);
-		if(!res) return false;
-	}
-	else {
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		gluOrtho2D(-320,320,-240,240);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_INTRO));
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0,1.0);	glVertex2i(-320,-240);
-			glTexCoord2f(1.0,1.0);	glVertex2i(320,-240);
-			glTexCoord2f(1.0,0.0);	glVertex2i(320,240);
-			glTexCoord2f(0.0,0.0);	glVertex2i(-320,240);
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
-	}
+	option = 0;
+	res = Data.LoadImage(IMG_INTRO, "start_menu.png",GL_RGBA);
+	if(!res) return false;
+	res = Data.LoadImage(IMG_ARROWS, "arrows.png",GL_RGBA);
+	if(!res) return false;
 
 	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
+	
+	return res;
+}
 
+bool cGame::InitInstrucc() {
+	bool res = true;
+
+	option = 0;
+	res = Data.LoadImage(IMG_INSTRUC, "instructions.png",GL_RGBA);
+	if(!res) return false;
+
+	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
+	
+	return res;
+}
+
+bool cGame::InitCredits() {
+	bool res = true;
+
+	option = 0;
+	res = Data.LoadImage(IMG_CREDITS, "credits.png",GL_RGBA);
+	if(!res) return false;
+
+	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
+	
 	return res;
 }
 
