@@ -89,16 +89,14 @@ bool cGame::Process()
 			if(keys['x']) {
 				switch (option) {
 					case IMG_INSTRUC:
-						stage = option;
 						res = InitInstrucc();
 						break;
 					case IMG_CREDITS:
-						stage = option;
 						res = InitCredits();
 						break;
 					default:
-						stage = 4;
-						res = InitLevel1();
+						res = InitMap(1);
+						//res = InitLevel1();
 						break;
 				}
 			}
@@ -117,13 +115,19 @@ bool cGame::Process()
 
 			break;
 		case IMG_INSTRUC:
-			stage++;
+			if(keys['x']) {
+				res = InitIntro();
+			}
 			break;
 		case IMG_CREDITS:
-			stage++;
+			if(keys['x']) {
+				res = InitIntro();
+			}
 			break;
 		case IMG_MAP:
-			stage++;
+			if(keys['x']) {
+				res = InitLevel1();
+			}
 			break;
 		default:
 			bool keypressed = false;
@@ -271,6 +275,20 @@ void cGame::Render()
 			glDisable(GL_TEXTURE_2D);
 			break;
 		case IMG_MAP:
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluOrtho2D(-320,320,-240,240);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_MAP));
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.0,1.0);	glVertex2i(-320,-240);
+				glTexCoord2f(1.0,1.0);	glVertex2i(320,-240);
+				glTexCoord2f(1.0,0.0);	glVertex2i(320,240);
+				glTexCoord2f(0.0,0.0);	glVertex2i(-320,240);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
 			break;
 		default:
 			if(!reappears && delay%20==0)
@@ -322,6 +340,7 @@ void cGame::Render()
 bool cGame::InitIntro() {
 	bool res = true;
 
+	stage = IMG_INTRO;
 	option = 0;
 	res = Data.LoadImage(IMG_INTRO, "start_menu.png",GL_RGBA);
 	if(!res) return false;
@@ -336,11 +355,10 @@ bool cGame::InitIntro() {
 bool cGame::InitInstrucc() {
 	bool res = true;
 
+	stage = IMG_INSTRUC;
 	option = 0;
 	res = Data.LoadImage(IMG_INSTRUC, "instructions.png",GL_RGBA);
 	if(!res) return false;
-
-	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
 	
 	return res;
 }
@@ -348,17 +366,28 @@ bool cGame::InitInstrucc() {
 bool cGame::InitCredits() {
 	bool res = true;
 
+	stage = IMG_CREDITS;
 	option = 0;
 	res = Data.LoadImage(IMG_CREDITS, "credits.png",GL_RGBA);
 	if(!res) return false;
+	
+	return res;
+}
 
-	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
+bool cGame::InitMap(int lvl) {
+	bool res = true;
+
+	stage = IMG_MAP;
+	option = 0;
+	res = Data.LoadImage(IMG_MAP, "world_map.png",GL_RGBA);
+	if(!res) return false;
 	
 	return res;
 }
 
 bool cGame::InitLevel1() {
 	bool res = true;
+	stage = 4;
 	res = Data.LoadImage(IMG_TILES,"Pantalla01.png",GL_RGBA);
 	if(!res) return false;
 	res = Scene.LoadLevel(3); // CACTUS: canviar num

@@ -35,6 +35,7 @@ public:
 	bool InitIntro();
 	bool InitInstrucc();
 	bool InitCredits();
+	bool InitMap(int lvl);
 	bool InitLevel1();
 
 private:
