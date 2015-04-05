@@ -54,6 +54,8 @@ private:
 	int score;
 	int stage;
 	int option;
+	int arr_x,arr_y;
+	int eat_x,eat_y;
 	std::vector<cMonster*> monsters;
 	std::vector<cBlock*> blocks;
 	cData Data;

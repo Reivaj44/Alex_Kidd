@@ -3,6 +3,7 @@
 #include "cPtero.h"
 #include "cSFish.h"
 #include "cGhost.h"
+#include "cFrog.h"
 #include "cMiniboss.h"
 
 cGame::cGame(void)
@@ -218,10 +219,9 @@ void cGame::Render()
 				glTexCoord2f(1.0,0.0);	glVertex2i(320,240);
 				glTexCoord2f(0.0,0.0);	glVertex2i(-320,240);
 			glEnd();
-			int arr_x,arr_y;
 			switch (option) {
-				case 0: //-20,-63
-					arr_x = -20;
+				case 0: //30,-63
+					arr_x = 30;
 					arr_y = -63;
 					break;
 				case 1: //-60,-130
@@ -288,6 +288,27 @@ void cGame::Render()
 				glTexCoord2f(1.0,0.0);	glVertex2i(320,240);
 				glTexCoord2f(0.0,0.0);	glVertex2i(-320,240);
 			glEnd();
+			delay++;
+			
+
+			glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_ARROWS));
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.5,1.0);	glVertex2i(arr_x-8,arr_y-8);
+				glTexCoord2f(1.0,1.0);	glVertex2i(arr_x+8,arr_y-8);
+				glTexCoord2f(1.0,0.0);	glVertex2i(arr_x+8,arr_y+8);
+				glTexCoord2f(0.5,0.0);	glVertex2i(arr_x-8,arr_y+8);
+			glEnd();
+
+			eat_x = 260;
+			eat_y = -150;
+			glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_EATING));
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.0,1.0);	glVertex2i(eat_x-32,eat_y-64);
+				glTexCoord2f(0.5,1.0);	glVertex2i(eat_x+32,eat_y-64);
+				glTexCoord2f(0.5,0.0);	glVertex2i(eat_x+32,eat_y+64);
+				glTexCoord2f(0.0,0.0);	glVertex2i(eat_x-32,eat_y+64);
+			glEnd();
+
 			glDisable(GL_TEXTURE_2D);
 			break;
 		default:
@@ -378,9 +399,23 @@ bool cGame::InitMap(int lvl) {
 	bool res = true;
 
 	stage = IMG_MAP;
-	option = 0;
+	delay = 0;
+	switch (lvl) {
+		case 1: //-139,-45
+			arr_x = -139;
+			arr_y = -45;
+			break;
+		case 2: //-154,-17
+			arr_x = -154;
+			arr_y = -17;
+			break;
+	}
 	res = Data.LoadImage(IMG_MAP, "world_map.png",GL_RGBA);
 	if(!res) return false;
+	res = Data.LoadImage(IMG_EATING, "alex_eating.png",GL_RGBA);
+	if(!res) return false;
+
+	//PlaySound(TEXT("Sounds/02-Level_Start.wav"), NULL, SND_ASYNC); // CACTUS: activar
 	
 	return res;
 }
@@ -425,6 +460,9 @@ bool cGame::InitLevel1() {
 	cMiniboss* Miniboss = new cMiniboss();
 	Miniboss->SetTile(10,107);
 
+	cFrog* Frog = new cFrog();
+	Frog->SetTile(7,110);
+
 	cBlock* Block1 = new cBlock();
 	Block1->SetTile(5,113);
 
@@ -446,6 +484,7 @@ bool cGame::InitLevel1() {
 	Box3->SetState(SKULL);
 
 	monsters.push_back(Ptero);
+	monsters.push_back(Frog);
 	//monsters.push_back(SFish);
 	//monsters.push_back(Ghost);
 	//monsters.push_back(Miniboss);
