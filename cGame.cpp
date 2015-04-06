@@ -41,9 +41,6 @@ bool cGame::Init()
 	glAlphaFunc(GL_GREATER, 0.05f);
 	glEnable(GL_ALPHA_TEST);
 
-	//Scene initialization
-	/**/
-	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
 	res = InitIntro();
 
 	return res;
@@ -416,6 +413,8 @@ bool cGame::InitInstrucc() {
 	res = Data.LoadImage(IMG_INSTRUC, "instructions.png",GL_RGBA);
 	if(!res) return false;
 	
+	PlaySound(TEXT("Sounds/tloz-overworld.wav"), NULL, SND_ASYNC); // CACTUS: activar
+
 	return res;
 }
 
