@@ -363,12 +363,14 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 		{
 			unsigned int i = 0;
 			bool monster_dead = false;
+			bool monster_sound = false;
 			while(i < monsters.size() && !monster_dead)
 			{
 				if(!monsters[i]->isDead() && monsters[i]->CollidesBox(punchbox)) 
 				{
 					monsters[i]->Die();
 					monster_dead = true;
+					monster_sound = monsters[i]->isDead();
 				}
 				i++;
 			}
@@ -383,7 +385,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				}
 				i++;
 			}
-			if(first_punch && !destroy_block) 
+			if(first_punch && (!destroy_block || !monster_sound) 
 			{
 				mciSendString("play SOUNDS/punch.wav", NULL, 0, NULL);
 			}
