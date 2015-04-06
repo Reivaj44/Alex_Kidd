@@ -5,7 +5,7 @@ cScorpion::cScorpion(void)
 {
 	state = STATE_LEFT;
 	ibodybox.left = 9; ibodybox.right = 31-9;
-	ibodybox.bottom = 13; ibodybox.top = 31-13;
+	ibodybox.bottom = 12; ibodybox.top = 31-12;
 }
 
 

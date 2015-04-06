@@ -517,7 +517,7 @@ bool cGame::InitLevel1() {
 	if(!res) return false;
 
 	//Creem monstres i blocks de prova
-	cPtero* Ptero = new cPtero();
+	cScorpion* Ptero = new cScorpion();
 	Ptero->SetTile(8,113);
 
 	cSFish* SFish = new cSFish();
@@ -599,7 +599,7 @@ bool cGame::InitLevel2() {
 	if(!res) return false;
 	res = Data.LoadImage(IMG_PLAYER_B,"Alex_big.png",GL_RGBA);
 	if(!res) return false;
-	Scene.GetPlayerInitPosition(&check_x, &check_y,0);
+	Scene.GetPlayerInitPosition(check_x, check_y,0);
 	Player.SetTile(check_x, check_y); //init position
 	Player.SetState(STATE_LOOKRIGHT);
 
@@ -610,7 +610,7 @@ bool cGame::InitLevel2() {
 	if(!res) return false;
 
 	//Creem monstres i blocks de prova
-	cPtero* Ptero = new cPtero();
+	cScorpion* Ptero = new cScorpion();
 	Ptero->SetTile(8,113);
 
 	cSFish* SFish = new cSFish();
