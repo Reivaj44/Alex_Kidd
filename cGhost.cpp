@@ -48,7 +48,7 @@ void cGhost::Draw(int tex_id)
 	DrawRect(tex_id,xo,yo,xf,yf);
 }
 
-void cGhost::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width, int& lifes) {
+void cGhost::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width) {
 	if(wait>100) 
 	{
 		retard %= 30;
@@ -68,7 +68,7 @@ void cGhost::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, cons
 		y+=ydir;
 		retard++;
 		UpdateBox();
-		cMonster::Logic(map,player, blocks, rectangle, level_width, lifes);
+		cMonster::Logic(map,player, blocks, rectangle, level_width);
 	}
 	else wait++;
 }

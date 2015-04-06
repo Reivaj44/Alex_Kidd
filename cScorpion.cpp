@@ -31,11 +31,11 @@ void cScorpion::Draw(int tex_id)
 	}
 }
 
-void cScorpion::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width, int& lifes) {
+void cScorpion::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width) {
 	if(state!=STATE_EXPLODE)
 	{
 		x -= step_length;
 		UpdateBox();
-		cMonster::Logic(map,player,blocks, rectangle, level_width, lifes);
+		cMonster::Logic(map,player,blocks, rectangle, level_width);
 	}
 }
