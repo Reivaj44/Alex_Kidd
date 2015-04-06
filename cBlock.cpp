@@ -51,7 +51,8 @@ void cBlock::Destroy()
 {
 	if(collisionable)
 	{
-		mciSendString("play SOUNDS/smb_breakblock.wav", NULL, 0, NULL);
+		if(state==R_BROWN || state==R_GREEN) mciSendString("play SOUNDS/smb_breakblock.wav", NULL, 0, NULL);
+		else mciSendString("play SOUNDS/smb3_fireball.wav", NULL, 0, NULL);
 		if(state!=SKULL && state!=SKULL_P && state!=R_BROWN && state!=R_GREEN)
 		{
 			SetState(treasure);
