@@ -487,7 +487,7 @@ bool cGame::InitLevel1() {
 	if(!res) return false;
 	res = Data.LoadImage(IMG_PLAYER_B,"Alex_big.png",GL_RGBA);
 	if(!res) return false;
-	Scene.GetPlayerInitPosition(check_x, check_y);
+	Scene.GetPlayerInitPosition(&check_x, &check_y,0);
 	Player.SetTile(check_x, check_y); //init position
 	Player.SetState(STATE_LOOKRIGHT);
 

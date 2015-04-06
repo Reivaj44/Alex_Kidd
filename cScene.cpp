@@ -28,6 +28,7 @@ bool cScene::LoadLevel(int level)
 
 	rects.clear();
 	isWater.clear();
+	player_position.clear();
 
 	id_DL=glGenLists(1);
 	glNewList(id_DL,GL_COMPILE);
@@ -42,7 +43,7 @@ bool cScene::LoadLevel(int level)
 			
 			for(k=0;k<num_quads;k++) {
 				float f;
-				int w;
+				int p;
 				cRect* rec = new cRect();
 				fscanf(fd,"%f",&f);
 				rec->top = f*16+15;
@@ -56,6 +57,11 @@ bool cScene::LoadLevel(int level)
 				
 				fscanf(fd,"%d",&water);
 				isWater.push_back(water);
+
+				fscanf(fd,"%d",&p);
+				player_position.push_back(p); //x position
+				fscanf(fd,"%d",&p);
+				player_position.push_back(p); //y position
 			}
 	
 			for(j=SCENE_HEIGHT-1;j>=0;j--)
@@ -155,7 +161,7 @@ int cScene::GetIsWater(int i) {
 	return isWater[i];
 }
 
-void cScene::GetPlayerInitPosition(int &x, int &y) {
-	x = player_x;
-	y = player_y;
+void cScene::GetPlayerInitPosition(int* x, int* y, int num_rect) {
+	*x = player_position[2*num_rect];
+	*y = player_position[2*num_rect+1];
 }
