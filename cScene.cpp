@@ -50,12 +50,12 @@ bool cScene::LoadLevel(int level)
 		fscanf(fd, "%d", &x_monster);
 		fscanf(fd, "%d", &y_monster);
 		switch(t_monster) {
-			case 0: monster = new cMonster();
-			case 1: monster = new cPtero();
-			case 2: monster = new cSFish();
-			case 3: monster = new cMiniboss();
-			case 4: monster = new cScorpion();
-			case 5: monster = new cFrog();
+			case 0: monster = new cMonster(); break;
+			case 1: monster = new cPtero(); break;
+			case 2: monster = new cSFish(); break;
+			case 3: monster = new cMiniboss(); break;
+			case 4: monster = new cScorpion(); break;
+			case 5: monster = new cFrog(); break;
 		}
 		monster->SetTile(x_monster,y_monster);
 		monsters.push_back(monster);

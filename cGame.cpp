@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "cPlayer.h"
 
+
 cGame::cGame(void)
 {
 	jump_key = false;
