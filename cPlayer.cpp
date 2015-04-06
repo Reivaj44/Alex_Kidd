@@ -359,13 +359,30 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 		}
 		if(punching) 
 		{
-			for(unsigned int i = 0; i < monsters.size(); i++) 
-				if(!monsters[i]->isDead() && monsters[i]->CollidesBox(punchbox)) monsters[i]->Die();
-			for(unsigned int i = 0; i < blocks.size(); i++) 
-				if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(punchbox)) blocks[i]->Destroy();
-
+			unsigned int i = 0;
+			bool monster_dead = false;
+			while(i < monsters.size() && !monster_dead)
+			{
+				if(!monsters[i]->isDead() && monsters[i]->CollidesBox(punchbox)) 
+				{
+					monsters[i]->Die();
+					monster_dead = true;
+				}
+				i++;
+			}
+			i = 0;
+			bool destroy_block = false;
+			while(i < blocks.size() && !destroy_block)
+			{
+				if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(punchbox)) 
+				{
+					blocks[i]->Destroy();
+					destroy_block = true;
+				}
+				i++;
+			}
 			punch_delay++;
-			if(punch_delay >= frame_delay && (!swimming || !poisoned) )
+			if(punch_delay == frame_delay && (!swimming || !poisoned) )
 			{
 				punch_delay = 0;
 				punching = false;
@@ -396,7 +413,11 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				{
 					//Over floor?
 					if(mario_jump)
-						for(unsigned int i = 0; i < monsters.size(); i++) 
+					{
+						unsigned int i = 0; 
+						bool collide = false;
+						while(i < monsters.size() && !collide)
+						{
 							if(!monsters[i]->isDead() && monsters[i]->CollidesBox(mariobox))
 							{
 								monsters[i]->Die();
@@ -404,7 +425,11 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 								intheair = true;
 								jump_alfa = 0;
 								jump_y = y;
+								collide = true;
 							}
+							i++;
+						}
+					}
 					if(CollidesMapFloor(map,blocks))
 					{	jumping=false;
 						intheair=false;
