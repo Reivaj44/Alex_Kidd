@@ -522,7 +522,7 @@ bool cGame::InitGameOver() {
 	res = Data.LoadImage(IMG_GAME_OVER, "game_over.png",GL_RGBA);
 	if(!res) return false;
 
-	PlaySound(TEXT("Sounds/victory.wav"), NULL, SND_ASYNC);
+	PlaySound(TEXT("Sounds/10-Game_Over.wav"), NULL, SND_ASYNC);
 	
 	return res;
 }
