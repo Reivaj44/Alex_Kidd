@@ -3,9 +3,10 @@
 
 cFrog::cFrog(void)
 {
-	state = STATE_DOWN;
-	ibodybox.left = 8; ibodybox.right = 31-8;
-	ibodybox.bottom = 4; ibodybox.top = 31-12;
+	SetState(STATE_DOWN);
+	y_ini = 0;
+	down_delay = 0;
+	get_top = false;
 }
 
 
@@ -13,6 +14,23 @@ cFrog::~cFrog(void)
 {
 }
 
+void cFrog::SetState(int st)
+{
+	if(st==STATE_DOWN)
+	{
+		ibodybox.left = 8; ibodybox.right = 31-8;
+		ibodybox.bottom = 4; ibodybox.top = 31-12;
+		UpdateBox();	
+	}
+	else if(st==STATE_DOWN)
+	{
+		ibodybox.left = 8; ibodybox.right = 31-8;
+		ibodybox.bottom = 4; ibodybox.top = 31-4;
+		UpdateBox();
+	}
+	state=st;
+}
+			
 void cFrog::Draw(int tex_id)
 {
 	if(state==STATE_EXPLODE) cMonster::Draw(tex_id);
@@ -41,45 +59,32 @@ void cFrog::Draw(int tex_id)
 void cFrog::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width) {
 	if(state!=STATE_EXPLODE)
 	{
-		int xaux;
-		int yaux;
-		bool bottom = false;
-		if(state==STATE_DOWN) bottom = true;
-		yaux = y;
-		xaux = x;
-		if(!bottom && (y - y_ini)<0.5) y += step_length;
-		else y -= step_length;
-		UpdateBox();
-		int k = delay;
-
-		if(CollidesMapFloor(map,blocks,level_width) && delay == 10) {
-			state = STATE_UP;
-			SetState(STATE_UP);
-			ibodybox.left = 8; ibodybox.right = 31-8;
-			ibodybox.bottom = 4; ibodybox.top = 31-4;
-			UpdateBox();
-			seq = 0;
-			delay = 0;
-		}
-		else if(CollidesMapFloor(map,blocks,level_width)) {
-			state = STATE_DOWN;
-			SetState(STATE_DOWN);
-			ibodybox.left = 8; ibodybox.right = 31-8;
-			ibodybox.bottom = 4; ibodybox.top = 31-12;
-			y_ini = yaux;
-			UpdateBox();
-			seq = 0;
-			//delay = 0;
+		
+		if(state==STATE_DOWN) 
+		{
+			++delay;
+			if(down_delay==10)
+			{
+				y_ini = y;
+				SetState(STATE_UP);
+			}
 		}
 
-		/*if(CollidesMapWall(map,bottom,blocks, rectangle) || CollidesMapWall(map,!bottom,blocks, rectangle)) {
-			x = xaux;
-			UpdateBox();
-			if(bottom) state=STATE_LEFT;
-			else state=STATE_RIGHT;
-			seq = 0;
-			delay = 0;
-		}*/
+		if(state==STATE_UP)
+		{
+			if(y_ini<32)
+			{
+				y += step_length;
+				UpdateBox();
+				y_ini += step_length;
+			}
+			else
+			{
+				y-=step_length;
+				UpdateBox();
+				if(CollidesMapFloor(map,blocks,level_width)) SetState(STATE_DOWN);
+			}
+		}
 		cMonster::Logic(map,player,blocks, rectangle, level_width);
 	}
 }
