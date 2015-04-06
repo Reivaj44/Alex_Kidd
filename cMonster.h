@@ -21,6 +21,6 @@ public:
 	bool isDead();
 	virtual void Die();
 	virtual void Draw(int tex_id);
-	virtual void Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle);
+	virtual void Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width);
 };
 

@@ -6,7 +6,6 @@
 
 #define STATE_DISAPPEARED -1
 
-class cScene;
 class cBlock;
 
 class cRect
@@ -32,9 +31,9 @@ public:
 	cRect GetBodyBox();
 
 	virtual bool Appears(const cRect &cam);
-	bool CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks, const cRect &rectangle);
-	bool CollidesMapFloor(int *map, std::vector<cBlock*> &blocks);
-	bool CollidesMapCeil(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle);
+	bool CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width);
+	bool CollidesMapFloor(int *map, std::vector<cBlock*> &blocks, int level_width);
+	bool CollidesMapCeil(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width);
 	bool CollidesBox(const cRect &box);
 
 	void GetArea(cRect *rc);
@@ -62,7 +61,6 @@ protected:
 	int frame_delay;
 	int delay;
 	float step_length;
-	cScene Scene;
 
 	virtual void UpdateBox();
 };

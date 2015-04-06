@@ -38,7 +38,7 @@ void cFrog::Draw(int tex_id)
 	}
 }
 
-void cFrog::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle) {
+void cFrog::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width) {
 	if(state!=STATE_EXPLODE)
 	{
 		int xaux;
@@ -52,7 +52,7 @@ void cFrog::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const
 		UpdateBox();
 		int k = delay;
 
-		if(CollidesMapFloor(map,blocks) && delay == 10) {
+		if(CollidesMapFloor(map,blocks,level_width) && delay == 10) {
 			state = STATE_UP;
 			SetState(STATE_UP);
 			ibodybox.left = 8; ibodybox.right = 31-8;
@@ -61,7 +61,7 @@ void cFrog::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const
 			seq = 0;
 			delay = 0;
 		}
-		else if(CollidesMapFloor(map,blocks)) {
+		else if(CollidesMapFloor(map,blocks,level_width)) {
 			state = STATE_DOWN;
 			SetState(STATE_DOWN);
 			ibodybox.left = 8; ibodybox.right = 31-8;
@@ -80,6 +80,6 @@ void cFrog::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const
 			seq = 0;
 			delay = 0;
 		}*/
-		cMonster::Logic(map,player,blocks, rectangle);
+		cMonster::Logic(map,player,blocks, rectangle, level_width);
 	}
 }

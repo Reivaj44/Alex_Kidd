@@ -8,7 +8,7 @@
 
 #define TILE_SIZE		16
 
-class cBicho;
+class cRect;
 
 class cScene
 {

@@ -105,7 +105,7 @@ void cPlayer::ChangeBox()
 	UpdateBox();
 }
 
-void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle)
+void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width)
 {
 	if(state != STATE_DEAD && !poisoned)
 	{
@@ -119,7 +119,7 @@ void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks, const cRect &rect
 			x -= step_length;
 			UpdateBox();
 
-			if(CollidesMapWall(map,false,blocks, rectangle)) 
+			if(CollidesMapWall(map,false,blocks, rectangle, level_width)) 
 			{
 				x = xaux;
 				UpdateBox();
@@ -141,7 +141,7 @@ void cPlayer::MoveLeft(int *map, std::vector<cBlock*> &blocks, const cRect &rect
 	}
 }
 
-void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle)
+void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width)
 {
 	if(state!=STATE_DEAD && !poisoned) {
 		if(state==STATE_CROUCHRIGHT || state==STATE_CROUCHLEFT) SetState(STATE_CROUCHRIGHT);
@@ -154,7 +154,7 @@ void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks, const cRect &rec
 			UpdateBox();
 
 			
-			if(CollidesMapWall(map,true,blocks, rectangle)) {
+			if(CollidesMapWall(map,true,blocks, rectangle, level_width)) {
 				x = xaux;
 				UpdateBox();
 			}
@@ -176,13 +176,13 @@ void cPlayer::MoveRight(int *map, std::vector<cBlock*> &blocks, const cRect &rec
 	}
 }
 
-void cPlayer::Crouch(int *map, std::vector<cBlock*> &blocks)
+void cPlayer::Crouch(int *map, std::vector<cBlock*> &blocks, int level_width)
 {
 	if(swimming && state!=STATE_DEAD && !poisoned)
 	{
 		y--;
 		UpdateBox();
-		CollidesMapFloor(map,blocks);
+		CollidesMapFloor(map,blocks, level_width);
 		down_press = true;
 		if(!punching && left) SetState(STATE_SWIMLEFT); 
 		else if(!punching) SetState(STATE_SWIMRIGHT);
@@ -335,7 +335,7 @@ bool cPlayer::isPoweredUp()
 	return mario_jump;
 }
 
-void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks, const cRect &rectangle)
+void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width)
 {
 	if(state==STATE_DEAD) 
 	{
@@ -348,7 +348,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 		if(poisoned)
 		{
 			if(!swimming) Stop();
-			if(swimming || CollidesMapFloor(map,blocks)) {
+			if(swimming || CollidesMapFloor(map,blocks,level_width)) {
 				if(retard%4==0) x--;
 				else if(retard%2==0) x++;
 				retard++;
@@ -416,7 +416,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				y = jump_y + (int)( ((float)JUMP_HEIGHT) * sin(alfa) );
 				UpdateBox();
 			
-				if(jump_alfa <= 90 && (CollidesMapCeil(map,blocks,rectangle)))
+				if(jump_alfa <= 90 && (CollidesMapCeil(map,blocks,rectangle, level_width)))
 					jumping = false;
 
 				if(jump_alfa > 90)
@@ -440,7 +440,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 							i++;
 						}
 					}
-					if(CollidesMapFloor(map,blocks))
+					if(CollidesMapFloor(map,blocks,level_width))
 					{	jumping=false;
 						intheair=false;
 					}
@@ -450,7 +450,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 		else if(!jumping && !swimming)
 		{
 			//Over floor?
-			if(!CollidesMapFloor(map,blocks)) {
+			if(!CollidesMapFloor(map,blocks,level_width)) {
 				y -= (1.5*step_length);
 				UpdateBox();
 				intheair=true;
@@ -464,7 +464,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 			{
 				y++;
 				UpdateBox();
-				CollidesMapCeil(map,blocks,rectangle);
+				CollidesMapCeil(map,blocks,rectangle,level_width);
 			}
 			down_press = false;
 		}
