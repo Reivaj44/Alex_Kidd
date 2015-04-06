@@ -53,7 +53,7 @@ void cFrog::Draw(int tex_id)
 	}
 }
 
-void cFrog::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width) {
+void cFrog::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width, int& lifes) {
 	if(state!=STATE_EXPLODE)
 	{
 		
@@ -86,6 +86,6 @@ void cFrog::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const
 				}
 			}
 		}
-		cMonster::Logic(map,player,blocks, rectangle, level_width);
+		cMonster::Logic(map,player,blocks, rectangle, level_width, lifes);
 	}
 }

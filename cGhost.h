@@ -12,7 +12,7 @@ public:
 	virtual bool Appears(const cRect &cam);
 
 	virtual void Draw(int tex_id);
-	virtual void Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width);
+	virtual void Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width, int& lifes);
 
 private:
 	float xdir, ydir;

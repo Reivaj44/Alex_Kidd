@@ -39,7 +39,7 @@ void cPtero::Draw(int tex_id)
 	}
 }
 
-void cPtero::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width) {
+void cPtero::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width, int& lifes) {
 	if(state!=STATE_EXPLODE)
 	{
 		int xaux;
@@ -58,6 +58,6 @@ void cPtero::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, cons
 			seq = 0;
 			delay = 0;
 		}
-		cMonster::Logic(map,player,blocks, rectangle, level_width);
+		cMonster::Logic(map,player,blocks, rectangle, level_width, lifes);
 	}
 }

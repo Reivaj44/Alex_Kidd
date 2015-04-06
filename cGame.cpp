@@ -225,7 +225,7 @@ bool cGame::Process()
 			}
 			//LOGICA DE MONSTRES, JUGADOR I OBJECTES
 			for(unsigned int i = 0; i < Scene.monsters.size(); i++)
-				if(Scene.monsters[i]->Appears(cam)) Scene.monsters[i]->Logic(Scene.GetMap(), Player, Scene.blocks, GetBorder(),Scene.GetWidth());
+				if(Scene.monsters[i]->Appears(cam)) Scene.monsters[i]->Logic(Scene.GetMap(), Player, Scene.blocks, GetBorder(),Scene.GetWidth(), lifes);
 			Player.Logic(Scene.GetMap(),Scene.monsters, Scene.blocks, GetBorder(),Scene.GetWidth());
 			for(unsigned int i = 0; i < Scene.blocks.size(); i++)
 				if(Scene.blocks[i]->Appears(cam)) Scene.blocks[i]->Logic(Player,money,lifes,Scene.monsters,check_x,check_y, level_completed);
