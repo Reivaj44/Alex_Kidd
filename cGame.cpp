@@ -536,7 +536,7 @@ bool cGame::InitLevel1() {
 	Box3->SetTreasure(RING);
 
 	monsters.push_back(Ptero);
-	//monsters.push_back(Frog);
+	monsters.push_back(Frog);
 	monsters.push_back(SFish);
 	//monsters.push_back(Ghost);
 	//monsters.push_back(Miniboss);
