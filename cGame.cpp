@@ -146,6 +146,7 @@ bool cGame::Process()
 			break;
 		default:
 			if(level_completed) {
+				level_completed = false;
 				switch (level) {
 					case 1:
 						InitMap(2);
@@ -155,6 +156,7 @@ bool cGame::Process()
 						break;
 				}
 			}
+
 			if(!blank)
 			{
 				bool keypressed = false;
@@ -562,6 +564,10 @@ bool cGame::InitLevel1() {
 	Box3->SetState(BMON);
 	Box3->SetTreasure(RING);
 
+	cBlock* Box4 = new cBlock();
+	Box4->SetTile(46,8);
+	Box4->SetState(RICE);
+
 	monsters.push_back(Ptero);
 	//monsters.push_back(Frog);
 	monsters.push_back(SFish);
@@ -574,6 +580,7 @@ bool cGame::InitLevel1() {
 	blocks.push_back(Box1);
 	blocks.push_back(Box2);
 	blocks.push_back(Box3);
+	blocks.push_back(Box4),
 
 	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP); // CACTUS: activar
 
@@ -583,6 +590,7 @@ bool cGame::InitLevel1() {
 bool cGame::InitLevel2() {
 	bool res = true;
 	stage = 5;
+	rectangle = 0;
 	res = Data.LoadImage(IMG_TILES,"Pantalla02.png",GL_RGBA);
 	if(!res) return false;
 	res = Scene.LoadLevel(2);
@@ -598,7 +606,7 @@ bool cGame::InitLevel2() {
 	if(!res) return false;
 	res = Data.LoadImage(IMG_PLAYER_B,"Alex_big.png",GL_RGBA);
 	if(!res) return false;
-	Scene.GetPlayerInitPosition(&check_x, &check_y,0);
+	Scene.GetPlayerInitPosition(check_x, check_y,0);
 	Player.SetTile(check_x, check_y); //init position
 	Player.SetState(STATE_LOOKRIGHT);
 
@@ -646,6 +654,9 @@ bool cGame::InitLevel2() {
 	Box3->SetTile(0,115);
 	Box3->SetState(BMON);
 	Box3->SetTreasure(RING);
+
+	monsters.clear();
+	blocks.clear();
 
 	monsters.push_back(Ptero);
 	monsters.push_back(Frog);
