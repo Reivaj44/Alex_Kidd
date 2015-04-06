@@ -3,9 +3,12 @@
 
 cMonster::cMonster(void)
 {
+	state = STATE_RIGHT;
 	SetWidthHeight(32,32);
 	frame_delay*=2;
 	step_length/=4;
+	ibodybox.left = 8; ibodybox.right = 31-8;
+	ibodybox.top = 31-8; ibodybox.bottom = 8;
 }
 
 

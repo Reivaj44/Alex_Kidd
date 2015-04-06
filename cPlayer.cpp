@@ -410,7 +410,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 			first_punch=false;
 		
 			punch_delay++;
-			if(punch_delay == frame_punch_delay && (!swimming || !poisoned) )
+			if(punch_delay >= frame_punch_delay && (!swimming || !poisoned) )
 			{
 				punch_delay = 0;
 				punching = false;
