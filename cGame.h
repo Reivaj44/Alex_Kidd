@@ -58,6 +58,7 @@ private:
 	int money;
 	int score;
 	int stage;
+	bool level_completed;
 
 	//variables extres
 	int rectangle; //rectangle de la camara

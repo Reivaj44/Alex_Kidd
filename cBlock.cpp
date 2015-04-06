@@ -130,6 +130,9 @@ void cBlock::Draw(int tex_id)
 
 			case CHBXT:		xo = 0.5f; yo = 1.0f;
 									break;
+
+			case RICE:		xo = 0.25f; yo = 0.75f;
+									break;
 		}
 		xf = xo + 0.250;
 		yf = yo - 0.250f;
@@ -137,7 +140,7 @@ void cBlock::Draw(int tex_id)
 	}
 }
 
-void cBlock::Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster*> &monsters, int &check_x, int &check_y)
+void cBlock::Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster*> &monsters, int &check_x, int &check_y, bool &level_completed)
 {
 	if(state==SKULL_P)
 	{
@@ -173,6 +176,7 @@ void cBlock::Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster
 			case RING: player.PowerUp(); mciSendString("play SOUNDS/smb_powerup.wav", NULL, 0, NULL); break;
 			case LIFE: lifes++; mciSendString("play SOUNDS/smb_1-up.wav", NULL, 0, NULL); break;
 			case CHBX: GetTile(check_x,check_y); mciSendString("play SOUNDS/smb3_pause.wav", NULL, 0, NULL); SetState(CHBXT); break;
+			case RICE: level_completed = true; break;
 		}
 		if(state!=CHBXT && state!=CHBX) SetState(STATE_DISAPPEARED);
 	}
