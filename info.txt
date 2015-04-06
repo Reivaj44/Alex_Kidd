@@ -1,0 +1,36 @@
+Alumnes:
+Javier Coleto Fernández
+Marc Àngel Jiménez Veciana
+
+Funcionalitats implementades al joc:
+- Nivell amb dos parts diferenciades (terra, aigua) amb el canvi de camara.
+- Escenari amb aigua i enemic granota que dispara bombolles (amb diferents seqüències)
+- So: música de fons i efectes especials
+- Objectes que donen peu a items:
+	- Caixa estrella que dona lloc a sacs de monedes
+	- Caixa interrogant que dona lloc a vida, poder, fantasma (fantasma si ja ha aparegut un poder)
+	- Calavera enverina al jugador
+	- Calavera vermella fa apareixer un fantasma al ser tocada
+- I els propis items:
+	- Sacs de monedes (20 i 10 monedes)
+	- Vida extra
+	- Poder
+	- Arros per passar de nivell
+
+Part crativa:
+- Introducció de les banderes checkpoint: Al tocar una bandera checkpoint el joc actualitza el lloc on apareixerás al morir.
+	(al canviar de nivell o de escenari (aigua) també guarda un checkpoint)
+- Salt imitant el Mario Bros: Al conseguir el boder (item de bigoti) obtenim els poder del Super Mario podent matar els monstres saltant sobre d'ells i fa un salt sobre aquests extra automaticament.
+	(el poder es manté fins que et maten)
+
+- Al obtenir 100 monedes sonarà un clip per indicar que s'ha guanyat una vida automaticament
+
+Instruccions:
+- Fletxes dreta i esquerra per moure's.
+- 'X' per donar cop de puny
+- 'C' per saltar
+- Fletxa cap a baix per ajupir-se
+
+Sota l'aigua:
+- Fletxes dreta, esquerra i abaix per moure's (cap adalt simplement et puja l'empenyiment de l'aigua)
+- 'X' per donar cop de puny
