@@ -5,4 +5,4 @@
 #include <stdio.h>
 #include <math.h>
 #include <vector>
-#include <glut.h>
+#include <gl/glut.h>

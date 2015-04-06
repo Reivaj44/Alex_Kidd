@@ -1,14 +1,17 @@
 #pragma once
 
 #include "cTexture.h"
-#include "cBicho.h"
+#include "cMonster.h"
 
 #define FILENAME		"level"
 #define FILENAME_EXT	".txt"
 
 #define TILE_SIZE		16
 
+class cBicho;
 class cRect;
+class cMonster;
+class cBlock;
 
 class cScene
 {
@@ -25,6 +28,9 @@ public:
 	void GetPlayerInitPosition(int &x, int &y, int num_rect);
 	int GetWidth();
 	int GetHeight();
+
+	std::vector<cMonster*> monsters;
+	std::vector<cBlock*> blocks;
 
 private:
 	int* map;	//scene

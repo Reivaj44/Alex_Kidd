@@ -2,7 +2,6 @@
 
 #include "cTexture.h"
 #include "Globals.h"
-#include "cScene.h"
 
 #define STATE_DISAPPEARED -1
 

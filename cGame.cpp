@@ -428,10 +428,10 @@ void cGame::Render()
 				glLoadIdentity();
 
 				Scene.Draw(Data.GetID(IMG_TILES));
-				for(unsigned int i = 0; i < blocks.size(); i++) 
-					if(blocks[i]->Appears(cam)) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
-				for(unsigned int i = 0; i < monsters.size(); i++) 
-					if(monsters[i]->Appears(cam)) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
+				for(unsigned int i = 0; i < Scene.blocks.size(); i++) 
+					if(Scene.blocks[i]->Appears(cam)) Scene.blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
+				for(unsigned int i = 0; i < Scene.monsters.size(); i++) 
+					if(Scene.monsters[i]->Appears(cam)) Scene.monsters[i]->Draw(Data.GetID(IMG_ENEMY));
 				if(Player.isPoweredUp()) Player.Draw(Data.GetID(IMG_PLAYER_B));
 				else Player.Draw(Data.GetID(IMG_PLAYER));
 			}
@@ -556,7 +556,7 @@ bool cGame::InitLevel1() {
 	if(!res) return false;
 
 	//Creem monstres i blocks de prova
-	cScorpion* Ptero = new cScorpion();
+	/*cScorpion* Ptero = new cScorpion();
 	Ptero->SetTile(8,113);
 
 	cSFish* SFish = new cSFish();
@@ -618,8 +618,8 @@ bool cGame::InitLevel1() {
 	blocks.push_back(Box1);
 	blocks.push_back(Box2);
 	blocks.push_back(Box3);
-	blocks.push_back(Box4),
-
+	blocks.push_back(Box4);
+	*/
 	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
 
 	return res;
@@ -656,7 +656,7 @@ bool cGame::InitLevel2() {
 	if(!res) return false;
 
 	//Creem monstres i blocks de prova
-	cScorpion* Ptero = new cScorpion();
+	/*cScorpion* Ptero = new cScorpion();
 	Ptero->SetTile(8,113);
 
 	cSFish* SFish = new cSFish();
@@ -712,8 +712,7 @@ bool cGame::InitLevel2() {
 	blocks.push_back(Box1);
 	blocks.push_back(Box2);
 	blocks.push_back(Box3);
-	blocks.push_back(Box4);
-
+	*/
 	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
 
 	return res;

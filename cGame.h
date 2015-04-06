@@ -78,8 +78,8 @@ private:
 	int eat_arrow;
 
 	//variables de proves
-	std::vector<cMonster*> monsters;
-	std::vector<cBlock*> blocks;
+	//std::vector<cMonster*> monsters;
+	//std::vector<cBlock*> blocks;
 	
 
 	cRect GetBorder();
