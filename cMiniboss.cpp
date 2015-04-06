@@ -68,7 +68,7 @@ void cMiniboss::Draw(int tex_id)
 	}
 }
 
-void cMiniboss::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width) {
+void cMiniboss::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width, int& lifes) {
 	if(state!=STATE_EXPLODE) {
 		if(state == STATE_UP) 
 		{
@@ -131,8 +131,12 @@ void cMiniboss::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, c
 		}
 		if(touched && !CollidesBox(player.GetHitBox())) touched = false;
 	}
-	if(state!=STATE_EXPLODE && CollidesBoobles(player.GetBodyBox())) player.Die();
-	else cMonster::Logic(map,player, blocks, rectangle, level_width);
+	if(state!=STATE_EXPLODE && CollidesBoobles(player.GetBodyBox())) 
+	{
+		player.Die();
+		lifes--;
+	}
+	else cMonster::Logic(map,player, blocks, rectangle, level_width, lifes);
 }
 
 bool cMiniboss::CollidesBoobles(cRect &playerbox)
