@@ -1,6 +1,5 @@
 #pragma once
 #include "cBicho.h"
-#include "cScene.h"
 #include "Globals.h"
 #include "cBlock.h"
 #include "cData.h"
@@ -95,7 +94,7 @@ bool cBicho::CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks, 
 
 	for(j=0;j<height_tiles;j++)
 	{
-		if((map[ tile_x + ((tile_y+j)*SCENE_WIDTH) ] != 0))	return true;
+		if((map[ tile_x + ((tile_y+j)*Scene.GetWidth()) ] != 0))	return true;
 	}
 	
 	return false;
@@ -126,9 +125,9 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks)
 	i=0;
 	while((i<width_tiles) && !collides && !collides_down)
 	{
-		if( (int(bodybox.bottom) % TILE_SIZE) == 0 && (map[ (tile_x + i) + ((tile_y - 1) * SCENE_WIDTH) ] != 0) )
+		if( (int(bodybox.bottom) % TILE_SIZE) == 0 && (map[ (tile_x + i) + ((tile_y - 1) * Scene.GetWidth()) ] != 0) )
 			collides_down = true;
-		else if((map[ (tile_x + i) + (tile_y * SCENE_WIDTH) ] != 0))
+		else if((map[ (tile_x + i) + (tile_y * Scene.GetWidth()) ] != 0))
 			collides = true;
 		i++;
 	}
@@ -171,9 +170,9 @@ bool cBicho::CollidesMapCeil(int *map, std::vector<cBlock*> &blocks, const cRect
 	i=0;
 	while((i<width_tiles) && !collides && !collides_up)
 	{
-		if( (int(bodybox.top) % TILE_SIZE) == 15 && (map[ (tile_x + i) + ((tile_y + 1) * SCENE_WIDTH) ] != 0) )
+		if( (int(bodybox.top) % TILE_SIZE) == 15 && (map[ (tile_x + i) + ((tile_y + 1) * Scene.GetWidth()) ] != 0) )
 			collides_up = true;
-		else if((map[ (tile_x + i) + (tile_y * SCENE_WIDTH) ] != 0))
+		else if((map[ (tile_x + i) + (tile_y * Scene.GetWidth()) ] != 0))
 			collides = true;
 		i++;
 	}

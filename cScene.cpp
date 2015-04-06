@@ -35,6 +35,11 @@ bool cScene::LoadLevel(int level)
 		glPushMatrix();
 		glBegin(GL_QUADS);
 
+			fscanf(fd,"%d",&scene_width);
+			fscanf(fd,"%d",&scene_height);
+
+			map = new int[scene_width * scene_height];
+
 			fscanf(fd,"%d",&num_quads);
 			int water;
 			
@@ -61,19 +66,19 @@ bool cScene::LoadLevel(int level)
 				player_position.push_back(p); //y position
 			}
 	
-			for(j=SCENE_HEIGHT-1;j>=0;j--)
+			for(j=scene_height-1;j>=0;j--)
 			{
 				px = 0;
 				py = j * TILE_SIZE;
 
-				for(i=0;i<SCENE_WIDTH;i++)
+				for(i=0;i<scene_width;i++)
 				{
 					tile_num;
 					fscanf(fd,"%d",&tile_num);
 					tile_num--;
 					if (tile_num >= 0) {
 						//Tiles = 1,2,3,...
-						map[(j*SCENE_WIDTH)+i] = tile_num;
+						map[(j*scene_width)+i] = tile_num;
 
 						coordx_tile = (float)((tile_num%15)*(16.0/240.0));
 						coordy_tile = (float)((tile_num/15)*(16.0/320.0));
@@ -99,12 +104,12 @@ bool cScene::LoadLevel(int level)
 	glNewList(bg_DL,GL_COMPILE);
 		glPushMatrix();
 		glBegin(GL_QUADS);
-			for(j=SCENE_HEIGHT-1;j>=0;j--)
+			for(j=scene_height-1;j>=0;j--)
 			{
 				px = 0;
 				py = j * TILE_SIZE;
 
-				for(i=0;i<SCENE_WIDTH;i++)
+				for(i=0;i<scene_width;i++)
 				{
 					tile_num;
 					fscanf(fd,"%d",&tile_num);
@@ -161,4 +166,12 @@ int cScene::GetIsWater(int i) {
 void cScene::GetPlayerInitPosition(int* x, int* y, int num_rect) {
 	*x = player_position[2*num_rect];
 	*y = player_position[2*num_rect+1];
+}
+
+int cScene::GetWidth() {
+	return scene_width;
+}
+
+int cScene::GetHeight() {
+	return scene_height;
 }
