@@ -385,7 +385,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				}
 				i++;
 			}
-			if(first_punch && (!destroy_block || !monster_sound) 
+			if(first_punch && !destroy_block && !monster_sound)
 			{
 				mciSendString("play SOUNDS/punch.wav", NULL, 0, NULL);
 			}
