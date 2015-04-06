@@ -43,10 +43,10 @@ public:
 	bool isSwimming();
 	bool isPoweredUp();
 
-	void MoveRight(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle);
-	void MoveLeft(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle);
+	void MoveRight(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width);
+	void MoveLeft(int *map, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width);
 	void Jump(int *map);
-	void Crouch(int *map, std::vector<cBlock*> &blocks);
+	void Crouch(int *map, std::vector<cBlock*> &blocks, int level_width);
 	void Punch(int *map);
 	void Stop();
 	void Die();
@@ -57,7 +57,7 @@ public:
 
 	void SetState(int s);
 
-	void Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks, const cRect& Rectangle);
+	void Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks, const cRect& Rectangle, int level_width);
 
 	virtual void Draw(int tex_id);
 

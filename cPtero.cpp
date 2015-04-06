@@ -39,7 +39,7 @@ void cPtero::Draw(int tex_id)
 	}
 }
 
-void cPtero::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle) {
+void cPtero::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width) {
 	if(state!=STATE_EXPLODE)
 	{
 		int xaux;
@@ -50,7 +50,7 @@ void cPtero::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, cons
 		else x -= step_length;
 		UpdateBox();
 
-		if(CollidesMapWall(map,right,blocks, rectangle) || CollidesMapWall(map,!right,blocks, rectangle)) {
+		if(CollidesMapWall(map,right,blocks, rectangle, level_width) || CollidesMapWall(map,!right,blocks, rectangle, level_width)) {
 			x = xaux;
 			UpdateBox();
 			if(right) state=STATE_LEFT;
@@ -58,6 +58,6 @@ void cPtero::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, cons
 			seq = 0;
 			delay = 0;
 		}
-		cMonster::Logic(map,player,blocks, rectangle);
+		cMonster::Logic(map,player,blocks, rectangle, level_width);
 	}
 }

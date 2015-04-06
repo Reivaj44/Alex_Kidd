@@ -147,7 +147,7 @@ bool cGame::Process()
 
 				if(keys[GLUT_KEY_DOWN]) 
 				{		
-					Player.Crouch(Scene.GetMap(),blocks);					
+					Player.Crouch(Scene.GetMap(),blocks,Scene.GetWidth());					
 					keypressed=true;
 				}
 
@@ -167,13 +167,13 @@ bool cGame::Process()
 
 				if(keys[GLUT_KEY_LEFT]) 
 				{		
-					Player.MoveLeft(Scene.GetMap(), blocks, GetBorder());	
+					Player.MoveLeft(Scene.GetMap(), blocks, GetBorder(),Scene.GetWidth());	
 					keypressed=true;
 				}
 
 				else if(keys[GLUT_KEY_RIGHT]) 
 				{	
-					Player.MoveRight(Scene.GetMap(), blocks, GetBorder());	
+					Player.MoveRight(Scene.GetMap(), blocks, GetBorder(),Scene.GetWidth());	
 					keypressed=true;
 				}
 
@@ -212,8 +212,8 @@ bool cGame::Process()
 			}
 			//LOGICA DE MONSTRES, JUGADOR I OBJECTES
 			for(unsigned int i = 0; i < monsters.size(); i++)
-				if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder());
-			Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder());
+				if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder(),Scene.GetWidth());
+			Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder(),Scene.GetWidth());
 			for(unsigned int i = 0; i < blocks.size(); i++)
 				if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,lifes,monsters,check_x,check_y, level_completed);
 
@@ -567,7 +567,7 @@ cRect cGame::GetBorder()
 
 int cGame::GetRectanglePlayer(const cPlayer &player)
 {
-	unsigned int i = 0; 
+	int i = 0; 
 	bool rect_found = false;
 	while (i < Scene.GetNumRects() && !rect_found) 
 	{	
