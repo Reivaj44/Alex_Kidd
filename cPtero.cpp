@@ -7,7 +7,7 @@ cPtero::cPtero(void)
 {
 	state = STATE_RIGHT;
 	ibodybox.left = 4; ibodybox.right = 31-4;
-	ibodybox.bottom = 8; ibodybox.top = 31-8;
+	ibodybox.bottom = 10; ibodybox.top = 31-10;
 }
 
 

@@ -13,11 +13,11 @@ cGame::cGame(void)
 	up_key = false;
 	down_key = false;
 	reappears = false;
+	blank = false;
 	delay = 0;
 	lifes = 3;
 	money = 0;
 	score = 0;
-	ring = 0;
 	rectangle = 0;
 }
 
@@ -141,65 +141,81 @@ bool cGame::Process()
 			}
 			break;
 		default:
-			bool keypressed = false;
-
-			if(keys[GLUT_KEY_DOWN]) 
-			{		
-				Player.Crouch(Scene.GetMap(),blocks);					
-				keypressed=true;
-			}
-
-			if(keys['c'] && !jump_key) 
+			if(!blank)
 			{
-				Player.Jump(Scene.GetMap()); 
-				jump_key=true;		
-				keypressed=true;
-			}
+				bool keypressed = false;
 
-			if(keys['x'] && !punch_key)
-			{
-				Player.Punch(Scene.GetMap());
-				punch_key=true;
-				keypressed=true;
-			}
+				if(keys[GLUT_KEY_DOWN]) 
+				{		
+					Player.Crouch(Scene.GetMap(),blocks);					
+					keypressed=true;
+				}
 
-			if(keys[GLUT_KEY_LEFT]) 
-			{		
-				Player.MoveLeft(Scene.GetMap(), blocks, GetBorder(Player));	
-				keypressed=true;
-			}
+				if(keys['c'] && !jump_key) 
+				{
+					Player.Jump(Scene.GetMap()); 
+					jump_key=true;		
+					keypressed=true;
+				}
 
-			else if(keys[GLUT_KEY_RIGHT]) 
-			{	
-				Player.MoveRight(Scene.GetMap(), blocks, GetBorder(Player));	
-				keypressed=true;
-			}
+				if(keys['x'] && !punch_key)
+				{
+					Player.Punch(Scene.GetMap());
+					punch_key=true;
+					keypressed=true;
+				}
 
-			if(!keypressed) Player.Stop();
-			
+				if(keys[GLUT_KEY_LEFT]) 
+				{		
+					Player.MoveLeft(Scene.GetMap(), blocks, GetBorder());	
+					keypressed=true;
+				}
+
+				else if(keys[GLUT_KEY_RIGHT]) 
+				{	
+					Player.MoveRight(Scene.GetMap(), blocks, GetBorder());	
+					keypressed=true;
+				}
+
+				if(!keypressed) Player.Stop();
+			}
 			
 			//Game Logic
-			if(Player.isDead() && !Player.Appears(cam)) 
-			{
-				Player.Resurrect(3,113);
-				cam.left = Scene.GetRectangles(0)->left; //valor inicial rectangle
-				cam.bottom = Scene.GetRectangles(0)->top-CAM_HEIGHT; //valor inicial rectangle
-				reappears = true;
-				delay = 0;
-			}
+			
 
-			if(!reappears && delay%20==0)
-			{
-				int rect = GetRectanglePlayer(Player);
-				if(!Player.isSwimming() && Scene.GetIsWater(rect)==1) {
-					Player.Swim();
+			
+			if(!blank)
+			{	//SI HA DE REAPAREIXER
+				if(reappears)
+				{
+					reappears = false;
+					Player.Resurrect(check_x,check_y);
+					CalculateCamResurrect();
 				}
-				for(unsigned int i = 0; i < monsters.size(); i++)
-					if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder(Player));
-				Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder(Player));
-				for(unsigned int i = 0; i < blocks.size(); i++)
-					if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,ring,lifes,monsters);
+
+				if(Player.isDead() && !Player.Appears(cam)) 
+				{
+					reappears = true;
+					blank = true;
+					delay = 0;
+				}
+
+				if(!Player.isDead())
+				{	//MIREM SI ENTRA A L'AIGUA
+					rectangle_player = GetRectanglePlayer(Player);
+					if(!Player.isSwimming() && Scene.GetIsWater(rectangle_player)==1) {
+						mciSendString("play SOUNDS/water.wav", NULL, 0, NULL);
+						Player.Swim();
+						PlaySound(TEXT("Sounds/04-Underwater.wav"), NULL, SND_ASYNC | SND_LOOP);
+					}
+				}
 			}
+			//LOGICA DE MONSTRES, JUGADOR I OBJECTES
+			for(unsigned int i = 0; i < monsters.size(); i++)
+				if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder());
+			Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder());
+			for(unsigned int i = 0; i < blocks.size(); i++)
+				if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,lifes,monsters,check_x,check_y);
 
 			break;
 	}
@@ -210,6 +226,7 @@ bool cGame::Process()
 //Output
 void cGame::Render()
 {
+	if(blank) glClearColor(0.0f,0.0f,1.0f,1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	bool res = true;
@@ -322,32 +339,38 @@ void cGame::Render()
 			glDisable(GL_TEXTURE_2D);
 			break;
 		default:
-			if(!reappears && delay%20==0)
+			if(!blank)
 			{
-				int play_x, play_y;
-				Player.GetPosition(play_x, play_y);
+				if(!Player.isDead())
+				{
+					//CALCULS DE CAMARA
+					int play_x, play_y;
+					Player.GetPosition(play_x, play_y);
 
-				if(rectangle<(Scene.GetNumRects()-1) && cBicho::BoxInsideBox( *(Scene.GetRectangles(rectangle+1)), cam ) ) rectangle++;
+					if(rectangle<(Scene.GetNumRects()-1) && cBicho::BoxInsideBox( *(Scene.GetRectangles(rectangle+1)), cam ) ) 
+						rectangle++;
 				
-				int level_width = Scene.GetRectangles(rectangle)->right; 
-				int level_height = Scene.GetRectangles(rectangle)->top; 
+					int level_width = Scene.GetRectangles(rectangle)->right; 
+					int level_height = Scene.GetRectangles(rectangle)->top; 
 				
-				if( (play_x - cam.left) > (CAM_WIDTH / 2) ) cam.left = play_x - CAM_WIDTH / 2;
-				if( (play_y - cam.bottom) < (CAM_HEIGHT / 2) ) cam.bottom = play_y - CAM_HEIGHT / 2;
-				cam.top = cam.bottom + CAM_HEIGHT;
-				cam.right = cam.left + CAM_WIDTH;
+					if( (play_x - cam.left) > (CAM_WIDTH / 2) ) cam.left = play_x - CAM_WIDTH / 2;
+					if( (play_y - cam.bottom) < (CAM_HEIGHT / 2) ) cam.bottom = play_y - CAM_HEIGHT / 2;
+					cam.top = cam.bottom + CAM_HEIGHT;
+					cam.right = cam.left + CAM_WIDTH;
 				
-				cam.bottom = max(0, cam.bottom);
-				cam.left = min(cam.left, level_width - CAM_WIDTH);
-				cam.top = cam.bottom + CAM_HEIGHT;
-				cam.right = cam.left + CAM_WIDTH;
-
+					cam.bottom = max(0, cam.bottom);
+					cam.left = min(cam.left, level_width - CAM_WIDTH);
+					cam.top = cam.bottom + CAM_HEIGHT;
+					cam.right = cam.left + CAM_WIDTH;
+				}
+				//COLOCAR CAMARA
 				glMatrixMode(GL_PROJECTION);
 				glLoadIdentity();
 			
 				gluOrtho2D(cam.left, cam.right, cam.bottom, cam.top);
-				glMatrixMode(GL_MODELVIEW);
 
+				//DIBUIXAR
+				glMatrixMode(GL_MODELVIEW);
 				glLoadIdentity();
 
 				Scene.Draw(Data.GetID(IMG_TILES));
@@ -355,12 +378,14 @@ void cGame::Render()
 					if(blocks[i]->Appears(cam)) blocks[i]->Draw(Data.GetID(IMG_BLOCKS));
 				for(unsigned int i = 0; i < monsters.size(); i++) 
 					if(monsters[i]->Appears(cam)) monsters[i]->Draw(Data.GetID(IMG_ENEMY));
-				Player.Draw(Data.GetID(IMG_PLAYER));
+				if(Player.isPoweredUp()) Player.Draw(Data.GetID(IMG_PLAYER_B));
+				else Player.Draw(Data.GetID(IMG_PLAYER));
 			}
 			else 
 			{	
-				reappears = false;
+				//DIBUIXAR PANTALLA EN BLAU
 				delay++;
+				if(!(delay%20)) blank = false;
 			}
 			break;
 	}
@@ -378,7 +403,7 @@ bool cGame::InitIntro() {
 	res = Data.LoadImage(IMG_ARROWS, "arrows.png",GL_RGBA);
 	if(!res) return false;
 
-	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
+	PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
 	
 	return res;
 }
@@ -401,6 +426,8 @@ bool cGame::InitCredits() {
 	option = 0;
 	res = Data.LoadImage(IMG_CREDITS, "credits.png",GL_RGBA);
 	if(!res) return false;
+
+	PlaySound(TEXT("Sounds/victory.wav"), NULL, SND_ASYNC);
 	
 	return res;
 }
@@ -425,7 +452,7 @@ bool cGame::InitMap(int lvl) {
 	res = Data.LoadImage(IMG_EATING, "alex_eating.png",GL_RGBA);
 	if(!res) return false;
 
-	//PlaySound(TEXT("Sounds/02-Level_Start.wav"), NULL, SND_ASYNC); // CACTUS: activar
+	PlaySound(TEXT("Sounds/02-Level_Start.wav"), NULL, SND_ASYNC); // CACTUS: activar
 	
 	return res;
 }
@@ -442,13 +469,14 @@ bool cGame::InitLevel1() {
 	cam.top = Scene.GetRectangles(0)->top;
 	cam.bottom = cam.top - CAM_HEIGHT;
 	cam.right = cam.left + CAM_WIDTH;
-	
+
 	//Player initialization
 	res = Data.LoadImage(IMG_PLAYER,"Alex.png",GL_RGBA);
 	if(!res) return false;
-	int play_x,play_y;
-	Scene.GetPlayerInitPosition(&play_x,&play_y);
-	Player.SetTile(play_x,play_y); //init position
+	res = Data.LoadImage(IMG_PLAYER_B,"Alex_big.png",GL_RGBA);
+	if(!res) return false;
+	Scene.GetPlayerInitPosition(check_x, check_y);
+	Player.SetTile(check_x, check_y); //init position
 	Player.SetState(STATE_LOOKRIGHT);
 
 	res = Data.LoadImageA(IMG_ENEMY, "Monsters.png", GL_RGBA);
@@ -462,7 +490,7 @@ bool cGame::InitLevel1() {
 	Ptero->SetTile(8,113);
 
 	cSFish* SFish = new cSFish();
-	SFish->SetTile(10,108);
+	SFish->SetTile(8,5);
 	
 	cGhost* Ghost = new cGhost();
 	Ghost->SetTile(10,111);
@@ -478,12 +506,13 @@ bool cGame::InitLevel1() {
 
 	cBlock* Block2 = new cBlock();
 	Block2->SetTile(10,113);
-	Block2->SetState(R_GREEN);
+	Block2->SetState(STAR);
+	Block2->SetTreasure(BMON);
 
 	cBlock* Box1 = new cBlock();
-	Box1->SetTile(1,113);
-	Box1->SetState(STAR);
-	Box1->SetTreasure(BMON);
+	Box1->SetTile(10,86);
+	Box1->SetState(CHBX);
+	//Box1->SetTreasure(BMON);
 
 	cBlock* Box2 = new cBlock();
 	Box2->SetTile(6,112);
@@ -491,11 +520,12 @@ bool cGame::InitLevel1() {
 
 	cBlock* Box3 = new cBlock();
 	Box3->SetTile(0,115);
-	Box3->SetState(SKULL);
+	Box3->SetState(QUEST);
+	Box3->SetTreasure(RING);
 
 	monsters.push_back(Ptero);
-	monsters.push_back(Frog);
-	//monsters.push_back(SFish);
+	//monsters.push_back(Frog);
+	monsters.push_back(SFish);
 	//monsters.push_back(Ghost);
 	//monsters.push_back(Miniboss);
 
@@ -505,20 +535,19 @@ bool cGame::InitLevel1() {
 	blocks.push_back(Box2);
 	blocks.push_back(Box3);
 
-	//PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP); // CACTUS: activar
+	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP); // CACTUS: activar
 
 	return res;
 }
 
-cRect cGame::GetBorder(const cPlayer &player)
+cRect cGame::GetBorder()
 {
-	int p = GetRectanglePlayer(player);
-	cRect playRect = *(Scene.GetRectangles(p));
+	cRect playRect = *(Scene.GetRectangles(rectangle_player));
 	cRect camRect  = *(Scene.GetRectangles(rectangle));
 	cRect aux;
-	aux.top		= min(camRect.top,		playRect.top,		cam.top);
+	aux.top		= min(camRect.top,		min(playRect.top,		cam.top));
 	aux.bottom	= min(camRect.bottom,	playRect.bottom);
-	aux.left	= min(camRect.left,		playRect.left,		cam.left);
+	aux.left	= max(camRect.left,		max(playRect.left,		cam.left));
 	aux.right	= min(camRect.right,	playRect.right);
 	return aux;
 }
@@ -534,3 +563,35 @@ int cGame::GetRectanglePlayer(const cPlayer &player)
 	}
 	return i;
 }
+
+void cGame::CalculateCamResurrect()
+{
+	cRect playRect = *(Scene.GetRectangles(rectangle_player));
+	int x = (check_x * TILE_SIZE);
+	int y = (check_y * TILE_SIZE);
+	cam.left = x - (CAM_WIDTH/2);
+	cam.right = x + (CAM_WIDTH/2 +1);
+	cam.top = y + (CAM_HEIGHT/2);
+	cam.bottom = y - (CAM_HEIGHT/2 +1);
+	if(cam.left < playRect.left) 
+	{
+		cam.left = playRect.left;
+		cam.right = cam.left + CAM_WIDTH;
+	}
+	if(cam.right > playRect.right)
+	{
+		cam.right = playRect.right;
+		cam.left = cam.right - CAM_WIDTH;
+	}
+	if(cam.bottom < playRect.bottom)
+	{
+		cam.bottom = playRect.bottom;
+		cam.top = cam.bottom + CAM_HEIGHT;
+	}
+	if(cam.top > playRect.top)
+	{
+		cam.top = playRect.top;
+		cam.bottom = cam.top - CAM_HEIGHT;
+	}
+}
+	

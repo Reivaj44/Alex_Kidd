@@ -9,6 +9,7 @@ cPlayer::cPlayer()
 	left = false;
 	swimming = false;
 	poisoned = false;
+	mario_jump = false;
 	retard = 0;
 	punch_delay = 0;
 	w = 64;
@@ -54,6 +55,11 @@ void cPlayer::UpdateBox()
 	punchbox.left = x + ipunchbox.left;
 	punchbox.right = x + ipunchbox.right;
 
+	mariobox.bottom = y + imariobox.bottom;
+	mariobox.top = y + imariobox.top;
+	mariobox.left = x + imariobox.left;
+	mariobox.right = x + imariobox.right;
+
 	if(left)
 	{
 		punchbox.left = x + 63 - ipunchbox.right;
@@ -65,6 +71,8 @@ void cPlayer::ChangeBox()
 {
 	ipunchbox.left = 32; ipunchbox.right = 32;
 	ipunchbox.bottom = 16; ipunchbox.top = 16;
+	imariobox.left = 32; imariobox.right = 32;
+	imariobox.bottom = 16; imariobox.top = 16;
 	if(swimming) 
 	{
 		ibodybox.left = 31-8;	ibodybox.right = 32 + 8;
@@ -84,7 +92,14 @@ void cPlayer::ChangeBox()
 			ipunchbox.left = 16+22; ipunchbox.right = 16+30;
 			ipunchbox.bottom = 12; ipunchbox.top = 19;
 		}
+		if(mario_jump)
+		{
+			imariobox.left = 16+10; imariobox.right = 16+31-10;
+			imariobox.bottom = 4; imariobox.top = 5;
+		}
+
 	}
+	
 	UpdateBox();
 }
 
@@ -250,6 +265,7 @@ void cPlayer::Jump(int *map)
 void cPlayer::Die()
 {
 	SetState(STATE_DEAD);
+	PlaySound(TEXT("SOUNDS/smb_mariodie.wav"), NULL, SND_ASYNC);
 }
 
 void cPlayer::Poison()
@@ -267,9 +283,20 @@ void cPlayer::Swim()
 
 void cPlayer::Resurrect(int tile_x, int tile_y)
 {
-	if(swimming) SetState(STATE_SWIMRIGHT);
-	else SetState(STATE_LOOKRIGHT);
+	if(swimming) 
+	{
+		SetState(STATE_SWIMRIGHT);
+		PlaySound(TEXT("Sounds/04-Underwater.wav"), NULL, SND_ASYNC | SND_LOOP);
+	}
+	else
+	{
+		SetState(STATE_LOOKRIGHT);
+		PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
+	}
 	SetTile(tile_x, tile_y);
+	mario_jump = false;
+	jumping = false;
+	intheair = false;
 }
 
 void cPlayer::SetState(int s)
@@ -290,14 +317,27 @@ void cPlayer::SetState(int s)
 	}
 	if( state==STATE_PUNCHLEFT	|| state==STATE_PUNCHRIGHT	|| state==STATE_SPUNCHLEFT	|| state==STATE_SPUNCHRIGHT) punching = true;
 	else punching = false;
+	seq = 0;
+	delay = 0;
 	ChangeBox();
+}
+
+void cPlayer::PowerUp()
+{
+	mario_jump = true;
+	ChangeBox();
+}
+
+bool cPlayer::isPoweredUp()
+{
+	return mario_jump;
 }
 
 void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlock*> &blocks, const cRect &rectangle)
 {
 	if(state==STATE_DEAD) 
 	{
-		y += 1;
+		y += 0.5;
 		UpdateBox();
 	}
 
@@ -319,13 +359,30 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 		}
 		if(punching) 
 		{
-			for(unsigned int i = 0; i < monsters.size(); i++) 
-				if(!monsters[i]->isDead() && monsters[i]->CollidesBox(punchbox)) monsters[i]->Die();
-			for(unsigned int i = 0; i < blocks.size(); i++) 
-				if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(punchbox)) blocks[i]->Destroy();
-
+			unsigned int i = 0;
+			bool monster_dead = false;
+			while(i < monsters.size() && !monster_dead)
+			{
+				if(!monsters[i]->isDead() && monsters[i]->CollidesBox(punchbox)) 
+				{
+					monsters[i]->Die();
+					monster_dead = true;
+				}
+				i++;
+			}
+			i = 0;
+			bool destroy_block = false;
+			while(i < blocks.size() && !destroy_block)
+			{
+				if(blocks[i]->isCollisionable() && blocks[i]->CollidesBox(punchbox)) 
+				{
+					blocks[i]->Destroy();
+					destroy_block = true;
+				}
+				i++;
+			}
 			punch_delay++;
-			if(punch_delay >= frame_delay && (!swimming || !poisoned) )
+			if(punch_delay == frame_delay && (!swimming || !poisoned) )
 			{
 				punch_delay = 0;
 				punching = false;
@@ -355,6 +412,24 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				if(jump_alfa > 90)
 				{
 					//Over floor?
+					if(mario_jump)
+					{
+						unsigned int i = 0; 
+						bool collide = false;
+						while(i < monsters.size() && !collide)
+						{
+							if(!monsters[i]->isDead() && monsters[i]->CollidesBox(mariobox))
+							{
+								monsters[i]->Die();
+								jumping = true;
+								intheair = true;
+								jump_alfa = 0;
+								jump_y = y;
+								collide = true;
+							}
+							i++;
+						}
+					}
 					if(CollidesMapFloor(map,blocks))
 					{	jumping=false;
 						intheair=false;
@@ -373,7 +448,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 
 			else intheair=false;
 		}
-		if(swimming && !poisoned && delay%2==0) 
+		if(swimming && !poisoned) 
 		{
 			if(!down_press)
 			{
@@ -436,7 +511,8 @@ void cPlayer::Draw(int tex_id)
 		case STATE_SPUNCHRIGHT:	xo = 0.5f;	yo = 0.375f;
 								break;
 
-		case STATE_DEAD:		xo = 0.0f + (GetFrame()*0.25f); yo = 0.875f;
+		case STATE_DEAD:		
+			xo = 0.0f + (GetFrame()*0.25f); yo = 0.875f;
 								NextFrame(3); break;
 	}
 

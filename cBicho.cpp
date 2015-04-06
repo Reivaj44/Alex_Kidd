@@ -105,7 +105,7 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks)
 {
 	int tile_x,tile_y;
 	int width_tiles;
-	int i;
+	unsigned int i;
 
 	tile_x = bodybox.left / TILE_SIZE;
 	tile_y = bodybox.bottom / TILE_SIZE;
@@ -146,7 +146,7 @@ bool cBicho::CollidesMapCeil(int *map, std::vector<cBlock*> &blocks, const cRect
 	int tile_x,tile_y;
 	int width_tiles;
 	bool on_base;
-	int i;
+	unsigned int i;
 
 	tile_x = bodybox.left / TILE_SIZE;
 	tile_y = bodybox.top / TILE_SIZE;

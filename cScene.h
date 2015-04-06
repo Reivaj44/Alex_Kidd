@@ -23,7 +23,7 @@ public:
 	int GetNumRects();
 	cRect* GetRectangles(int i);
 	int GetIsWater(int i);
-	void GetPlayerInitPosition(int* x, int* y);
+	void GetPlayerInitPosition(int &x, int &y);
 
 private:
 	int map[SCENE_WIDTH * SCENE_HEIGHT];	//scene

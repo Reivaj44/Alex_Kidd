@@ -3,7 +3,6 @@
 #include "cPlayer.h"
 #include "cMonster.h"
 
-
 #define BMON  1
 #define SMON  2
 #define RING  3
@@ -14,6 +13,9 @@
 #define SKULL_P	8
 #define R_BROWN 9
 #define R_GREEN 10
+#define CHBX  11
+#define CHBXT 12
+
 
 class cPlayer;
 class cMonster;
@@ -35,7 +37,7 @@ public:
 	virtual void SetState(int st);
 
 	virtual void Draw(int tex_id);
-	virtual void Logic(cPlayer &player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters);
+	virtual void Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster*> &monsters, int &check_x, int &check_y);
 
 protected:
 	bool collisionable;

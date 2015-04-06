@@ -39,29 +39,45 @@ public:
 	bool InitLevel1();
 
 private:
+	//variables input
 	unsigned char keys[256];
-	int rectangle;
 	bool jump_key;
 	bool punch_key;
 	bool up_key;
 	bool down_key;
-	bool reappears;
-	int delay;
+
+	//objectes principals del joc
 	cRect cam;
 	cScene Scene;
 	cPlayer Player;
+	cData Data;
+
+	//variables de estat del joc
 	int lifes;
-	bool ring;
 	int money;
 	int score;
 	int stage;
+
+	//variables extres
+	int rectangle; //rectangle de la camara
+	int rectangle_player; //rectangle del jugador
+	
 	int option;
+
 	int arr_x,arr_y;
 	int eat_x,eat_y;
+
+	bool blank;
+	bool reappears;
+	int check_x, check_y;
+	int delay;
+
+	//variables de proves
 	std::vector<cMonster*> monsters;
 	std::vector<cBlock*> blocks;
-	cData Data;
+	
 
-	cRect GetBorder(const cPlayer &player);
+	cRect GetBorder();
 	int GetRectanglePlayer(const cPlayer &player);
+	void CalculateCamResurrect();
 };

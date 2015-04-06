@@ -51,6 +51,7 @@ void cBlock::Destroy()
 {
 	if(collisionable)
 	{
+		mciSendString("play SOUNDS/smb_breakblock.wav", NULL, 0, NULL);
 		if(state!=SKULL && state!=SKULL_P && state!=R_BROWN && state!=R_GREEN)
 		{
 			SetState(treasure);
@@ -79,9 +80,9 @@ void cBlock::Destroy()
 void cBlock::SetState(int st) 
 {
 	cBicho::SetState(st);
-	if(st<=4) {
+	if(st<=4 || st>=11) {
 		collisionable = false;
-		y--;
+		if(st<=4) y--;
 	}
 	if(st==R_GREEN) green = true;
 }
@@ -94,34 +95,40 @@ void cBlock::Draw(int tex_id)
 		float xo,yo,xf,yf;
 		switch(GetState())
 		{
-			case SKULL:	xo = 0.0f; yo = 0.25f;
+			case SKULL:		xo = 0.0f; yo = 0.25f;
 									break;
 
-			case QUEST:	xo = 0.250f; yo = 0.25f;
+			case QUEST:		xo = 0.25f; yo = 0.25f;
 									break;
 
-			case STAR:	xo = 0.5f; yo = 0.25f;
+			case STAR:		xo = 0.5f; yo = 0.25f;
 									break;
 
 			case SKULL_P:	xo = 0.75f; yo = 0.25f;
 									break;
 
-			case BMON:	xo = 0.5f; yo = 0.5f;
+			case BMON:		xo = 0.5f; yo = 0.5f;
 									break;
 
-			case SMON:	xo = 0.75f; yo = 0.5f;
+			case SMON:		xo = 0.75f; yo = 0.5f;
 									break;
 
-			case RING:	xo = 0.0f; yo = 0.75f;
+			case RING:		xo = 0.0f; yo = 0.75f;
 									break;
 
-			case LIFE:	xo = 0.5f; yo= 0.75f;
+			case LIFE:		xo = 0.5f; yo= 0.75f;
 									break;
 
 			case R_BROWN:	xo = 0.0f; yo = 0.5f;
 									break;
 
-			case R_GREEN:	xo = 0.250f; yo = 0.5f;
+			case R_GREEN:	xo = 0.25f; yo = 0.5f;
+									break;
+
+			case CHBX:		xo = 0.25f; yo = 1.0f;
+									break;
+
+			case CHBXT:		xo = 0.5f; yo = 1.0f;
 									break;
 		}
 		xf = xo + 0.250;
@@ -130,7 +137,7 @@ void cBlock::Draw(int tex_id)
 	}
 }
 
-void cBlock::Logic(cPlayer &player, int &money, bool &ring, int &lifes, std::vector<cMonster*> &monsters)
+void cBlock::Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster*> &monsters, int &check_x, int &check_y)
 {
 	if(state==SKULL_P)
 	{
@@ -161,12 +168,13 @@ void cBlock::Logic(cPlayer &player, int &money, bool &ring, int &lifes, std::vec
 	{
 		switch(GetState())
 		{
-			case BMON: money+=20; break;
-			case SMON: money+=10; break;
-			case RING: ring = true; break;
-			case LIFE: lifes++; break;
+			case BMON: money+=20; mciSendString("play SOUNDS/smb_coin.wav", NULL, 0, NULL); break;
+			case SMON: money+=10; mciSendString("play SOUNDS/smb_coin.wav", NULL, 0, NULL); break;
+			case RING: player.PowerUp(); mciSendString("play SOUNDS/smb_powerup.wav", NULL, 0, NULL); break;
+			case LIFE: lifes++; mciSendString("play SOUNDS/smb_1-up.wav", NULL, 0, NULL); break;
+			case CHBX: GetTile(check_x,check_y); mciSendString("play SOUNDS/smb3_pause.wav", NULL, 0, NULL); SetState(CHBXT); break;
 		}
-		SetState(STATE_DISAPPEARED);
+		if(state!=CHBXT && state!=CHBX) SetState(STATE_DISAPPEARED);
 	}
 
 }
