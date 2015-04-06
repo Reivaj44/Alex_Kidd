@@ -6,6 +6,7 @@
 #include "cFrog.h"
 #include "cMiniboss.h"
 #include "cScorpion.h"
+#include "cPlayer.h"
 
 cGame::cGame(void)
 {
@@ -100,7 +101,6 @@ bool cGame::Process()
 						break;
 					default:
 						res = InitMap(1);
-						//res = InitLevel1();
 						break;
 				}
 				punch_key=true;
@@ -146,96 +146,106 @@ bool cGame::Process()
 				punch_key=true;
 			}
 			break;
+		case IMG_GAME_OVER:
+			if(keys['x'] && !punch_key) {
+				res = InitCredits();
+				punch_key=true;
+			}
+			break;
 		default:
-			if(level_completed) {
-				level_completed = false;
-				switch (level) {
-					case 1:
-						InitMap(2);
-						break;
-					case 2:
-						InitGameOver();
-						break;
-				}
+			if(lifes == 0) {
+				InitGameOver();
 			}
-
-			if(!blank)
-			{
-				bool keypressed = false;
-
-				if(keys[GLUT_KEY_DOWN]) 
-				{		
-					Player.Crouch(Scene.GetMap(),blocks,Scene.GetWidth());					
-					keypressed=true;
-				}
-
-				if(keys['c'] && !jump_key) 
-				{
-					Player.Jump(Scene.GetMap()); 
-					jump_key=true;		
-					keypressed=true;
-				}
-
-				if(keys['x'] && !punch_key)
-				{
-					Player.Punch(Scene.GetMap());
-					punch_key=true;
-					keypressed=true;
-				}
-
-				if(keys[GLUT_KEY_LEFT]) 
-				{		
-					Player.MoveLeft(Scene.GetMap(), blocks, GetBorder(),Scene.GetWidth());	
-					keypressed=true;
-				}
-
-				else if(keys[GLUT_KEY_RIGHT]) 
-				{	
-					Player.MoveRight(Scene.GetMap(), blocks, GetBorder(),Scene.GetWidth());	
-					keypressed=true;
-				}
-
-				if(!keypressed) Player.Stop();
-			}
-			
-			//Game Logic
-			
-
-			
-			if(!blank)
-			{	//SI HA DE REAPAREIXER
-				if(reappears)
-				{
-					reappears = false;
-					Player.Resurrect(check_x,check_y);
-					CalculateCamResurrect();
-				}
-
-				if(Player.isDead() && !Player.Appears(cam)) 
-				{
-					reappears = true;
-					blank = true;
-					delay = 0;
-				}
-
-				if(!Player.isDead())
-				{	//MIREM SI ENTRA A L'AIGUA
-					rectangle_player = GetRectanglePlayer(Player);
-					if(!Player.isSwimming() && Scene.GetIsWater(rectangle_player)==1) {
-						Scene.GetPlayerInitPosition(check_x,check_y,rectangle_player);
-						mciSendString("play SOUNDS/water.wav", NULL, 0, NULL);
-						Player.Swim();
-						PlaySound(TEXT("Sounds/04-Underwater.wav"), NULL, SND_ASYNC | SND_LOOP);
+			else {
+				if(level_completed) {
+					level_completed = false;
+					switch (level) {
+						case 1:
+							InitMap(2);
+							break;
+						case 2:
+							InitGameOver();
+							break;
 					}
 				}
-			}
-			//LOGICA DE MONSTRES, JUGADOR I OBJECTES
-			for(unsigned int i = 0; i < monsters.size(); i++)
-				if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder(),Scene.GetWidth());
-			Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder(),Scene.GetWidth());
-			for(unsigned int i = 0; i < blocks.size(); i++)
-				if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,lifes,monsters,check_x,check_y, level_completed);
 
+				if(!blank)
+				{
+					bool keypressed = false;
+
+					if(keys[GLUT_KEY_DOWN]) 
+					{		
+						Player.Crouch(Scene.GetMap(),blocks,Scene.GetWidth());					
+						keypressed=true;
+					}
+
+					if(keys['c'] && !jump_key) 
+					{
+						Player.Jump(Scene.GetMap()); 
+						jump_key=true;		
+						keypressed=true;
+					}
+
+					if(keys['x'] && !punch_key)
+					{
+						Player.Punch(Scene.GetMap());
+						punch_key=true;
+						keypressed=true;
+					}
+
+					if(keys[GLUT_KEY_LEFT]) 
+					{		
+						Player.MoveLeft(Scene.GetMap(), blocks, GetBorder(),Scene.GetWidth());	
+						keypressed=true;
+					}
+
+					else if(keys[GLUT_KEY_RIGHT]) 
+					{	
+						Player.MoveRight(Scene.GetMap(), blocks, GetBorder(),Scene.GetWidth());	
+						keypressed=true;
+					}
+
+					if(!keypressed) Player.Stop();
+				}
+			
+				//Game Logic
+			
+
+			
+				if(!blank)
+				{	//SI HA DE REAPAREIXER
+					if(reappears)
+					{
+						reappears = false;
+						Player.Resurrect(check_x,check_y);
+						CalculateCamResurrect();
+					}
+
+					if(Player.isDead() && !Player.Appears(cam)) 
+					{
+						reappears = true;
+						blank = true;
+						delay = 0;
+					}
+
+					if(!Player.isDead())
+					{	//MIREM SI ENTRA A L'AIGUA
+						rectangle_player = GetRectanglePlayer(Player);
+						if(!Player.isSwimming() && Scene.GetIsWater(rectangle_player)==1) {
+							Scene.GetPlayerInitPosition(check_x,check_y,rectangle_player);
+							mciSendString("play SOUNDS/water.wav", NULL, 0, NULL);
+							Player.Swim();
+							PlaySound(TEXT("Sounds/04-Underwater.wav"), NULL, SND_ASYNC | SND_LOOP);
+						}
+					}
+				}
+				//LOGICA DE MONSTRES, JUGADOR I OBJECTES
+				for(unsigned int i = 0; i < monsters.size(); i++)
+					if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder(),Scene.GetWidth());
+				Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder(),Scene.GetWidth());
+				for(unsigned int i = 0; i < blocks.size(); i++)
+					if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,lifes,monsters,check_x,check_y, level_completed);
+			}
 			break;
 	}
 
@@ -366,6 +376,22 @@ void cGame::Render()
 
 			glDisable(GL_TEXTURE_2D);
 			break;
+		case IMG_GAME_OVER:
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluOrtho2D(-320,320,-240,240);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_GAME_OVER));
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.0,1.0);	glVertex2i(-320,-240);
+				glTexCoord2f(1.0,1.0);	glVertex2i(320,-240);
+				glTexCoord2f(1.0,0.0);	glVertex2i(320,240);
+				glTexCoord2f(0.0,0.0);	glVertex2i(-320,240);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+			break;
 		default:
 			if(!blank)
 			{
@@ -431,7 +457,7 @@ bool cGame::InitIntro() {
 	res = Data.LoadImage(IMG_ARROWS, "arrows.png",GL_RGBA);
 	if(!res) return false;
 
-	PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
+	PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC);
 	
 	return res;
 }
@@ -444,7 +470,7 @@ bool cGame::InitInstrucc() {
 	res = Data.LoadImage(IMG_INSTRUC, "instructions.png",GL_RGBA);
 	if(!res) return false;
 	
-	PlaySound(TEXT("Sounds/tloz-overworld.wav"), NULL, SND_ASYNC); // CACTUS: activar
+	PlaySound(TEXT("Sounds/tloz-overworld.wav"), NULL, SND_ASYNC);
 
 	return res;
 }
@@ -491,6 +517,7 @@ bool cGame::InitMap(int lvl) {
 bool cGame::InitGameOver() {
 	bool res = true;
 
+	delay = 0;
 	stage = IMG_GAME_OVER;
 	res = Data.LoadImage(IMG_GAME_OVER, "game_over.png",GL_RGBA);
 	if(!res) return false;
@@ -593,7 +620,7 @@ bool cGame::InitLevel1() {
 	blocks.push_back(Box3);
 	blocks.push_back(Box4),
 
-	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP); // CACTUS: activar
+	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
 
 	return res;
 }
@@ -602,6 +629,7 @@ bool cGame::InitLevel2() {
 	bool res = true;
 	stage = 5;
 	rectangle = 0;
+	Player.Reset();
 	res = Data.LoadImage(IMG_TILES,"Pantalla02.png",GL_RGBA);
 	if(!res) return false;
 	res = Scene.LoadLevel(2);
@@ -666,6 +694,10 @@ bool cGame::InitLevel2() {
 	Box3->SetState(BMON);
 	Box3->SetTreasure(RING);
 
+	cBlock* Box4 = new cBlock();
+	Box4->SetTile(4,2);
+	Box4->SetState(RICE);
+
 	monsters.clear();
 	blocks.clear();
 
@@ -680,8 +712,9 @@ bool cGame::InitLevel2() {
 	blocks.push_back(Box1);
 	blocks.push_back(Box2);
 	blocks.push_back(Box3);
+	blocks.push_back(Box4);
 
-	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP); // CACTUS: activar
+	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
 
 	return res;
 }
