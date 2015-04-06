@@ -462,7 +462,7 @@ bool cGame::InitLevel1() {
 	stage = 4;
 	res = Data.LoadImage(IMG_TILES,"Pantalla01.png",GL_RGBA);
 	if(!res) return false;
-	res = Scene.LoadLevel(3); // CACTUS: canviar num
+	res = Scene.LoadLevel(1);
 	if(!res) return false;
 
 	cam.left = Scene.GetRectangles(0)->left;
