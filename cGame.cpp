@@ -5,6 +5,7 @@
 #include "cGhost.h"
 #include "cFrog.h"
 #include "cMiniboss.h"
+#include "cScorpion.h"
 
 cGame::cGame(void)
 {
@@ -518,7 +519,7 @@ bool cGame::InitLevel1() {
 	if(!res) return false;
 
 	//Creem monstres i blocks de prova
-	cPtero* Ptero = new cPtero();
+	cScorpion* Ptero = new cScorpion();
 	Ptero->SetTile(8,113);
 
 	cSFish* SFish = new cSFish();
@@ -617,7 +618,7 @@ bool cGame::InitLevel2() {
 	if(!res) return false;
 
 	//Creem monstres i blocks de prova
-	cPtero* Ptero = new cPtero();
+	cScorpion* Ptero = new cScorpion();
 	Ptero->SetTile(8,113);
 
 	cSFish* SFish = new cSFish();
@@ -629,7 +630,7 @@ bool cGame::InitLevel2() {
 	cMiniboss* Miniboss = new cMiniboss();
 	Miniboss->SetTile(10,107);
 
-	cFrog* Frog = new cFrog();
+	cScorpion* Frog = new cScorpion();
 	Frog->SetTile(7,110);
 
 	cBlock* Block1 = new cBlock();
