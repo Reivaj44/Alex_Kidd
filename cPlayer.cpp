@@ -266,6 +266,8 @@ void cPlayer::Jump(int *map)
 
 void cPlayer::Die()
 {
+	seq = 0;
+	delay = 0;
 	SetState(STATE_DEAD);
 	PlaySound(TEXT("SOUNDS/smb_mariodie.wav"), NULL, SND_ASYNC);
 }
@@ -319,8 +321,6 @@ void cPlayer::SetState(int s)
 	}
 	if( state==STATE_PUNCHLEFT	|| state==STATE_PUNCHRIGHT	|| state==STATE_SPUNCHLEFT	|| state==STATE_SPUNCHRIGHT) punching = true;
 	else punching = false;
-	seq = 0;
-	delay = 0;
 	ChangeBox();
 }
 
