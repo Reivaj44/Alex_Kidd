@@ -225,7 +225,7 @@ void cBlock::DrawRock(int tex_id)
 
 void cBlock::Money(int &money, cPlayer &player)
 {
-	const int money_life = 30;
+	const int money_life = 100;
 	if(money>=money_life)
 	{
 		player.lifes++;
