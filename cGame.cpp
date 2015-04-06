@@ -156,7 +156,7 @@ bool cGame::Process()
 					level_completed = false;
 					switch (level) {
 						case 1:
-							InitMap(2);
+							InitMap(1);
 							break;
 						case 2:
 							InitGameOver();
