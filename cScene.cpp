@@ -26,6 +26,9 @@ bool cScene::LoadLevel(int level)
 	fd=fopen(file,"r");
 	if(fd==NULL) return false;
 
+	rects.clear();
+	isWater.clear();
+
 	id_DL=glGenLists(1);
 	glNewList(id_DL,GL_COMPILE);
 		glPushMatrix();
