@@ -215,7 +215,7 @@ bool cGame::Process()
 				if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder());
 			Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder());
 			for(unsigned int i = 0; i < blocks.size(); i++)
-				if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,lifes,monsters,check_x,check_y);
+				if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,lifes,monsters,check_x,check_y, level_completed);
 
 			break;
 	}
@@ -514,6 +514,7 @@ bool cGame::InitLevel1() {
 	Frog->SetTile(7,110);
 
 	cBlock* Block1 = new cBlock();
+	Block1->SetState(SMON);
 	Block1->SetTile(5,113);
 
 	cBlock* Block2 = new cBlock();
@@ -528,11 +529,11 @@ bool cGame::InitLevel1() {
 
 	cBlock* Box2 = new cBlock();
 	Box2->SetTile(6,112);
-	Box2->SetState(SKULL_P);
+	Box2->SetState(SMON);
 
 	cBlock* Box3 = new cBlock();
 	Box3->SetTile(0,115);
-	Box3->SetState(QUEST);
+	Box3->SetState(BMON);
 	Box3->SetTreasure(RING);
 
 	monsters.push_back(Ptero);

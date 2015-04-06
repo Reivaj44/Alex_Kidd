@@ -171,8 +171,8 @@ void cBlock::Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster
 	{
 		switch(GetState())
 		{
-			case BMON: money+=20; mciSendString("play SOUNDS/smb_coin.wav", NULL, 0, NULL); break;
-			case SMON: money+=10; mciSendString("play SOUNDS/smb_coin.wav", NULL, 0, NULL); break;
+			case BMON: money+=20; Money(money, lifes); break;
+			case SMON: money+=10; Money(money, lifes); break;
 			case RING: player.PowerUp(); mciSendString("play SOUNDS/smb_powerup.wav", NULL, 0, NULL); break;
 			case LIFE: lifes++; mciSendString("play SOUNDS/smb_1-up.wav", NULL, 0, NULL); break;
 			case CHBX: GetTile(check_x,check_y); mciSendString("play SOUNDS/smb3_pause.wav", NULL, 0, NULL); SetState(CHBXT); break;
@@ -220,4 +220,16 @@ void cBlock::DrawRock(int tex_id)
 		if(xinc>0.5) xinc*=0.80;
 		delay=0;
 	}
+}
+
+void cBlock::Money(int &money, int &lifes)
+{
+	const int money_life = 30;
+	if(money>=money_life)
+	{
+		lifes++;
+		mciSendString("play SOUNDS/smb_1-up.wav", NULL, 0, NULL);
+		money=money%money_life;
+	}
+	else mciSendString("play SOUNDS/smb_coin.wav", NULL, 0, NULL); 
 }

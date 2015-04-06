@@ -53,5 +53,6 @@ protected:
 	float xdes, ydes, xinc;
 
 	void DrawRock(int tex_id);
+	void Money(int &money, int &lifes);
 };
 

@@ -12,9 +12,11 @@ cPlayer::cPlayer()
 	mario_jump = false;
 	retard = 0;
 	punch_delay = 0;
+	frame_punch_delay = frame_delay;
 	w = 64;
 	h = 32;
 	down_press = false;
+	first_punch = false;
 	SetState(STATE_LOOKRIGHT);
 }
 cPlayer::~cPlayer(){}
@@ -198,7 +200,7 @@ void cPlayer::Punch(int *map)
 {
 	if(state!=STATE_CROUCHLEFT && state!=STATE_CROUCHRIGHT && !punching && state!=STATE_DEAD && !poisoned)
 	{
-		mciSendString("play SOUNDS/punch.wav", NULL, 0, NULL);
+		first_punch = true;
 		if(swimming)
 		{
 			if(left) SetState(STATE_SPUNCHLEFT);
@@ -381,8 +383,14 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				}
 				i++;
 			}
+			if(first_punch && !destroy_block) 
+			{
+				mciSendString("play SOUNDS/punch.wav", NULL, 0, NULL);
+			}
+			first_punch=false;
+		
 			punch_delay++;
-			if(punch_delay == frame_delay && (!swimming || !poisoned) )
+			if(punch_delay == frame_punch_delay && (!swimming || !poisoned) )
 			{
 				punch_delay = 0;
 				punching = false;
