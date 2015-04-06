@@ -201,6 +201,7 @@ bool cGame::Process()
 				{	//MIREM SI ENTRA A L'AIGUA
 					rectangle_player = GetRectanglePlayer(Player);
 					if(!Player.isSwimming() && Scene.GetIsWater(rectangle_player)==1) {
+						Scene.GetPlayerInitPosition(check_x,check_y,rectangle_player);
 						mciSendString("play SOUNDS/water.wav", NULL, 0, NULL);
 						Player.Swim();
 						PlaySound(TEXT("Sounds/04-Underwater.wav"), NULL, SND_ASYNC | SND_LOOP);
@@ -486,7 +487,7 @@ bool cGame::InitLevel1() {
 	if(!res) return false;
 	res = Data.LoadImage(IMG_PLAYER_B,"Alex_big.png",GL_RGBA);
 	if(!res) return false;
-	Scene.GetPlayerInitPosition(&check_x, &check_y,0);
+	Scene.GetPlayerInitPosition(check_x, check_y,0);
 	Player.SetTile(check_x, check_y); //init position
 	Player.SetState(STATE_LOOKRIGHT);
 
