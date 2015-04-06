@@ -472,6 +472,24 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 				y -= (1.5*step_length);
 				UpdateBox();
 				intheair=true;
+				if(mario_jump)
+				{
+					unsigned int i = 0; 
+					bool collide = false;
+					while(i < monsters.size() && !collide)
+					{
+						if(!monsters[i]->isDead() && monsters[i]->CollidesBox(mariobox))
+						{
+							monsters[i]->Die();
+							jumping = true;
+							intheair = true;
+							jump_alfa = 0;
+							jump_y = y;
+							collide = true;
+						}
+						i++;
+					}
+				}
 			}
 
 			else intheair=false;
