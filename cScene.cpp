@@ -34,9 +34,6 @@ bool cScene::LoadLevel(int level)
 	glNewList(id_DL,GL_COMPILE);
 		glPushMatrix();
 		glBegin(GL_QUADS);
-			
-			fscanf(fd,"%d",&player_x);
-			fscanf(fd,"%d",&player_y);
 
 			fscanf(fd,"%d",&num_quads);
 			int water;
