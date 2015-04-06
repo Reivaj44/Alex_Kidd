@@ -75,6 +75,7 @@ private:
 	bool reappears;
 	int check_x, check_y;
 	int delay;
+	int eat_arrow;
 
 	//variables de proves
 	std::vector<cMonster*> monsters;

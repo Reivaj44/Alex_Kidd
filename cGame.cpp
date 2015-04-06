@@ -20,6 +20,7 @@ cGame::cGame(void)
 	money = 0;
 	score = 0;
 	rectangle = 0;
+	eat_arrow = 0;
 }
 
 cGame::~cGame(void)
@@ -333,25 +334,34 @@ void cGame::Render()
 				glTexCoord2f(1.0,0.0);	glVertex2i(320,240);
 				glTexCoord2f(0.0,0.0);	glVertex2i(-320,240);
 			glEnd();
-			delay++;
-			
 
-			glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_ARROWS));
-			glBegin(GL_QUADS);
-				glTexCoord2f(0.5,1.0);	glVertex2i(arr_x-8,arr_y-8);
-				glTexCoord2f(1.0,1.0);	glVertex2i(arr_x+8,arr_y-8);
-				glTexCoord2f(1.0,0.0);	glVertex2i(arr_x+8,arr_y+8);
-				glTexCoord2f(0.5,0.0);	glVertex2i(arr_x-8,arr_y+8);
-			glEnd();
+			delay++;
+			if(delay==16)
+			{
+				eat_arrow++;
+				eat_arrow%=2;
+				delay = 0;
+			}
+
+			if(eat_arrow==0)
+			{
+				glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_ARROWS));
+				glBegin(GL_QUADS);
+					glTexCoord2f(0.5,1.0);	glVertex2i(arr_x-8,arr_y-8);
+					glTexCoord2f(1.0,1.0);	glVertex2i(arr_x+8,arr_y-8);
+					glTexCoord2f(1.0,0.0);	glVertex2i(arr_x+8,arr_y+8);
+					glTexCoord2f(0.5,0.0);	glVertex2i(arr_x-8,arr_y+8);
+				glEnd();
+			}
 
 			eat_x = 260;
 			eat_y = -150;
 			glBindTexture(GL_TEXTURE_2D,Data.GetID(IMG_EATING));
 			glBegin(GL_QUADS);
-				glTexCoord2f(0.0,1.0);	glVertex2i(eat_x-32,eat_y-64);
-				glTexCoord2f(0.5,1.0);	glVertex2i(eat_x+32,eat_y-64);
-				glTexCoord2f(0.5,0.0);	glVertex2i(eat_x+32,eat_y+64);
-				glTexCoord2f(0.0,0.0);	glVertex2i(eat_x-32,eat_y+64);
+				glTexCoord2f(0.0+0.5*eat_arrow,1.0);	glVertex2i(eat_x-32,eat_y-64);
+				glTexCoord2f(0.5+0.5*eat_arrow,1.0);	glVertex2i(eat_x+32,eat_y-64);
+				glTexCoord2f(0.5+0.5*eat_arrow,0.0);	glVertex2i(eat_x+32,eat_y+64);
+				glTexCoord2f(0.0+0.5*eat_arrow,0.0);	glVertex2i(eat_x-32,eat_y+64);
 			glEnd();
 
 			glDisable(GL_TEXTURE_2D);
