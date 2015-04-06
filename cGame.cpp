@@ -11,10 +11,9 @@ cGame::cGame(void)
 	down_key = false;
 	reappears = false;
 	blank = false;
+	game_over = false;
 	delay = 0;
-	lifes = 3;
 	money = 0;
-	score = 0;
 	rectangle = 0;
 	eat_arrow = 0;
 }
@@ -148,7 +147,8 @@ bool cGame::Process()
 			}
 			break;
 		default:
-			if(lifes == 0) {
+			if(game_over) {
+				game_over = false;
 				InitGameOver();
 			}
 			else {
@@ -218,9 +218,14 @@ bool cGame::Process()
 
 					if(Player.isDead() && !Player.Appears(cam)) 
 					{
-						reappears = true;
-						blank = true;
-						delay = 0;
+						
+						if(Player.lifes==0) game_over = true;
+						else 
+						{
+							blank = true;
+							reappears = true;
+							delay = 0;
+						}
 					}
 
 					if(!Player.isDead())
@@ -239,7 +244,7 @@ bool cGame::Process()
 					if(Scene.monsters[i]->Appears(cam)) Scene.monsters[i]->Logic(Scene.GetMap(), Player, Scene.blocks, GetBorder(),Scene.GetWidth());
 				Player.Logic(Scene.GetMap(),Scene.monsters, Scene.blocks, GetBorder(),Scene.GetWidth());
 				for(unsigned int i = 0; i < Scene.blocks.size(); i++)
-					if(Scene.blocks[i]->Appears(cam)) Scene.blocks[i]->Logic(Player,money,lifes,Scene.monsters,check_x,check_y, level_completed);
+					if(Scene.blocks[i]->Appears(cam)) Scene.blocks[i]->Logic(Player,money,Scene.monsters,check_x,check_y, level_completed);
 			}
 			break;
 	}

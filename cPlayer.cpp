@@ -17,6 +17,7 @@ cPlayer::cPlayer()
 	h = 32;
 	down_press = false;
 	first_punch = false;
+	lifes = 3;
 	SetState(STATE_LOOKRIGHT);
 }
 cPlayer::~cPlayer(){}
@@ -268,6 +269,7 @@ void cPlayer::Die()
 {
 	seq = 0;
 	delay = 0;
+	lifes--;
 	SetState(STATE_DEAD);
 	PlaySound(TEXT("SOUNDS/smb_mariodie.wav"), NULL, SND_ASYNC);
 }

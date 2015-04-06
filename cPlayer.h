@@ -62,6 +62,8 @@ public:
 
 	virtual void Draw(int tex_id);
 
+	int lifes;
+
 private:
 	bool left;
 	bool intheair;

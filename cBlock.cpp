@@ -141,7 +141,7 @@ void cBlock::Draw(int tex_id)
 	}
 }
 
-void cBlock::Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster*> &monsters, int &check_x, int &check_y, bool &level_completed)
+void cBlock::Logic(cPlayer &player, int &money, std::vector<cMonster*> &monsters, int &check_x, int &check_y, bool &level_completed)
 {
 	if(state==SKULL_P)
 	{
@@ -172,10 +172,10 @@ void cBlock::Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster
 	{
 		switch(GetState())
 		{
-			case BMON: money+=20; Money(money, lifes); break;
-			case SMON: money+=10; Money(money, lifes); break;
+			case BMON: money+=20; Money(money, player); break;
+			case SMON: money+=10; Money(money, player); break;
 			case RING: player.PowerUp(); mciSendString("play SOUNDS/smb_powerup.wav", NULL, 0, NULL); break;
-			case LIFE: lifes++; mciSendString("play SOUNDS/smb_1-up.wav", NULL, 0, NULL); break;
+			case LIFE: player.lifes++; mciSendString("play SOUNDS/smb_1-up.wav", NULL, 0, NULL); break;
 			case CHBX: GetTile(check_x,check_y); mciSendString("play SOUNDS/smb3_pause.wav", NULL, 0, NULL); SetState(CHBXT); break;
 			case RICE: level_completed = true; mciSendString("play SOUNDS/rice_ball.wav", NULL, 0, NULL); break;
 		}
@@ -223,12 +223,12 @@ void cBlock::DrawRock(int tex_id)
 	}
 }
 
-void cBlock::Money(int &money, int &lifes)
+void cBlock::Money(int &money, cPlayer &player)
 {
 	const int money_life = 30;
 	if(money>=money_life)
 	{
-		lifes++;
+		player.lifes++;
 		mciSendString("play SOUNDS/smb_1-up.wav", NULL, 0, NULL);
 		money=money%money_life;
 	}

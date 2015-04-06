@@ -55,12 +55,11 @@ private:
 	cData Data;
 
 	//variables de estat del joc
-	int lifes;
 	int money;
-	int score;
 	int stage;
 	bool level_completed;
 	int level;
+	bool game_over;
 
 	//variables extres
 	int rectangle; //rectangle de la camara

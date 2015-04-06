@@ -38,7 +38,7 @@ public:
 	virtual void SetState(int st);
 
 	virtual void Draw(int tex_id);
-	virtual void Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster*> &monsters, int &check_x, int &check_y, bool &level_completed);
+	virtual void Logic(cPlayer &player, int &money, std::vector<cMonster*> &monsters, int &check_x, int &check_y, bool &level_completed);
 
 protected:
 	bool collisionable;
@@ -53,6 +53,6 @@ protected:
 	float xdes, ydes, xinc;
 
 	void DrawRock(int tex_id);
-	void Money(int &money, int &lifes);
+	void Money(int &money, cPlayer &player);
 };
 

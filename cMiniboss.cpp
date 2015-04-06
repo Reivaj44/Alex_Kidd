@@ -131,7 +131,7 @@ void cMiniboss::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, c
 		}
 		if(touched && !CollidesBox(player.GetHitBox())) touched = false;
 	}
-	if(state!=STATE_EXPLODE && CollidesBoobles(player.GetBodyBox())) player.Die();
+	if(state!=STATE_EXPLODE && CollidesBoobles(player.GetBodyBox()) && !player.isDead()) player.Die();
 	else cMonster::Logic(map,player, blocks, rectangle, level_width);
 }
 

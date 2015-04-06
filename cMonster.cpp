@@ -48,5 +48,5 @@ void cMonster::Draw(int tex_id)
 
 void cMonster::Logic(int *map, cPlayer &player, std::vector<cBlock*> &blocks, const cRect &rectangle, int level_width)
 {
-	if(state!=STATE_EXPLODE && CollidesBox(player.GetBodyBox())) player.Die();
+	if(state!=STATE_EXPLODE && CollidesBox(player.GetBodyBox()) && !player.isDead()) player.Die();
 }
