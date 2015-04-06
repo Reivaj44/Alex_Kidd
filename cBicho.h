@@ -2,9 +2,11 @@
 
 #include "cTexture.h"
 #include "Globals.h"
+#include "cScene.h"
 
 #define STATE_DISAPPEARED -1
 
+class cScene;
 class cBlock;
 
 class cRect
@@ -60,6 +62,7 @@ protected:
 	int frame_delay;
 	int delay;
 	float step_length;
+	cScene Scene;
 
 	virtual void UpdateBox();
 };
