@@ -5,6 +5,7 @@
 #include "cGhost.h"
 #include "cFrog.h"
 #include "cMiniboss.h"
+#include "cScorpion.h"
 
 cGame::cGame(void)
 {
@@ -621,7 +622,7 @@ bool cGame::InitLevel2() {
 	cMiniboss* Miniboss = new cMiniboss();
 	Miniboss->SetTile(10,107);
 
-	cFrog* Frog = new cFrog();
+	cScorpion* Frog = new cScorpion();
 	Frog->SetTile(7,110);
 
 	cBlock* Block1 = new cBlock();
