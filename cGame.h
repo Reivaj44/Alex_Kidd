@@ -38,6 +38,7 @@ public:
 	bool InitMap(int lvl);
 	bool InitGameOver();
 	bool InitLevel1();
+	bool InitLevel2();
 
 private:
 	//variables input
@@ -59,6 +60,7 @@ private:
 	int score;
 	int stage;
 	bool level_completed;
+	int level;
 
 	//variables extres
 	int rectangle; //rectangle de la camara

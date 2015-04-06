@@ -133,11 +133,28 @@ bool cGame::Process()
 			break;
 		case IMG_MAP:
 			if(keys['x'] && !punch_key) {
-				res = InitLevel1();
+				switch (level) {
+					case 1:
+						res = InitLevel1();
+						break;
+					case 2:
+						res = InitLevel2();
+						break;
+				}
 				punch_key=true;
 			}
 			break;
 		default:
+			if(level_completed) {
+				switch (level) {
+					case 1:
+						InitMap(2);
+						break;
+					case 2:
+						InitGameOver();
+						break;
+				}
+			}
 			if(!blank)
 			{
 				bool keypressed = false;
@@ -436,6 +453,7 @@ bool cGame::InitMap(int lvl) {
 
 	stage = IMG_MAP;
 	delay = 0;
+	level = lvl;
 	switch (lvl) {
 		case 1: //-139,-45
 			arr_x = -139;
@@ -451,7 +469,7 @@ bool cGame::InitMap(int lvl) {
 	res = Data.LoadImage(IMG_EATING, "alex_eating.png",GL_RGBA);
 	if(!res) return false;
 
-	PlaySound(TEXT("Sounds/02-Level_Start.wav"), NULL, SND_ASYNC); // CACTUS: activar
+	PlaySound(TEXT("Sounds/02-Level_Start.wav"), NULL, SND_ASYNC);
 	
 	return res;
 }
@@ -463,7 +481,7 @@ bool cGame::InitGameOver() {
 	res = Data.LoadImage(IMG_GAME_OVER, "game_over.png",GL_RGBA);
 	if(!res) return false;
 
-	//PlaySound(TEXT("Sounds/victory.wav"), NULL, SND_ASYNC);
+	PlaySound(TEXT("Sounds/victory.wav"), NULL, SND_ASYNC);
 	
 	return res;
 }
@@ -474,6 +492,99 @@ bool cGame::InitLevel1() {
 	res = Data.LoadImage(IMG_TILES,"Pantalla01.png",GL_RGBA);
 	if(!res) return false;
 	res = Scene.LoadLevel(1);
+	if(!res) return false;
+
+	cam.left = Scene.GetRectangles(0)->left;
+	cam.top = Scene.GetRectangles(0)->top;
+	cam.bottom = cam.top - CAM_HEIGHT;
+	cam.right = cam.left + CAM_WIDTH;
+
+	//Player initialization
+	res = Data.LoadImage(IMG_PLAYER,"Alex.png",GL_RGBA);
+	if(!res) return false;
+	res = Data.LoadImage(IMG_PLAYER_B,"Alex_big.png",GL_RGBA);
+	if(!res) return false;
+	Scene.GetPlayerInitPosition(&check_x, &check_y,0);
+	Player.SetTile(check_x, check_y); //init position
+	Player.SetState(STATE_LOOKRIGHT);
+
+	res = Data.LoadImageA(IMG_ENEMY, "Monsters.png", GL_RGBA);
+	if(!res) return false;
+	
+	res = Data.LoadImageA(IMG_BLOCKS, "blocks.png", GL_RGBA);
+	if(!res) return false;
+
+	//Creem monstres i blocks de prova
+	cPtero* Ptero = new cPtero();
+	Ptero->SetTile(8,113);
+
+	cSFish* SFish = new cSFish();
+	SFish->SetTile(8,5);
+	
+	cGhost* Ghost = new cGhost();
+	Ghost->SetTile(10,111);
+
+	cMiniboss* Miniboss = new cMiniboss();
+	Miniboss->SetTile(10,107);
+
+	cFrog* Frog = new cFrog();
+	Frog->SetTile(7,110);
+
+	cMonster* Lode = new cMonster();
+	Lode->SetTile(49,0);
+	cRect k = Lode->GetBodyBox();
+	k.top = 16;
+	k.bottom = 16;
+	k.left = 16;
+	k.right = 16;
+
+	cBlock* Block1 = new cBlock();
+	Block1->SetState(SMON);
+	Block1->SetTile(5,113);
+
+	cBlock* Block2 = new cBlock();
+	Block2->SetTile(10,113);
+	Block2->SetState(STAR);
+	Block2->SetTreasure(BMON);
+
+	cBlock* Box1 = new cBlock();
+	Box1->SetTile(10,86);
+	Box1->SetState(CHBX);
+	//Box1->SetTreasure(BMON);
+
+	cBlock* Box2 = new cBlock();
+	Box2->SetTile(6,112);
+	Box2->SetState(SMON);
+
+	cBlock* Box3 = new cBlock();
+	Box3->SetTile(0,115);
+	Box3->SetState(BMON);
+	Box3->SetTreasure(RING);
+
+	monsters.push_back(Ptero);
+	//monsters.push_back(Frog);
+	monsters.push_back(SFish);
+	//monsters.push_back(Ghost);
+	//monsters.push_back(Miniboss);
+	monsters.push_back(Lode);
+
+	blocks.push_back(Block1);
+	blocks.push_back(Block2);
+	blocks.push_back(Box1);
+	blocks.push_back(Box2);
+	blocks.push_back(Box3);
+
+	PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP); // CACTUS: activar
+
+	return res;
+}
+
+bool cGame::InitLevel2() {
+	bool res = true;
+	stage = 5;
+	res = Data.LoadImage(IMG_TILES,"Pantalla02.png",GL_RGBA);
+	if(!res) return false;
+	res = Scene.LoadLevel(2);
 	if(!res) return false;
 
 	cam.left = Scene.GetRectangles(0)->left;
