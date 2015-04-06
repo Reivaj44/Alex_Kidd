@@ -265,8 +265,7 @@ void cPlayer::Jump(int *map)
 void cPlayer::Die()
 {
 	SetState(STATE_DEAD);
-	PlaySound(TEXT("Sounds/nada.wav"), NULL, SND_ASYNC);
-	mciSendString("play SOUNDS/smb_mariodie.wav", NULL, 0, NULL);
+	PlaySound(TEXT("SOUNDS/smb_mariodie.wav"), NULL, SND_ASYNC);
 }
 
 void cPlayer::Poison()
@@ -287,12 +286,12 @@ void cPlayer::Resurrect(int tile_x, int tile_y)
 	if(swimming) 
 	{
 		SetState(STATE_SWIMRIGHT);
-		PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
+		PlaySound(TEXT("Sounds/04-Underwater.wav"), NULL, SND_ASYNC | SND_LOOP);
 	}
 	else
 	{
 		SetState(STATE_LOOKRIGHT);
-		PlaySound(TEXT("Sounds/04-Underwater.wav"), NULL, SND_ASYNC | SND_LOOP);
+		PlaySound(TEXT("Sounds/03-Main_Theme.wav"), NULL, SND_ASYNC | SND_LOOP);
 	}
 	SetTile(tile_x, tile_y);
 	mario_jump = false;
@@ -318,6 +317,8 @@ void cPlayer::SetState(int s)
 	}
 	if( state==STATE_PUNCHLEFT	|| state==STATE_PUNCHRIGHT	|| state==STATE_SPUNCHLEFT	|| state==STATE_SPUNCHRIGHT) punching = true;
 	else punching = false;
+	seq = 0;
+	delay = 0;
 	ChangeBox();
 }
 
@@ -336,7 +337,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 {
 	if(state==STATE_DEAD) 
 	{
-		y += 1;
+		y += 0.5;
 		UpdateBox();
 	}
 
@@ -422,7 +423,7 @@ void cPlayer::Logic(int *map, std::vector<cMonster*> &monsters, std::vector<cBlo
 
 			else intheair=false;
 		}
-		if(swimming && !poisoned && delay%2==0) 
+		if(swimming && !poisoned) 
 		{
 			if(!down_press)
 			{
@@ -485,7 +486,8 @@ void cPlayer::Draw(int tex_id)
 		case STATE_SPUNCHRIGHT:	xo = 0.5f;	yo = 0.375f;
 								break;
 
-		case STATE_DEAD:		xo = 0.0f + (GetFrame()*0.25f); yo = 0.875f;
+		case STATE_DEAD:		
+			xo = 0.0f + (GetFrame()*0.25f); yo = 0.875f;
 								NextFrame(3); break;
 	}
 

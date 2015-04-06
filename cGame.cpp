@@ -13,11 +13,11 @@ cGame::cGame(void)
 	up_key = false;
 	down_key = false;
 	reappears = false;
+	blank = false;
 	delay = 0;
 	lifes = 3;
 	money = 0;
 	score = 0;
-	ring = 0;
 	rectangle = 0;
 }
 
@@ -141,69 +141,81 @@ bool cGame::Process()
 			}
 			break;
 		default:
-			bool keypressed = false;
-
-			if(keys[GLUT_KEY_DOWN]) 
-			{		
-				Player.Crouch(Scene.GetMap(),blocks);					
-				keypressed=true;
-			}
-
-			if(keys['c'] && !jump_key) 
+			if(!blank)
 			{
-				Player.Jump(Scene.GetMap()); 
-				jump_key=true;		
-				keypressed=true;
-			}
+				bool keypressed = false;
 
-			if(keys['x'] && !punch_key)
-			{
-				Player.Punch(Scene.GetMap());
-				punch_key=true;
-				keypressed=true;
-			}
-
-			if(keys[GLUT_KEY_LEFT]) 
-			{		
-				Player.MoveLeft(Scene.GetMap(), blocks, GetBorder());	
-				keypressed=true;
-			}
-
-			else if(keys[GLUT_KEY_RIGHT]) 
-			{	
-				Player.MoveRight(Scene.GetMap(), blocks, GetBorder());	
-				keypressed=true;
-			}
-
-			if(!keypressed) Player.Stop();
-			
-			
-			//Game Logic
-			if(Player.isDead() && !Player.Appears(cam)) 
-			{
-				Player.Resurrect(check_x,check_y);
-				CalculateCamResurrect();
-				reappears = true;
-				delay = 0;
-			}
-
-			if(!reappears && delay%100==0)
-			{
-				if(!Player.isDead())
-				{
-					rectangle_player = GetRectanglePlayer(Player);
-					if(!Player.isSwimming() && Scene.GetIsWater(rectangle_player)==1) {
-						Player.Swim();
-						PlaySound(TEXT("Sounds/04-Underwater.wav"), NULL, SND_ASYNC);
-					}
+				if(keys[GLUT_KEY_DOWN]) 
+				{		
+					Player.Crouch(Scene.GetMap(),blocks);					
+					keypressed=true;
 				}
 
-				for(unsigned int i = 0; i < monsters.size(); i++)
-					if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder());
-				Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder());
-				for(unsigned int i = 0; i < blocks.size(); i++)
-					if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,lifes,monsters,check_x,check_y);
+				if(keys['c'] && !jump_key) 
+				{
+					Player.Jump(Scene.GetMap()); 
+					jump_key=true;		
+					keypressed=true;
+				}
+
+				if(keys['x'] && !punch_key)
+				{
+					Player.Punch(Scene.GetMap());
+					punch_key=true;
+					keypressed=true;
+				}
+
+				if(keys[GLUT_KEY_LEFT]) 
+				{		
+					Player.MoveLeft(Scene.GetMap(), blocks, GetBorder());	
+					keypressed=true;
+				}
+
+				else if(keys[GLUT_KEY_RIGHT]) 
+				{	
+					Player.MoveRight(Scene.GetMap(), blocks, GetBorder());	
+					keypressed=true;
+				}
+
+				if(!keypressed) Player.Stop();
 			}
+			
+			//Game Logic
+			
+
+			
+			if(!blank)
+			{	//SI HA DE REAPAREIXER
+				if(reappears)
+				{
+					reappears = false;
+					Player.Resurrect(check_x,check_y);
+					CalculateCamResurrect();
+				}
+
+				if(Player.isDead() && !Player.Appears(cam)) 
+				{
+					reappears = true;
+					blank = true;
+					delay = 0;
+				}
+
+				if(!Player.isDead())
+				{	//MIREM SI ENTRA A L'AIGUA
+					rectangle_player = GetRectanglePlayer(Player);
+					if(!Player.isSwimming() && Scene.GetIsWater(rectangle_player)==1) {
+						mciSendString("play SOUNDS/water.wav", NULL, 0, NULL);
+						Player.Swim();
+						PlaySound(TEXT("Sounds/04-Underwater.wav"), NULL, SND_ASYNC | SND_LOOP);
+					}
+				}
+			}
+			//LOGICA DE MONSTRES, JUGADOR I OBJECTES
+			for(unsigned int i = 0; i < monsters.size(); i++)
+				if(monsters[i]->Appears(cam)) monsters[i]->Logic(Scene.GetMap(), Player, blocks, GetBorder());
+			Player.Logic(Scene.GetMap(),monsters, blocks, GetBorder());
+			for(unsigned int i = 0; i < blocks.size(); i++)
+				if(blocks[i]->Appears(cam)) blocks[i]->Logic(Player,money,lifes,monsters,check_x,check_y);
 
 			break;
 	}
@@ -214,6 +226,7 @@ bool cGame::Process()
 //Output
 void cGame::Render()
 {
+	if(blank) glClearColor(0.0f,0.0f,1.0f,1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	bool res = true;
@@ -326,18 +339,16 @@ void cGame::Render()
 			glDisable(GL_TEXTURE_2D);
 			break;
 		default:
-			if(!reappears && delay%100==0)
+			if(!blank)
 			{
 				if(!Player.isDead())
 				{
+					//CALCULS DE CAMARA
 					int play_x, play_y;
 					Player.GetPosition(play_x, play_y);
 
 					if(rectangle<(Scene.GetNumRects()-1) && cBicho::BoxInsideBox( *(Scene.GetRectangles(rectangle+1)), cam ) ) 
-					{
 						rectangle++;
-						//check_x = Scene.GetRectangles(rectangle)->top; posicio inici nou rectangle
-					}
 				
 					int level_width = Scene.GetRectangles(rectangle)->right; 
 					int level_height = Scene.GetRectangles(rectangle)->top; 
@@ -352,13 +363,14 @@ void cGame::Render()
 					cam.top = cam.bottom + CAM_HEIGHT;
 					cam.right = cam.left + CAM_WIDTH;
 				}
-
+				//COLOCAR CAMARA
 				glMatrixMode(GL_PROJECTION);
 				glLoadIdentity();
 			
 				gluOrtho2D(cam.left, cam.right, cam.bottom, cam.top);
-				glMatrixMode(GL_MODELVIEW);
 
+				//DIBUIXAR
+				glMatrixMode(GL_MODELVIEW);
 				glLoadIdentity();
 
 				Scene.Draw(Data.GetID(IMG_TILES));
@@ -371,8 +383,9 @@ void cGame::Render()
 			}
 			else 
 			{	
-				reappears = false;
+				//DIBUIXAR PANTALLA EN BLAU
 				delay++;
+				if(!(delay%20)) blank = false;
 			}
 			break;
 	}
@@ -390,7 +403,7 @@ bool cGame::InitIntro() {
 	res = Data.LoadImage(IMG_ARROWS, "arrows.png",GL_RGBA);
 	if(!res) return false;
 
-	//PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
+	PlaySound(TEXT("Sounds/01-Title_Screen.wav"), NULL, SND_ASYNC); // CACTUS: activar
 	
 	return res;
 }
@@ -413,6 +426,8 @@ bool cGame::InitCredits() {
 	option = 0;
 	res = Data.LoadImage(IMG_CREDITS, "credits.png",GL_RGBA);
 	if(!res) return false;
+
+	PlaySound(TEXT("Sounds/victory.wav"), NULL, SND_ASYNC);
 	
 	return res;
 }
@@ -437,7 +452,7 @@ bool cGame::InitMap(int lvl) {
 	res = Data.LoadImage(IMG_EATING, "alex_eating.png",GL_RGBA);
 	if(!res) return false;
 
-	//PlaySound(TEXT("Sounds/02-Level_Start.wav"), NULL, SND_ASYNC); // CACTUS: activar
+	PlaySound(TEXT("Sounds/02-Level_Start.wav"), NULL, SND_ASYNC); // CACTUS: activar
 	
 	return res;
 }
@@ -454,7 +469,7 @@ bool cGame::InitLevel1() {
 	cam.top = Scene.GetRectangles(0)->top;
 	cam.bottom = cam.top - CAM_HEIGHT;
 	cam.right = cam.left + CAM_WIDTH;
-	
+
 	//Player initialization
 	res = Data.LoadImage(IMG_PLAYER,"Alex.png",GL_RGBA);
 	if(!res) return false;
@@ -475,7 +490,7 @@ bool cGame::InitLevel1() {
 	Ptero->SetTile(8,113);
 
 	cSFish* SFish = new cSFish();
-	SFish->SetTile(10,108);
+	SFish->SetTile(8,5);
 	
 	cGhost* Ghost = new cGhost();
 	Ghost->SetTile(10,111);
@@ -510,7 +525,7 @@ bool cGame::InitLevel1() {
 
 	monsters.push_back(Ptero);
 	//monsters.push_back(Frog);
-	//monsters.push_back(SFish);
+	monsters.push_back(SFish);
 	//monsters.push_back(Ghost);
 	//monsters.push_back(Miniboss);
 
