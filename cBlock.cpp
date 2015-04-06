@@ -177,7 +177,7 @@ void cBlock::Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster
 			case RING: player.PowerUp(); mciSendString("play SOUNDS/smb_powerup.wav", NULL, 0, NULL); break;
 			case LIFE: lifes++; mciSendString("play SOUNDS/smb_1-up.wav", NULL, 0, NULL); break;
 			case CHBX: GetTile(check_x,check_y); mciSendString("play SOUNDS/smb3_pause.wav", NULL, 0, NULL); SetState(CHBXT); break;
-			case RICE: level_completed = true; break;
+			case RICE: level_completed = true; mciSendString("play SOUNDS/rice_ball.wav", NULL, 0, NULL); break;
 		}
 		if(state!=CHBXT && state!=CHBX) SetState(STATE_DISAPPEARED);
 	}

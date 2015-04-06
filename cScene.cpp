@@ -167,9 +167,9 @@ int cScene::GetIsWater(int i) {
 	return isWater[i];
 }
 
-void cScene::GetPlayerInitPosition(int* x, int* y, int num_rect) {
-	*x = player_position[2*num_rect];
-	*y = player_position[2*num_rect+1];
+void cScene::GetPlayerInitPosition(int& x, int& y, int num_rect) {
+	x = player_position[2*num_rect];
+	y = player_position[2*num_rect+1];
 }
 
 int cScene::GetWidth() {

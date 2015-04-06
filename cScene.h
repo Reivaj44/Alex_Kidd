@@ -22,7 +22,7 @@ public:
 	int GetNumRects();
 	cRect* GetRectangles(int i);
 	int GetIsWater(int i);
-	void GetPlayerInitPosition(int* x, int* y, int num_rect);
+	void GetPlayerInitPosition(int &x, int &y, int num_rect);
 	int GetWidth();
 	int GetHeight();
 
