@@ -457,9 +457,21 @@ bool cGame::InitMap(int lvl) {
 	return res;
 }
 
+bool cGame::InitGameOver() {
+	bool res = true;
+
+	stage = IMG_GAME_OVER;
+	res = Data.LoadImage(IMG_GAME_OVER, "game_over.png",GL_RGBA);
+	if(!res) return false;
+
+	//PlaySound(TEXT("Sounds/victory.wav"), NULL, SND_ASYNC);
+	
+	return res;
+}
+
 bool cGame::InitLevel1() {
 	bool res = true;
-	stage = 4;
+	stage = 5;
 	res = Data.LoadImage(IMG_TILES,"Pantalla01.png",GL_RGBA);
 	if(!res) return false;
 	res = Scene.LoadLevel(1);

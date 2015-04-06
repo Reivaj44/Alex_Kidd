@@ -36,6 +36,7 @@ public:
 	bool InitInstrucc();
 	bool InitCredits();
 	bool InitMap(int lvl);
+	bool InitGameOver();
 	bool InitLevel1();
 
 private:
