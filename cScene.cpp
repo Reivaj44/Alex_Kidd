@@ -1,5 +1,11 @@
 #include "cScene.h"
 #include "Globals.h"
+#include "cPtero.h"
+#include "cSFish.h"
+#include "cGhost.h"
+#include "cFrog.h"
+#include "cMiniboss.h"
+#include "cScorpion.h"
 
 cScene::cScene(void)
 {
@@ -29,7 +35,52 @@ bool cScene::LoadLevel(int level)
 	rects.clear();
 	isWater.clear();
 	player_position.clear();
+	monsters.clear();
+	blocks.clear();
 
+	int num_monsters;
+	fscanf(fd, "%d", &num_monsters);
+	for(int i=0; i<num_monsters; i++)
+	{
+		int t_monster;
+		int x_monster;
+		int y_monster;
+		cMonster* monster;
+		fscanf(fd, "%d", &t_monster);
+		fscanf(fd, "%d", &x_monster);
+		fscanf(fd, "%d", &y_monster);
+		switch(t_monster) {
+			case 0: monster = new cMonster();
+			case 1: monster = new cPtero();
+			case 2: monster = new cSFish();
+			case 3: monster = new cMiniboss();
+			case 4: monster = new cScorpion();
+			case 5: monster = new cFrog();
+		}
+		monster->SetTile(x_monster,y_monster);
+		monsters.push_back(monster);
+	}
+
+	int num_blocks;
+	fscanf(fd, "%d", &num_blocks);
+	for(int i=0; i<num_blocks; i++)
+	{
+		int t_block;
+		int t_tres;
+		int x_block;
+		int y_block;
+		fscanf(fd, "%d", &t_block);
+		fscanf(fd, "%d", &t_tres);
+		fscanf(fd, "%d", &x_block);
+		fscanf(fd, "%d", &y_block);
+		cBlock* block = new cBlock();
+		block->SetState(t_block);
+		block->SetTreasure(t_tres);
+		block->SetTile(x_block,y_block);
+		blocks.push_back(block);
+	}
+
+	
 	id_DL=glGenLists(1);
 	glNewList(id_DL,GL_COMPILE);
 		glPushMatrix();

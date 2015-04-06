@@ -33,14 +33,14 @@ void cBicho::GetPosition(int &posx,int &posy)
 }
 void cBicho::SetTile(int tx,int ty)
 {
-	x = tx * TILE_SIZE - ibodybox.left;
-	y = ty * TILE_SIZE - ibodybox.bottom;
+	x = tx * 16 - ibodybox.left;
+	y = ty * 16 - ibodybox.bottom;
 	UpdateBox();
 }
 void cBicho::GetTile(int &tx,int &ty)
 {
-	tx = x / TILE_SIZE + ibodybox.left;
-	ty = y / TILE_SIZE + ibodybox.bottom;
+	tx = x / 16 + ibodybox.left;
+	ty = y / 16 + ibodybox.bottom;
 }
 void cBicho::SetWidthHeight(int width,int height)
 {
@@ -82,10 +82,10 @@ bool cBicho::CollidesMapWall(int *map,bool right, std::vector<cBlock*> &blocks, 
 	int x_aux = bodybox.left;
 	if(right) x_aux = bodybox.right;
 
-	tile_x = x_aux / TILE_SIZE;
-	tile_y = bodybox.bottom / TILE_SIZE;
+	tile_x = x_aux / 16;
+	tile_y = bodybox.bottom / 16;
 	
-	height_tiles = int( bodybox.top / TILE_SIZE) - int(bodybox.bottom / TILE_SIZE) + 1;
+	height_tiles = int( bodybox.top / 16) - int(bodybox.bottom / 16) + 1;
 	
 	if(CollidesBorder(bodybox,rectangle)) return true;
 
@@ -106,10 +106,10 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks, int level_
 	int width_tiles;
 	unsigned int i;
 
-	tile_x = bodybox.left / TILE_SIZE;
-	tile_y = bodybox.bottom / TILE_SIZE;
+	tile_x = bodybox.left / 16;
+	tile_y = bodybox.bottom / 16;
 
-	width_tiles = int( (bodybox.right) / TILE_SIZE ) - int( bodybox.left / TILE_SIZE ) + 1;
+	width_tiles = int( (bodybox.right) / 16 ) - int( bodybox.left / 16 ) + 1;
 
 	bool collides=false;
 	bool collides_down=false;
@@ -125,7 +125,7 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks, int level_
 	i=0;
 	while((i<width_tiles) && !collides && !collides_down)
 	{
-		if( (int(bodybox.bottom) % TILE_SIZE) == 0 && (map[ (tile_x + i) + ((tile_y - 1) * level_width) ] != 0) )
+		if( (int(bodybox.bottom) % 16) == 0 && (map[ (tile_x + i) + ((tile_y - 1) * level_width) ] != 0) )
 			collides_down = true;
 		else if((map[ (tile_x + i) + (tile_y * level_width) ] != 0))
 			collides = true;
@@ -133,7 +133,7 @@ bool cBicho::CollidesMapFloor(int *map, std::vector<cBlock*> &blocks, int level_
 	}
 	if(collides)
 	{
-			y += TILE_SIZE - (int(bodybox.bottom) % TILE_SIZE);
+			y += 16 - (int(bodybox.bottom) % 16);
 			UpdateBox();
 	}
 
@@ -147,10 +147,10 @@ bool cBicho::CollidesMapCeil(int *map, std::vector<cBlock*> &blocks, const cRect
 	bool on_base;
 	unsigned int i;
 
-	tile_x = bodybox.left / TILE_SIZE;
-	tile_y = bodybox.top / TILE_SIZE;
+	tile_x = bodybox.left / 16;
+	tile_y = bodybox.top / 16;
 
-	width_tiles = int( (bodybox.right) / TILE_SIZE ) - int( bodybox.left / TILE_SIZE ) + 1;
+	width_tiles = int( (bodybox.right) / 16 ) - int( bodybox.left / 16 ) + 1;
 
 	bool collides=false;
 	bool collides_up=false;
@@ -170,7 +170,7 @@ bool cBicho::CollidesMapCeil(int *map, std::vector<cBlock*> &blocks, const cRect
 	i=0;
 	while((i<width_tiles) && !collides && !collides_up)
 	{
-		if( (int(bodybox.top) % TILE_SIZE) == 15 && (map[ (tile_x + i) + ((tile_y + 1) * level_width) ] != 0) )
+		if( (int(bodybox.top) % 16) == 15 && (map[ (tile_x + i) + ((tile_y + 1) * level_width) ] != 0) )
 			collides_up = true;
 		else if((map[ (tile_x + i) + (tile_y * level_width) ] != 0))
 			collides = true;
@@ -178,7 +178,7 @@ bool cBicho::CollidesMapCeil(int *map, std::vector<cBlock*> &blocks, const cRect
 	}
 	if(collides)
 	{
-			y -= (int(bodybox.top) % TILE_SIZE) + 1;
+			y -= (int(bodybox.top) % 16) + 1;
 			UpdateBox();
 	}
 
