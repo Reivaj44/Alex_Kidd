@@ -72,10 +72,12 @@ private:
 	int jump_alfa;
 	int jump_y;
 	bool down_press;
+	bool first_punch;
 
 	cRect punchbox;
 	cRect ipunchbox;
 	int punch_delay;
+	int frame_punch_delay;
 
 	cRect mariobox;
 	cRect imariobox;
