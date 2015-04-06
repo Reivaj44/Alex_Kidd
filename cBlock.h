@@ -15,6 +15,7 @@
 #define R_GREEN 10
 #define CHBX  11
 #define CHBXT 12
+#define RICE  13
 
 
 class cPlayer;
@@ -37,7 +38,7 @@ public:
 	virtual void SetState(int st);
 
 	virtual void Draw(int tex_id);
-	virtual void Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster*> &monsters, int &check_x, int &check_y);
+	virtual void Logic(cPlayer &player, int &money, int &lifes, std::vector<cMonster*> &monsters, int &check_x, int &check_y, bool &level_completed);
 
 protected:
 	bool collisionable;
