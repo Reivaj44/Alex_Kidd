@@ -53,6 +53,7 @@ public:
 	void Poison();
 	void Swim();
 	void Resurrect(int tile_x, int tile_y);
+	void Reset();
 	void PowerUp();
 
 	void SetState(int s);

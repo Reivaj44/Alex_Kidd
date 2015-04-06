@@ -330,6 +330,22 @@ void cPlayer::PowerUp()
 	ChangeBox();
 }
 
+void cPlayer::Reset()
+{
+	intheair = false;
+	jumping = false;
+	left = false;
+	swimming = false;
+	poisoned = false;
+	retard = 0;
+	punch_delay = 0;
+	down_press = false;
+	first_punch = false;
+	SetState(STATE_LOOKRIGHT);
+	delay = 0;
+	seq = 0;
+}
+
 bool cPlayer::isPoweredUp()
 {
 	return mario_jump;
